@@ -1,5 +1,5 @@
-import { SimulationClock } from "./SimulationEngine/SimulationClock";
-import { DummyNode, Updatable } from "./SimulationEngine/DummyNode";
+import { SimulationClock } from "./SimulationClock";
+import { DummyNode, Updatable } from "./DummyNode";
 
 // SimulationEngine 클래스: 업데이트 루프를 관리하며 start와 pause 함수 제공
 class SimulationEngine {
@@ -50,26 +50,10 @@ const clock = new SimulationClock();
 const node = new DummyNode();
 const engine = new SimulationEngine(tickInterval, clock, [node]);
 
-engine.start();
+export function start() {
+  engine.start();
+}
 
-// 5초 후 시뮬레이션 일시 중지
-setTimeout(() => {
+export function pause() {
   engine.pause();
-}, 5000);
-
-// window.addEventListener("DOMContentLoaded", () => {
-//   const startButton = document.getElementById("start");
-//   const pauseButton = document.getElementById("pause");
-
-//   if (startButton) {
-//     startButton.addEventListener("click", () => {
-//       engine.start();
-//     });
-//   }
-
-//   if (pauseButton) {
-//     pauseButton.addEventListener("click", () => {
-//       engine.pause();
-//     });
-//   }
-// });
+}
