@@ -1,4 +1,4 @@
-import Main from "~/main/Main";
+import Main from "~/client/main/Main";
 
 export function meta() {
   return [{ title: "Tratics" }, { name: "description", content: "Tractics" }];
