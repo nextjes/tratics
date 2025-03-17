@@ -1,5 +1,11 @@
-# Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,node,intellij+all
-# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,node,intellij+all
+.DS_Store
+/node_modules/
+
+# React Router
+/.react-router/
+/build/
+# Created by https://www.toptal.com/developers/gitignore/api/react,node,intellij+all,visualstudiocode
+# Edit at https://www.toptal.com/developers/gitignore?templates=react,node,intellij+all,visualstudiocode
 
 ### Intellij+all ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
@@ -229,6 +235,19 @@ dist
 # SvelteKit build / generate output
 .svelte-kit
 
+### react ###
+.DS_*
+**/*.backup.*
+**/*.back.*
+
+node_modules
+
+*.sublime*
+
+psd
+thumb
+sketch
+
 ### VisualStudioCode ###
 .vscode/*
 !.vscode/settings.json
@@ -248,4 +267,4 @@ dist
 .history
 .ionide
 
-# End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,node,intellij+all
+# End of https://www.toptal.com/developers/gitignore/api/react,node,intellij+all,visualstudiocode
