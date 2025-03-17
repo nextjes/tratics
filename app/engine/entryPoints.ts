@@ -1,7 +1,7 @@
 // engine 폴더 만들기 위한 index.ts 파일 생성
 
 import { SimulationClock } from "./SimulationClock";
-import { DummyNode, type Updatable } from "./DummyNode";
+import { Node, type Updatable } from "./Node";
 import { useMemoryState } from "~/store/memory";
 
 // SimulationEngine 클래스: 업데이트 루프를 관리하며 start와 pause 함수 제공
@@ -47,11 +47,21 @@ class SimulationEngine {
       console.log("Simulation paused.");
     }
   }
+
+  stop(): void {
+    if (this.intervalId !== null) {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
+      this.clock.reset();
+      this.updatables.forEach((obj) => obj.reset());
+      console.log("Simulation stopped.");
+    }
+  }
 }
 
 const tickInterval = 100; // 밀리초 단위로 100ms 간격
 const clock = new SimulationClock();
-const node = new DummyNode();
+const node = new Node(3);
 const engine = new SimulationEngine(tickInterval, clock, [node]);
 
 export function start() {
@@ -61,5 +71,10 @@ export function start() {
 
 export function pause() {
   engine.pause();
+  useMemoryState.getState().setIsRunning(false);
+}
+
+export function stop() {
+  engine.stop();
   useMemoryState.getState().setIsRunning(false);
 }
