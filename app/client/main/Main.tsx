@@ -1,4 +1,4 @@
-import { pause, start } from "~/engine/entryPoints";
+import { stop, start } from "~/engine/entryPoints";
 import Header from "./Header";
 import Section from "./Section";
 
@@ -9,7 +9,7 @@ const Main = () => {
   };
 
   const onStopClick = (): void => {
-    pause();
+    stop();
   };
 
   return (

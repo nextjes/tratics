@@ -47,6 +47,16 @@ class SimulationEngine {
       console.log("Simulation paused.");
     }
   }
+
+  stop(): void {
+    if (this.intervalId !== null) {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
+      this.clock.reset();
+      this.updatables.forEach((obj) => obj.reset());
+      console.log("Simulation stopped.");
+    }
+  }
 }
 
 const tickInterval = 100; // 밀리초 단위로 100ms 간격
@@ -61,5 +71,10 @@ export function start() {
 
 export function pause() {
   engine.pause();
+  useMemoryState.getState().setIsRunning(false);
+}
+
+export function stop() {
+  engine.stop();
   useMemoryState.getState().setIsRunning(false);
 }

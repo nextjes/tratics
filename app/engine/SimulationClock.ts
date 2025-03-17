@@ -21,4 +21,9 @@ export class SimulationClock {
   currentTime(): number {
     return this.simulationTime;
   }
+
+  reset(): void {
+    this.lastTick = Date.now();
+    this.simulationTime = 0.0;
+  }
 }
