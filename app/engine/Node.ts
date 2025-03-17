@@ -20,7 +20,7 @@ export class Node implements Updatable {
 
   update(deltaTime: number): void {
     this.elapsedTime += deltaTime;
-    console.log(`DummyNode updated: value = ${this.elapsedTime.toFixed(4)}`);
+    console.log(`Node updated: value = ${this.elapsedTime.toFixed(4)}`);
     useMemoryState.getState().setNodeStatus(this.status);
   }
 

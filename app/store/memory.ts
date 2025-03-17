@@ -21,6 +21,5 @@ export const useMemoryState = create<MemoryState>((set) => ({
 }));
 
 export const useMemoryClock = () => useMemoryState((state) => state.clock);
-export const useDummyNodeValue = () =>
-  useMemoryState((state) => state.nodeStatus);
+export const useNodeStatus = () => useMemoryState((state) => state.nodeStatus);
 export const useIsRunning = () => useMemoryState((state) => state.isRunning);
