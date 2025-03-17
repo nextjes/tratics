@@ -1,4 +1,4 @@
-import { pause, start } from "~/engine";
+import { pause, start } from "~/engine/entryPoints";
 import Header from "./Header";
 import Section from "./Section";
 
