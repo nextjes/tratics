@@ -41,3 +41,32 @@ jobs:
               issue_number: issue_number,
               state: 'closed'
             });
+
+      - name: Update GitHub Project Status (PR Merged)
+        if: github.event.pull_request.merged == true
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issue_number = process.env.ISSUE_NUMBER;
+            if (!issue_number) return;
+
+            const projects = await github.rest.projects.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+
+            for (const project of projects.data) {
+              const columns = await github.rest.projects.listColumns({
+                project_id: project.id
+              });
+
+              for (const column of columns.data) {
+                if (column.name === "Done") {
+                  await github.rest.projects.moveCard({
+                    column_id: column.id,
+                    position: "top"
+                  });
+                }
+              }
+            }
