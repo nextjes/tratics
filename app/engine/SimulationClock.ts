@@ -1,20 +1,36 @@
 export class SimulationClock {
-  private lastTick: number;
-  private simulationTime: number; // 초 단위로 누적된 시뮬레이션 시간
+  private readonly lastTick: number;
+  private readonly simulationTime: number;
+  private readonly lastDeltaMilliseconds: number;
 
-  constructor() {
-    this.lastTick = Date.now();
-    this.simulationTime = 0.0;
+  private constructor(
+    lastTick: number,
+    simulationTime: number,
+    lastDeltaMilliseconds: number
+  ) {
+    this.lastTick = lastTick;
+    this.simulationTime = simulationTime;
+    this.lastDeltaMilliseconds = lastDeltaMilliseconds;
+  }
+
+  static init(now: number): SimulationClock {
+    return new SimulationClock(now, 0, 0);
   }
 
   // tick() 메서드는 지난 틱(Delta Time)을 계산하고 시뮬레이션 시간을 업데이트합니다.
-  tick(): number {
-    const now = Date.now();
-    const delta = now - this.lastTick; // 밀리초 단위
-    this.lastTick = now;
-    const deltaSeconds = delta / 1000; // 초 단위 변환
-    this.simulationTime += deltaSeconds;
-    return deltaSeconds;
+  tick(now: number): [SimulationClock, number] {
+    const delta = now - this.lastTick;
+    const deltaSeconds = delta / 1000;
+    const newSimulationTime = this.simulationTime + deltaSeconds;
+
+    return [new SimulationClock(now, newSimulationTime, delta), deltaSeconds];
+  }
+
+  advance(to: number): SimulationClock {
+    const deltaMilliseconds = to - this.lastTick;
+    const newSimulationTime = this.simulationTime + deltaMilliseconds / 1000;
+
+    return new SimulationClock(to, newSimulationTime, deltaMilliseconds);
   }
 
   // 현재 시뮬레이션 시간 반환 (초 단위)
@@ -22,8 +38,7 @@ export class SimulationClock {
     return this.simulationTime;
   }
 
-  reset(): void {
-    this.lastTick = Date.now();
-    this.simulationTime = 0.0;
+  reset(): SimulationClock {
+    return new SimulationClock(Date.now(), 0, 0);
   }
 }

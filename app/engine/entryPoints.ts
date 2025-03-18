@@ -26,9 +26,10 @@ class SimulationEngine {
     if (this.intervalId !== null) return; // 이미 실행 중이면 중복 실행하지 않음
     this.intervalId = setInterval(() => {
       // 클럭 업데이트 및 deltaTime 계산
-      const deltaTime = this.clock.tick();
+      const [clock, deltaTime] = this.clock.tick(Date.now());
 
       // 등록된 모든 도메인 객체 업데이트
+      this.clock = clock;
       this.updatables.forEach((obj) => obj.update(deltaTime));
 
       // 현재 시뮬레이션 시간 출력
@@ -52,7 +53,7 @@ class SimulationEngine {
     if (this.intervalId !== null) {
       clearInterval(this.intervalId);
       this.intervalId = null;
-      this.clock.reset();
+      this.clock = this.clock.reset();
       this.updatables.forEach((obj) => obj.reset());
       console.log("Simulation stopped.");
     }
@@ -60,7 +61,7 @@ class SimulationEngine {
 }
 
 const tickInterval = 100; // 밀리초 단위로 100ms 간격
-const clock = new SimulationClock();
+const clock = SimulationClock.init(Date.now());
 const node = new Node(3);
 const engine = new SimulationEngine(tickInterval, clock, [node]);
 
