@@ -13,3 +13,9 @@ yarn install
 ```shell
 yarn dev
 ```
+
+## 테스트 실행 방법
+
+```shell
+yarn test
+```
