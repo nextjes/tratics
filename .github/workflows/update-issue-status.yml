@@ -1,0 +1,76 @@
+name: Update Issue Status on PR Events
+
+on:
+  pull_request:
+    types: [opened, synchronize, closed]
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  update_issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract Issue Number from Branch Name
+        id: extract
+        run: echo "ISSUE_NUMBER=$(echo ${{ github.head_ref }} | grep -oE '[0-9]+$')" >> $GITHUB_ENV
+
+      - name: Update Issue Status (When PR is Opened)
+        if: github.event.action == 'opened'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issue_number = process.env.ISSUE_NUMBER;
+            if (!issue_number) return;
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue_number,
+              body: `🚀 PR #${context.payload.pull_request.number} is linked to this issue.`
+            });
+
+      - name: Close Issue When PR is Merged
+        if: github.event.pull_request.merged == true
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issue_number = process.env.ISSUE_NUMBER;
+            if (!issue_number) return;
+            github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue_number,
+              state: 'closed'
+            });
+
+      - name: Update GitHub Project Status (PR Merged)
+        if: github.event.pull_request.merged == true
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issue_number = process.env.ISSUE_NUMBER;
+            if (!issue_number) return;
+
+            const projects = await github.rest.projects.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+
+            for (const project of projects.data) {
+              const columns = await github.rest.projects.listColumns({
+                project_id: project.id
+              });
+
+              for (const column of columns.data) {
+                if (column.name === "Done") {
+                  await github.rest.projects.moveCard({
+                    column_id: column.id,
+                    position: "top"
+                  });
+                }
+              }
+            }
