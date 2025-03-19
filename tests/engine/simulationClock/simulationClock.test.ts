@@ -2,6 +2,14 @@ import { describe, it, expect } from "vitest";
 import { SimulationClock } from "~/engine/SimulationClock";
 import { MilliSecond, Second } from "~/engine/term";
 
+describe("SimulationClock.init", () => {
+  it("initializes the clock with 0 seconds", () => {
+    const clock = SimulationClock.init();
+
+    expect(clock.currentTime()).toEqual(new Second(0));
+  });
+});
+
 describe("SimulationClock.advanceBy", () => {
   it.concurrent.each([
     [SimulationClock.init(), new MilliSecond(1000), new Second(1)],
@@ -29,6 +37,18 @@ describe("SimulationClock.reset", () => {
       const reset = clock.reset();
 
       expect(reset.currentTime()).toEqual(expectedTime);
+    }
+  );
+});
+
+describe("SimulationClock.currentTime", () => {
+  it.concurrent.each([
+    [SimulationClock.init(), new Second(0)],
+    [SimulationClock.init().advanceBy(new MilliSecond(10000)), new Second(10)],
+  ])(
+    "returns the current time",
+    (clock: SimulationClock, expectedTime: Second) => {
+      expect(clock.currentTime()).toEqual(expectedTime);
     }
   );
 });
