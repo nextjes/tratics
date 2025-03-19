@@ -1,5 +1,5 @@
 import { expect, test, describe } from "vitest";
-import { Node } from "../../../app/engine/Node";
+import { Node } from "../../../app/engine/node";
 
 describe("", () => {
   test("is reset", () => {
