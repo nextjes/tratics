@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { SimulationClock } from "~/engine/SimulationClock";
 import { MilliSecond, Second } from "~/engine/term";
 
-describe("SimulationClock.advance", () => {
+describe("SimulationClock.advanceBy", () => {
   it.concurrent.each([
     [
       SimulationClock.init(new Date(2025, 3, 18, 10, 0, 0).getTime()),
