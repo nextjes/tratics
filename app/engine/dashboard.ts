@@ -2,7 +2,7 @@ import { useMemoryState } from "~/store/memory";
 import * as term from "./term";
 
 export class Dashboard {
-  readonly elapsedTime: term.Second;
+  elapsedTime: term.Second;
 
   private constructor(elapsedTime: term.Second) {
     this.elapsedTime = elapsedTime;
