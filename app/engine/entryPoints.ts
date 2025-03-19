@@ -34,9 +34,14 @@ class SimulationEngine {
 
       // 현재 시뮬레이션 시간 출력
       console.log(
-        `Simulation time: ${this.clock.currentTime().toFixed(4)} seconds`
+        `Simulation time: ${this.clock
+          .currentTime()
+          .valueOf()
+          .toFixed(4)} seconds`
       );
-      useMemoryState.getState().setClock(this.clock.currentTime().toFixed(4));
+      useMemoryState
+        .getState()
+        .setClock(this.clock.currentTime().valueOf().toFixed(4));
     }, this.tickInterval);
   }
 
