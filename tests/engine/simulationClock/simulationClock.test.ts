@@ -4,11 +4,7 @@ import { MilliSecond, Second } from "~/engine/term";
 
 describe("SimulationClock.advanceBy", () => {
   it.concurrent.each([
-    [
-      SimulationClock.init(new Date(2025, 3, 18, 10, 0, 0).getTime()),
-      new MilliSecond(1000),
-      new Second(1),
-    ],
+    [SimulationClock.init(), new MilliSecond(1000), new Second(1)],
   ])(
     "advances the current time by %s seconds",
     (
@@ -19,6 +15,20 @@ describe("SimulationClock.advanceBy", () => {
       const advanced = clock.advanceBy(millSecondsToAdvance);
 
       expect(advanced.currentTime()).toEqual(expectedSeconds);
+    }
+  );
+});
+
+describe("SimulationClock.reset", () => {
+  it.concurrent.each([
+    [SimulationClock.init(), new Second(0)],
+    [SimulationClock.init().advanceBy(new MilliSecond(10000)), new Second(0)],
+  ])(
+    "resets the current time to 0",
+    (clock: SimulationClock, expectedTime: Second) => {
+      const reset = clock.reset();
+
+      expect(reset.currentTime()).toEqual(expectedTime);
     }
   );
 });

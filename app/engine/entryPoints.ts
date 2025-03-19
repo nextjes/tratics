@@ -3,6 +3,7 @@
 import { SimulationClock } from "./SimulationClock";
 import { Node, type Updatable } from "./Node";
 import { useMemoryState } from "~/store/memory";
+import * as term from "./term";
 
 // SimulationEngine 클래스: 업데이트 루프를 관리하며 start와 pause 함수 제공
 class SimulationEngine {
@@ -26,11 +27,11 @@ class SimulationEngine {
     if (this.intervalId !== null) return; // 이미 실행 중이면 중복 실행하지 않음
     this.intervalId = setInterval(() => {
       // 클럭 업데이트 및 deltaTime 계산
-      const [clock, deltaTime] = this.clock.tick(Date.now());
+      const deltaTime = new term.MilliSecond(this.tickInterval);
 
       // 등록된 모든 도메인 객체 업데이트
-      this.clock = clock;
-      this.updatables.forEach((obj) => obj.update(deltaTime));
+      this.clock = this.clock.advanceBy(deltaTime);
+      this.updatables.forEach((obj) => obj.update(deltaTime.valueOf()));
 
       // 현재 시뮬레이션 시간 출력
       console.log(
@@ -66,7 +67,7 @@ class SimulationEngine {
 }
 
 const tickInterval = 100; // 밀리초 단위로 100ms 간격
-const clock = SimulationClock.init(Date.now());
+const clock = SimulationClock.init();
 const node = new Node(3);
 const engine = new SimulationEngine(tickInterval, clock, [node]);
 
