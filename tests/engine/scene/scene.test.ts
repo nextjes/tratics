@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { Simulation } from "~/engine/simulation";
+import { Scene } from "~/engine/scene";
 import { Second } from "~/engine/term";
 
-describe("Simulation.draft", () => {
+describe("Scene.draft", () => {
   it("drafts a dashboard with 0 seconds elapsed time", () => {
-    const dashboard = Simulation.draft();
+    const dashboard = Scene.draft();
 
     expect(dashboard.elapsedTime).toEqual(new Second(0));
   });

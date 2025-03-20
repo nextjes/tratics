@@ -1,4 +1,4 @@
-import { Simulation } from "./simulation";
+import { Scene } from "./scene";
 import { Node, SimulationClock, type Temporal } from "./updatable";
 import { useMemoryState } from "~/store/memory";
 import * as term from "./term";
@@ -9,18 +9,18 @@ class SimulationEngine {
   private tickInterval: number;
   private clock: SimulationClock;
   private updatables: Temporal[];
-  private simulation: Simulation;
+  private scene: Scene;
 
   constructor(
     tickInterval: number,
     clock: SimulationClock,
     updatables: Temporal[],
-    simulation: Simulation
+    scene: Scene
   ) {
     this.tickInterval = tickInterval;
     this.clock = clock;
     this.updatables = updatables;
-    this.simulation = simulation;
+    this.scene = scene;
   }
 
   // start() 함수: 시뮬레이션 업데이트 루프 시작
@@ -35,8 +35,8 @@ class SimulationEngine {
       this.updatables.forEach((obj) => {
         obj = obj.after(deltaTime);
       });
-      this.simulation.elapsedTime = this.clock.currentTime();
-      this.simulation.publish();
+      this.scene.elapsedTime = this.clock.currentTime();
+      this.scene.publish();
     }, this.tickInterval);
   }
 
@@ -63,12 +63,7 @@ class SimulationEngine {
 const tickInterval = 100; // 밀리초 단위로 100ms 간격
 const clock = SimulationClock.init();
 const node = Node.init(new term.Second(3));
-const engine = new SimulationEngine(
-  tickInterval,
-  clock,
-  [node],
-  Simulation.draft()
-);
+const engine = new SimulationEngine(tickInterval, clock, [node], Scene.draft());
 
 export function start() {
   engine.start();
