@@ -6,3 +6,4 @@ export {
   type Resetable,
   type Updatable,
 } from "./temporal";
+export { Task } from "./task";
