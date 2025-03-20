@@ -1,5 +1,5 @@
 import { Dashboard } from "./dashboard";
-import { Node, type Updatable } from "./node";
+import { Node, type Updatable } from "./updatable";
 import { useMemoryState } from "~/store/memory";
 import * as term from "./term";
 import { SimulationClock } from "./clock";
