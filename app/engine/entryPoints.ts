@@ -33,7 +33,9 @@ class SimulationEngine {
 
       // 등록된 모든 도메인 객체 업데이트
       this.clock = this.clock.advanceBy(deltaTime);
-      this.updatables.forEach((obj) => obj.update(deltaTime.valueOf()));
+      this.updatables.forEach((obj) => {
+        obj = obj.update(deltaTime.valueOf());
+      });
       this.dashboard.elapsedTime = this.clock.currentTime();
       this.dashboard.publish();
     }, this.tickInterval);
@@ -61,7 +63,7 @@ class SimulationEngine {
 
 const tickInterval = 100; // 밀리초 단위로 100ms 간격
 const clock = SimulationClock.init();
-const node = new Node(3);
+const node = Node.init(new term.Second(3));
 const engine = new SimulationEngine(
   tickInterval,
   clock,

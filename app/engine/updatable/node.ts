@@ -1,29 +1,56 @@
 import { useMemoryState } from "~/store/memory";
+import * as term from "~/engine/term";
 
 export interface Updatable {
-  update(deltaTime: number): void;
-  reset(): void;
+  update(deltaTime: term.MilliSecond): Updatable;
+  reset(): Updatable;
 }
 
 export class Node implements Updatable {
-  #estimatedProcessingDuration: number;
-  #elapsedTime: number;
-  #status: string;
+  readonly #estimatedProcessingDuration: term.Second;
+  readonly #elapsedTime: term.MilliSecond;
+  readonly #status: string;
 
-  constructor(estimatedProcessingDuration: number) {
+  private constructor(
+    estimatedProcessingDuration: term.Second,
+    elapsedTime: term.MilliSecond,
+    status: string
+  ) {
     this.#estimatedProcessingDuration = estimatedProcessingDuration;
-    this.#elapsedTime = 0.0;
-    this.#status = "idle";
+    this.#elapsedTime = elapsedTime;
+    this.#status = status;
   }
 
-  update(deltaTime: number): void {
-    this.#elapsedTime += deltaTime;
-    console.log(`Node updated: value = ${this.#elapsedTime.toFixed(4)}`);
+  static init(estimatedProcessingDuration: term.Second): Node {
+    return new Node(
+      estimatedProcessingDuration,
+      new term.MilliSecond(0),
+      "idle"
+    );
+  }
+
+  status(): string {
+    return this.#status;
+  }
+
+  elapsedTime(): term.MilliSecond {
+    return this.#elapsedTime;
+  }
+
+  update(deltaTime: term.MilliSecond): Node {
     useMemoryState.getState().setNodeStatus(this.#status);
+    return new Node(
+      this.#estimatedProcessingDuration,
+      new term.MilliSecond(this.#elapsedTime.valueOf() + deltaTime.valueOf()),
+      this.#status
+    );
   }
 
-  reset(): void {
-    this.#elapsedTime = 0.0;
-    this.#status = "idle";
+  reset(): Node {
+    return new Node(
+      this.#estimatedProcessingDuration,
+      new term.MilliSecond(0),
+      "idle"
+    );
   }
 }
