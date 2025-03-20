@@ -1,7 +1,6 @@
 export const enum Role {
   Clock = "clock",
   Node = "node",
-  Task = "task",
 }
 
 export const enum TaskStatus {
