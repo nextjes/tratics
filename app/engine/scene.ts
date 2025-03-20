@@ -1,23 +1,23 @@
 import { useMemoryState } from "~/store/memory";
-import type { Temporal } from "./updatable";
+import type { Publishable } from "./updatable";
+import * as term from "./term";
 
 export class Scene {
-  temporals: Temporal[];
+  publishables: Publishable[];
 
-  constructor(temporals: Temporal[]) {
-    this.temporals = temporals;
+  constructor(publishables: Publishable[]) {
+    this.publishables = publishables;
   }
 
   publish(): void {
     const state = useMemoryState.getState();
     const handlers = {
-      clock: state.setClock,
-      node: state.setNodeStatus,
+      [term.Role.Clock]: state.setClock,
+      [term.Role.Node]: state.setNodeStatus,
     };
-    this.temporals.reduce((_, temporal) => {
-      const { role, contents } = temporal.publishable();
-      handlers[role]?.(contents);
-      return null;
-    }, null);
+    this.publishables.forEach((publishable) => {
+      const { role, contents } = publishable.state();
+      handlers[role as term.Role]?.(contents);
+    });
   }
 }

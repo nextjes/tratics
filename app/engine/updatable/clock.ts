@@ -1,7 +1,11 @@
 import * as term from "~/engine/term";
-import { type Temporal, type Publishable } from "./temporal";
+import {
+  type Temporal,
+  type Publishable,
+  type PublishableState,
+} from "./temporal";
 
-export class SimulationClock implements Temporal {
+export class SimulationClock implements Temporal, Publishable {
   readonly #simulationTime: term.Second;
 
   private constructor(simulationTime: term.Second) {
@@ -28,9 +32,9 @@ export class SimulationClock implements Temporal {
     return new SimulationClock(new term.Second(0));
   }
 
-  publishable(): Publishable {
+  state(): PublishableState {
     return {
-      role: "clock",
+      role: term.Role.Clock,
       contents: this.#simulationTime.valueOf().toFixed(4),
     };
   }

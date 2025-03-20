@@ -1,8 +1,11 @@
-import { useMemoryState } from "~/store/memory";
 import * as term from "~/engine/term";
-import { type Temporal, type Publishable } from "./temporal";
+import {
+  type Temporal,
+  type Publishable,
+  type PublishableState,
+} from "./temporal";
 
-export class Node implements Temporal {
+export class Node implements Temporal, Publishable {
   readonly #estimatedProcessingDuration: term.Second;
   readonly #elapsedTime: term.MilliSecond;
   readonly #status: string;
@@ -49,9 +52,9 @@ export class Node implements Temporal {
     );
   }
 
-  publishable(): Publishable {
+  state(): PublishableState {
     return {
-      role: "node",
+      role: term.Role.Node,
       contents: this.#status,
     };
   }
