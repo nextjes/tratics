@@ -11,7 +11,7 @@ export class SimulationClock {
     return new SimulationClock(new term.Second(0));
   }
 
-  advanceBy(milliSeconds: term.MilliSecond): SimulationClock {
+  after(milliSeconds: term.MilliSecond): SimulationClock {
     const newSimulationTime = new term.Second(
       this.#simulationTime.valueOf() + milliSeconds.toSeconds()
     );
