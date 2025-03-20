@@ -1,15 +1,15 @@
 import { useMemoryState } from "~/store/memory";
 import * as term from "./term";
 
-export class Dashboard {
+export class Simulation {
   elapsedTime: term.Second;
 
   private constructor(elapsedTime: term.Second) {
     this.elapsedTime = elapsedTime;
   }
 
-  static draft(): Dashboard {
-    return new Dashboard(new term.Second(0));
+  static draft(): Simulation {
+    return new Simulation(new term.Second(0));
   }
 
   publish(): void {

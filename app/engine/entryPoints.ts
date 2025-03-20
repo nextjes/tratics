@@ -1,4 +1,4 @@
-import { Dashboard } from "./dashboard";
+import { Simulation } from "./simulation";
 import { Node, SimulationClock, type Temporal } from "./updatable";
 import { useMemoryState } from "~/store/memory";
 import * as term from "./term";
@@ -9,13 +9,13 @@ class SimulationEngine {
   private tickInterval: number;
   private clock: SimulationClock;
   private updatables: Temporal[];
-  private dashboard: Dashboard;
+  private dashboard: Simulation;
 
   constructor(
     tickInterval: number,
     clock: SimulationClock,
     updatables: Temporal[],
-    dashboard: Dashboard
+    dashboard: Simulation
   ) {
     this.tickInterval = tickInterval;
     this.clock = clock;
@@ -67,7 +67,7 @@ const engine = new SimulationEngine(
   tickInterval,
   clock,
   [node],
-  Dashboard.draft()
+  Simulation.draft()
 );
 
 export function start() {
