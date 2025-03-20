@@ -1,19 +1,17 @@
 import { useMemoryState } from "~/store/memory";
 
 export interface Updatable {
-  estimatedProcessingDuration: number;
-
   update(deltaTime: number): void;
   reset(): void;
 }
 
 export class Node implements Updatable {
-  estimatedProcessingDuration: number;
+  #estimatedProcessingDuration: number;
   #elapsedTime: number;
   #status: string;
 
   constructor(estimatedProcessingDuration: number) {
-    this.estimatedProcessingDuration = estimatedProcessingDuration;
+    this.#estimatedProcessingDuration = estimatedProcessingDuration;
     this.#elapsedTime = 0.0;
     this.#status = "idle";
   }
