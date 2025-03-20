@@ -9,18 +9,18 @@ class SimulationEngine {
   private tickInterval: number;
   private clock: SimulationClock;
   private updatables: Temporal[];
-  private dashboard: Simulation;
+  private simulation: Simulation;
 
   constructor(
     tickInterval: number,
     clock: SimulationClock,
     updatables: Temporal[],
-    dashboard: Simulation
+    simulation: Simulation
   ) {
     this.tickInterval = tickInterval;
     this.clock = clock;
     this.updatables = updatables;
-    this.dashboard = dashboard;
+    this.simulation = simulation;
   }
 
   // start() 함수: 시뮬레이션 업데이트 루프 시작
@@ -35,8 +35,8 @@ class SimulationEngine {
       this.updatables.forEach((obj) => {
         obj = obj.after(deltaTime);
       });
-      this.dashboard.elapsedTime = this.clock.currentTime();
-      this.dashboard.publish();
+      this.simulation.elapsedTime = this.clock.currentTime();
+      this.simulation.publish();
     }, this.tickInterval);
   }
 
