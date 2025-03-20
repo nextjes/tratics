@@ -1,6 +1,7 @@
 import * as term from "~/engine/term";
+import { type Temporal, type Publishable } from "./temporal";
 
-export class SimulationClock {
+export class SimulationClock implements Temporal {
   readonly #simulationTime: term.Second;
 
   private constructor(simulationTime: term.Second) {
@@ -11,7 +12,7 @@ export class SimulationClock {
     return new SimulationClock(new term.Second(0));
   }
 
-  advanceBy(milliSeconds: term.MilliSecond): SimulationClock {
+  after(milliSeconds: term.MilliSecond): SimulationClock {
     const newSimulationTime = new term.Second(
       this.#simulationTime.valueOf() + milliSeconds.toSeconds()
     );
@@ -25,5 +26,12 @@ export class SimulationClock {
 
   reset(): SimulationClock {
     return new SimulationClock(new term.Second(0));
+  }
+
+  publishable(): Publishable {
+    return {
+      role: "clock",
+      contents: this.#simulationTime.valueOf().toFixed(4),
+    };
   }
 }

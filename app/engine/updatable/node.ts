@@ -1,12 +1,8 @@
 import { useMemoryState } from "~/store/memory";
 import * as term from "~/engine/term";
+import { type Temporal, type Publishable } from "./temporal";
 
-export interface Updatable {
-  update(deltaTime: term.MilliSecond): Updatable;
-  reset(): Updatable;
-}
-
-export class Node implements Updatable {
+export class Node implements Temporal {
   readonly #estimatedProcessingDuration: term.Second;
   readonly #elapsedTime: term.MilliSecond;
   readonly #status: string;
@@ -37,8 +33,7 @@ export class Node implements Updatable {
     return this.#elapsedTime;
   }
 
-  update(deltaTime: term.MilliSecond): Node {
-    useMemoryState.getState().setNodeStatus(this.#status);
+  after(deltaTime: term.MilliSecond): Node {
     return new Node(
       this.#estimatedProcessingDuration,
       new term.MilliSecond(this.#elapsedTime.valueOf() + deltaTime.valueOf()),
@@ -52,5 +47,12 @@ export class Node implements Updatable {
       new term.MilliSecond(0),
       "idle"
     );
+  }
+
+  publishable(): Publishable {
+    return {
+      role: "node",
+      contents: this.#status,
+    };
   }
 }

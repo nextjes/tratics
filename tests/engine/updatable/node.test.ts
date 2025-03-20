@@ -11,7 +11,7 @@ describe("Node.init", () => {
   });
 });
 
-describe("Node.update", () => {
+describe("Node.after", () => {
   it.concurrent.each([
     [Node.init(new Second(3)), new MilliSecond(1), new MilliSecond(1)],
     [Node.init(new Second(3)), new MilliSecond(3), new MilliSecond(3)],
@@ -19,7 +19,7 @@ describe("Node.update", () => {
   ])(
     "updates the elapsed time by %s",
     (node: Node, deltaTime: MilliSecond, expectedElapsedTime: MilliSecond) => {
-      const updatedNode = node.update(deltaTime);
+      const updatedNode = node.after(deltaTime);
 
       expect(updatedNode.elapsedTime()).toEqual(expectedElapsedTime);
     }
@@ -29,7 +29,7 @@ describe("Node.update", () => {
 describe("Node.reset", () => {
   it.concurrent.each([
     [Node.init(new Second(3)), new MilliSecond(0)],
-    [Node.init(new Second(3)).update(new MilliSecond(5)), new MilliSecond(0)],
+    [Node.init(new Second(3)).after(new MilliSecond(5)), new MilliSecond(0)],
   ])(
     "resets the elapsed time to 0",
     (node: Node, expectedElapsedTime: MilliSecond) => {

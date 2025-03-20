@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { SimulationClock } from "~/engine/clock";
+import { SimulationClock } from "~/engine/updatable";
 import { MilliSecond, Second } from "~/engine/term";
 
 describe("SimulationClock.init", () => {
@@ -10,7 +10,7 @@ describe("SimulationClock.init", () => {
   });
 });
 
-describe("SimulationClock.advanceBy", () => {
+describe("SimulationClock.after", () => {
   it.concurrent.each([
     [SimulationClock.init(), new MilliSecond(1000), new Second(1)],
   ])(
@@ -20,7 +20,7 @@ describe("SimulationClock.advanceBy", () => {
       millSecondsToAdvance: MilliSecond,
       expectedSeconds: Second
     ) => {
-      const advanced = clock.advanceBy(millSecondsToAdvance);
+      const advanced = clock.after(millSecondsToAdvance);
 
       expect(advanced.currentTime()).toEqual(expectedSeconds);
     }
@@ -30,7 +30,7 @@ describe("SimulationClock.advanceBy", () => {
 describe("SimulationClock.reset", () => {
   it.concurrent.each([
     [SimulationClock.init(), new Second(0)],
-    [SimulationClock.init().advanceBy(new MilliSecond(10000)), new Second(0)],
+    [SimulationClock.init().after(new MilliSecond(10000)), new Second(0)],
   ])(
     "resets the current time to 0",
     (clock: SimulationClock, expectedTime: Second) => {
@@ -44,7 +44,7 @@ describe("SimulationClock.reset", () => {
 describe("SimulationClock.currentTime", () => {
   it.concurrent.each([
     [SimulationClock.init(), new Second(0)],
-    [SimulationClock.init().advanceBy(new MilliSecond(10000)), new Second(10)],
+    [SimulationClock.init().after(new MilliSecond(10000)), new Second(10)],
   ])(
     "returns the current time",
     (clock: SimulationClock, expectedTime: Second) => {
