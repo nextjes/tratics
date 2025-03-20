@@ -9,14 +9,15 @@ export class Scene {
   }
 
   publish(): void {
-    const statusRegister = {
-      clock: useMemoryState.getState().setClock,
-      node: useMemoryState.getState().setNodeStatus,
+    const state = useMemoryState.getState();
+    const handlers = {
+      clock: state.setClock,
+      node: state.setNodeStatus,
     };
-    this.temporals.forEach((temporal) => {
-      statusRegister[temporal.publishable().role](
-        temporal.publishable().contents
-      );
-    });
+    this.temporals.reduce((_, temporal) => {
+      const { role, contents } = temporal.publishable();
+      handlers[role]?.(contents);
+      return null;
+    }, null);
   }
 }
