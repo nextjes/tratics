@@ -13,7 +13,7 @@ const Section = () => {
         <ServerIcon className="size-[50px]" />
       </div>
       <div>Simulation Time : {clock} seconds </div>
-      <div>Node Status : {nodeStatus} seconds</div>
+      <div>Node Working Core : {nodeStatus}</div>
     </section>
   );
 };

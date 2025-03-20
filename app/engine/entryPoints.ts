@@ -1,5 +1,5 @@
 import { Scene } from "./scene";
-import { Node, SimulationClock, type Updatable } from "./updatable";
+import { Node, SimulationClock, Task, type Updatable } from "./updatable";
 import { useMemoryState } from "~/store/memory";
 import * as term from "./term";
 
@@ -43,7 +43,7 @@ class SimulationEngine {
 
 const tickInterval = 100; // 밀리초 단위로 100ms 간격
 const clock = SimulationClock.init();
-const node = Node.boot(2);
+const node = Node.boot(2).registerTask(Task.ready(new term.Second(3)));
 const engine = new SimulationEngine(tickInterval, [clock, node]);
 
 export function start() {
