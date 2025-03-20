@@ -8,7 +8,7 @@ export class Scene {
     this.elapsedTime = elapsedTime;
   }
 
-  static draft(): Scene {
+  static first(): Scene {
     return new Scene(new term.Second(0));
   }
 
