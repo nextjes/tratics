@@ -1,29 +1,29 @@
+import * as term from "~/engine/term";
+
 export class SimulationClock {
-  private lastTick: number;
-  private simulationTime: number; // 초 단위로 누적된 시뮬레이션 시간
+  readonly #simulationTime: term.Second;
 
-  constructor() {
-    this.lastTick = Date.now();
-    this.simulationTime = 0.0;
+  private constructor(simulationTime: term.Second) {
+    this.#simulationTime = simulationTime;
   }
 
-  // tick() 메서드는 지난 틱(Delta Time)을 계산하고 시뮬레이션 시간을 업데이트합니다.
-  tick(): number {
-    const now = Date.now();
-    const delta = now - this.lastTick; // 밀리초 단위
-    this.lastTick = now;
-    const deltaSeconds = delta / 1000; // 초 단위 변환
-    this.simulationTime += deltaSeconds;
-    return deltaSeconds;
+  static init(): SimulationClock {
+    return new SimulationClock(new term.Second(0));
   }
 
-  // 현재 시뮬레이션 시간 반환 (초 단위)
-  currentTime(): number {
-    return this.simulationTime;
+  advanceBy(milliSeconds: term.MilliSecond): SimulationClock {
+    const newSimulationTime = new term.Second(
+      this.#simulationTime.valueOf() + milliSeconds.toSeconds()
+    );
+
+    return new SimulationClock(newSimulationTime);
   }
 
-  reset(): void {
-    this.lastTick = Date.now();
-    this.simulationTime = 0.0;
+  currentTime(): term.Second {
+    return this.#simulationTime;
+  }
+
+  reset(): SimulationClock {
+    return new SimulationClock(new term.Second(0));
   }
 }
