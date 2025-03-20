@@ -1,6 +1,7 @@
 import * as term from "~/engine/term";
+import { type Temporal } from "./temporal";
 
-export class SimulationClock {
+export class SimulationClock implements Temporal {
   readonly #simulationTime: term.Second;
 
   private constructor(simulationTime: term.Second) {
