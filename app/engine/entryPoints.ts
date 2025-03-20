@@ -1,24 +1,24 @@
 import { Scene } from "./scene";
-import { Node, SimulationClock, type Temporal } from "./updatable";
+import { Node, SimulationClock, type Updatable } from "./updatable";
 import { useMemoryState } from "~/store/memory";
 import * as term from "./term";
 
 class SimulationEngine {
   private intervalId: ReturnType<typeof setInterval> | null = null;
   private tickInterval: number;
-  private temporals: Temporal[];
+  private updatables: Updatable[];
 
-  constructor(tickInterval: number, temporals: Temporal[]) {
+  constructor(tickInterval: number, updatables: Updatable[]) {
     this.tickInterval = tickInterval;
-    this.temporals = temporals;
+    this.updatables = updatables;
   }
 
   start(): void {
     if (this.intervalId !== null) return;
     this.intervalId = setInterval(() => {
       const deltaTime = new term.MilliSecond(this.tickInterval);
-      this.temporals = this.temporals.map((obj) => obj.after(deltaTime));
-      new Scene(this.temporals).publish();
+      this.updatables = this.updatables.map((obj) => obj.after(deltaTime));
+      new Scene(this.updatables).publish();
     }, this.tickInterval);
   }
 
@@ -35,7 +35,7 @@ class SimulationEngine {
     if (this.intervalId !== null) {
       clearInterval(this.intervalId);
       this.intervalId = null;
-      this.temporals = this.temporals.map((obj) => obj.reset());
+      this.updatables = this.updatables.map((obj) => obj.reset());
       console.log("Simulation stopped.");
     }
   }

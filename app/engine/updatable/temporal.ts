@@ -11,5 +11,13 @@ export interface Publishable {
 
 export interface Temporal {
   after(deltaTime: term.MilliSecond): Temporal;
-  reset(): Temporal;
+}
+
+export interface Resetable {
+  reset(): Resetable;
+}
+
+export interface Updatable extends Temporal, Publishable, Resetable {
+  after(deltaTime: term.MilliSecond): Updatable;
+  reset(): Updatable;
 }

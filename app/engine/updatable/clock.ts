@@ -1,11 +1,7 @@
 import * as term from "~/engine/term";
-import {
-  type Temporal,
-  type Publishable,
-  type PublishableState,
-} from "./temporal";
+import { type PublishableState, type Updatable } from "./temporal";
 
-export class SimulationClock implements Temporal, Publishable {
+export class SimulationClock implements Updatable {
   readonly #simulationTime: term.Second;
 
   private constructor(simulationTime: term.Second) {

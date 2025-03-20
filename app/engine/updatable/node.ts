@@ -1,11 +1,7 @@
 import * as term from "~/engine/term";
-import {
-  type Temporal,
-  type Publishable,
-  type PublishableState,
-} from "./temporal";
+import { type PublishableState, type Updatable } from "./temporal";
 
-export class Node implements Temporal, Publishable {
+export class Node implements Updatable {
   readonly #estimatedProcessingDuration: term.Second;
   readonly #elapsedTime: term.MilliSecond;
   readonly #status: string;

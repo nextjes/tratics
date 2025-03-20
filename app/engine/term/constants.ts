@@ -4,9 +4,7 @@ export const enum Role {
 }
 
 export const enum TaskStatus {
-  New = "new",
-  Runnable = "runnable",
+  Ready = "ready",
   Running = "running",
-  Waiting = "waiting",
   Terminated = "terminated",
 }
