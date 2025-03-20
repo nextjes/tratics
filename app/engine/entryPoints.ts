@@ -34,7 +34,7 @@ class SimulationEngine {
       // 등록된 모든 도메인 객체 업데이트
       this.clock = this.clock.advanceBy(deltaTime);
       this.updatables.forEach((obj) => {
-        obj = obj.update(deltaTime.valueOf());
+        obj = obj.update(deltaTime);
       });
       this.dashboard.elapsedTime = this.clock.currentTime();
       this.dashboard.publish();
