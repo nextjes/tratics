@@ -3,9 +3,9 @@ import * as term from "~/engine/term";
 import * as error from "~/engine/error";
 
 export class Task implements Temporal {
-  #estimatedProcessingDuration: term.Second;
-  #elapsedTime: term.MilliSecond;
-  #status: term.TaskStatus;
+  readonly #estimatedProcessingDuration: term.Second;
+  readonly #elapsedTime: term.MilliSecond;
+  readonly #status: term.TaskStatus;
 
   private constructor(
     estimatedProcessingDuration: term.Second,
@@ -31,6 +31,10 @@ export class Task implements Temporal {
 
   elapsedTime(): term.MilliSecond {
     return this.#elapsedTime;
+  }
+
+  estimatedProcessingDuration(): term.Second {
+    return this.#estimatedProcessingDuration;
   }
 
   after(deltaTime: term.MilliSecond): Task {
