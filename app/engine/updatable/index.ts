@@ -1,1 +1,1 @@
-export { Node } from "./node";
+export { Node, type Updatable } from "./node";
