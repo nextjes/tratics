@@ -1,5 +1,5 @@
 import { Dashboard } from "./dashboard";
-import { Node, SimulationClock, type Updatable } from "./updatable";
+import { Node, SimulationClock, type Temporal } from "./updatable";
 import { useMemoryState } from "~/store/memory";
 import * as term from "./term";
 
@@ -8,13 +8,13 @@ class SimulationEngine {
   private intervalId: ReturnType<typeof setInterval> | null = null;
   private tickInterval: number;
   private clock: SimulationClock;
-  private updatables: Updatable[];
+  private updatables: Temporal[];
   private dashboard: Dashboard;
 
   constructor(
     tickInterval: number,
     clock: SimulationClock,
-    updatables: Updatable[],
+    updatables: Temporal[],
     dashboard: Dashboard
   ) {
     this.tickInterval = tickInterval;
@@ -33,7 +33,7 @@ class SimulationEngine {
       // 등록된 모든 도메인 객체 업데이트
       this.clock = this.clock.after(deltaTime);
       this.updatables.forEach((obj) => {
-        obj = obj.update(deltaTime);
+        obj = obj.after(deltaTime);
       });
       this.dashboard.elapsedTime = this.clock.currentTime();
       this.dashboard.publish();
