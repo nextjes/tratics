@@ -1,5 +1,5 @@
 import * as term from "~/engine/term";
-import { type Temporal } from "./temporal";
+import { type Temporal, type Publishable } from "./temporal";
 
 export class SimulationClock implements Temporal {
   readonly #simulationTime: term.Second;
@@ -26,5 +26,12 @@ export class SimulationClock implements Temporal {
 
   reset(): SimulationClock {
     return new SimulationClock(new term.Second(0));
+  }
+
+  publishable(): Publishable {
+    return {
+      role: "clock",
+      contents: this.#simulationTime.valueOf().toFixed(4),
+    };
   }
 }

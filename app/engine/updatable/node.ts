@@ -1,6 +1,6 @@
 import { useMemoryState } from "~/store/memory";
 import * as term from "~/engine/term";
-import { type Temporal } from "./temporal";
+import { type Temporal, type Publishable } from "./temporal";
 
 export class Node implements Temporal {
   readonly #estimatedProcessingDuration: term.Second;
@@ -34,7 +34,6 @@ export class Node implements Temporal {
   }
 
   after(deltaTime: term.MilliSecond): Node {
-    useMemoryState.getState().setNodeStatus(this.#status);
     return new Node(
       this.#estimatedProcessingDuration,
       new term.MilliSecond(this.#elapsedTime.valueOf() + deltaTime.valueOf()),
@@ -48,5 +47,12 @@ export class Node implements Temporal {
       new term.MilliSecond(0),
       "idle"
     );
+  }
+
+  publishable(): Publishable {
+    return {
+      role: "node",
+      contents: this.#status,
+    };
   }
 }

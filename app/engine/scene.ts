@@ -1,18 +1,22 @@
 import { useMemoryState } from "~/store/memory";
-import * as term from "./term";
+import type { Temporal } from "./updatable";
 
 export class Scene {
-  elapsedTime: term.Second;
+  temporals: Temporal[];
 
-  private constructor(elapsedTime: term.Second) {
-    this.elapsedTime = elapsedTime;
-  }
-
-  static first(): Scene {
-    return new Scene(new term.Second(0));
+  constructor(temporals: Temporal[]) {
+    this.temporals = temporals;
   }
 
   publish(): void {
-    useMemoryState.getState().setClock(this.elapsedTime.valueOf().toFixed(4));
+    const statusRegister = {
+      clock: useMemoryState.getState().setClock,
+      node: useMemoryState.getState().setNodeStatus,
+    };
+    this.temporals.forEach((temporal) => {
+      statusRegister[temporal.publishable().role](
+        temporal.publishable().contents
+      );
+    });
   }
 }
