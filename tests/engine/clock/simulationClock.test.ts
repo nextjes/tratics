@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { SimulationClock } from "~/engine/simulationClock";
+import { SimulationClock } from "~/engine/clock";
 import { MilliSecond, Second } from "~/engine/term";
 
 describe("SimulationClock.init", () => {
