@@ -117,6 +117,7 @@ export class Node implements Updatable {
       cores[index] = null;
     } else {
       // 작업이 계속 실행되는 경우
+      cores[index] = task.after(new term.MilliSecond(remainingTime[index]));
       remainingTime[index] = 0;
     }
   }
