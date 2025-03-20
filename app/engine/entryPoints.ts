@@ -1,8 +1,7 @@
 import { Dashboard } from "./dashboard";
-import { Node, type Updatable } from "./updatable";
+import { Node, SimulationClock, type Updatable } from "./updatable";
 import { useMemoryState } from "~/store/memory";
 import * as term from "./term";
-import { SimulationClock } from "./clock";
 
 // SimulationEngine 클래스: 업데이트 루프를 관리하며 start와 pause 함수 제공
 class SimulationEngine {
