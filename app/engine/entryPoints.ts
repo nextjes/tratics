@@ -1,9 +1,8 @@
-// engine 폴더 만들기 위한 index.ts 파일 생성
-
-import { SimulationClock } from "./SimulationClock";
-import { Node, type Updatable } from "./Node";
+import { Dashboard } from "./dashboard";
+import { Node, type Updatable } from "./node";
 import { useMemoryState } from "~/store/memory";
 import * as term from "./term";
+import { SimulationClock } from "./clock";
 
 // SimulationEngine 클래스: 업데이트 루프를 관리하며 start와 pause 함수 제공
 class SimulationEngine {
@@ -11,15 +10,18 @@ class SimulationEngine {
   private tickInterval: number;
   private clock: SimulationClock;
   private updatables: Updatable[];
+  private dashboard: Dashboard;
 
   constructor(
     tickInterval: number,
     clock: SimulationClock,
-    updatables: Updatable[]
+    updatables: Updatable[],
+    dashboard: Dashboard
   ) {
     this.tickInterval = tickInterval;
     this.clock = clock;
     this.updatables = updatables;
+    this.dashboard = dashboard;
   }
 
   // start() 함수: 시뮬레이션 업데이트 루프 시작
@@ -32,17 +34,8 @@ class SimulationEngine {
       // 등록된 모든 도메인 객체 업데이트
       this.clock = this.clock.advanceBy(deltaTime);
       this.updatables.forEach((obj) => obj.update(deltaTime.valueOf()));
-
-      // 현재 시뮬레이션 시간 출력
-      console.log(
-        `Simulation time: ${this.clock
-          .currentTime()
-          .valueOf()
-          .toFixed(4)} seconds`
-      );
-      useMemoryState
-        .getState()
-        .setClock(this.clock.currentTime().valueOf().toFixed(4));
+      this.dashboard.elapsedTime = this.clock.currentTime();
+      this.dashboard.publish();
     }, this.tickInterval);
   }
 
@@ -69,7 +62,12 @@ class SimulationEngine {
 const tickInterval = 100; // 밀리초 단위로 100ms 간격
 const clock = SimulationClock.init();
 const node = new Node(3);
-const engine = new SimulationEngine(tickInterval, clock, [node]);
+const engine = new SimulationEngine(
+  tickInterval,
+  clock,
+  [node],
+  Dashboard.draft()
+);
 
 export function start() {
   engine.start();
