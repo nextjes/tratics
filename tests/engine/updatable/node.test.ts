@@ -1,5 +1,5 @@
 import { expect, it, describe } from "vitest";
-import { MilliSecond } from "~/engine/term";
+import { type MilliSecond } from "~/engine/term";
 import { Node, Task } from "~/engine/updatable";
 
 describe("Node.boot", () => {
@@ -12,17 +12,13 @@ describe("Node.boot", () => {
 
 describe("Node.registerTask", () => {
   it.concurrent.each([
-    [Node.boot(2), Task.ready(new MilliSecond(3000)), 1],
-    [
-      Node.boot(2).registerTask(Task.ready(new MilliSecond(3000))),
-      Task.ready(new MilliSecond(3000)),
-      2,
-    ],
+    [Node.boot(2), Task.ready(3000), 1],
+    [Node.boot(2).registerTask(Task.ready(3000)), Task.ready(3000), 2],
     [
       Node.boot(2)
-        .registerTask(Task.ready(new MilliSecond(3000)))
-        .registerTask(Task.ready(new MilliSecond(3000))),
-      Task.ready(new MilliSecond(3000)),
+        .registerTask(Task.ready(3000))
+        .registerTask(Task.ready(3000)),
+      Task.ready(3000),
       3,
     ],
   ])(
@@ -37,40 +33,34 @@ describe("Node.registerTask", () => {
 
 describe("Node.after", () => {
   it.concurrent.each([
-    [
-      Node.boot(2).registerTask(Task.ready(new MilliSecond(3000))),
-      new MilliSecond(1),
-      0,
-      1,
-      [new MilliSecond(2999), undefined],
-    ],
+    [Node.boot(2).registerTask(Task.ready(3000)), 1, 0, 1, [1, undefined]],
     [
       Node.boot(2)
-        .registerTask(Task.ready(new MilliSecond(3000)))
-        .registerTask(Task.ready(new MilliSecond(3000))),
-      new MilliSecond(1000),
+        .registerTask(Task.ready(3000))
+        .registerTask(Task.ready(3000)),
+      1000,
       0,
       2,
-      [new MilliSecond(2000), new MilliSecond(2000)],
+      [1000, 1000],
     ],
     [
       Node.boot(2)
-        .registerTask(Task.ready(new MilliSecond(3000)))
-        .registerTask(Task.ready(new MilliSecond(3000))),
-      new MilliSecond(3000),
+        .registerTask(Task.ready(3000))
+        .registerTask(Task.ready(3000)),
+      3000,
       0,
       0,
       [undefined, undefined],
     ],
     [
       Node.boot(2)
-        .registerTask(Task.ready(new MilliSecond(3000)))
-        .registerTask(Task.ready(new MilliSecond(3000)))
-        .registerTask(Task.ready(new MilliSecond(3000))),
-      new MilliSecond(5000),
+        .registerTask(Task.ready(3000))
+        .registerTask(Task.ready(3000))
+        .registerTask(Task.ready(3000)),
+      4800,
       0,
       1,
-      [new MilliSecond(2000), undefined],
+      [1800, undefined],
     ],
   ])(
     "processes tasks correctly after advancing time by %s milliseconds",
@@ -93,12 +83,12 @@ describe("Node.after", () => {
 });
 
 describe("Node.reset", () => {
-  it.concurrent.each([
-    [Node.boot(2)],
-    [Node.boot(2).after(new MilliSecond(5))],
-  ])("resets the elapsed time to 0", (node: Node) => {
-    const resetNode = node.reset();
+  it.concurrent.each([[Node.boot(2)], [Node.boot(2).after(5)]])(
+    "resets the elapsed time to 0",
+    (node: Node) => {
+      const resetNode = node.reset();
 
-    expect(resetNode.workingCoreNum()).toEqual(0);
-  });
+      expect(resetNode.workingCoreNum()).toEqual(0);
+    }
+  );
 });

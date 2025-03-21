@@ -34,7 +34,7 @@ export class Node implements Updatable {
     // 불변성을 위해 데이터 복사
     const cores = [...this.cores];
     const readyQueue = [...this.#readyQueue];
-    const remainingTimePerCore = cores.map(() => deltaTime.valueOf());
+    const remainingTimePerCore = cores.map(() => deltaTime);
 
     // 모든 코어의 시간을 소비할 때까지 처리
     while (Node.hasRemainingTime(remainingTimePerCore)) {
@@ -80,15 +80,12 @@ export class Node implements Updatable {
     }
 
     // 대기열에서 작업 가져와서 처리 시작
-    const task = queue
-      .shift()!
-      .start()
-      .after(new term.MilliSecond(remainingTime[index]));
+    const task = queue.shift()!.start().after(remainingTime[index]);
 
     // 작업 상태에 따른 처리
     if (task.status() === term.TaskStatus.Terminated) {
       // 작업이 완료된 경우 남은 시간 계산
-      const taskDuration = task.estimatedProcessingDuration().valueOf();
+      const taskDuration = task.estimatedProcessingDuration();
       remainingTime[index] = Math.max(0, remainingTime[index] - taskDuration);
     } else {
       // 작업이 아직 실행 중인 경우
@@ -114,16 +111,13 @@ export class Node implements Updatable {
       cores[index] = null;
     } else {
       // 작업이 계속 실행되는 경우
-      cores[index] = task.after(new term.MilliSecond(remainingTime[index]));
+      cores[index] = task.after(remainingTime[index]);
       remainingTime[index] = 0;
     }
   }
 
   private static estimateTaskRemainingTime(task: Task): number {
-    return (
-      task.estimatedProcessingDuration().valueOf() -
-      task.elapsedTime().valueOf()
-    );
+    return task.estimatedProcessingDuration() - task.elapsedTime();
   }
 
   reset(): Node {

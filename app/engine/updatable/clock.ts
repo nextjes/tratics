@@ -9,13 +9,11 @@ export class SimulationClock implements Updatable {
   }
 
   static init(): SimulationClock {
-    return new SimulationClock(new term.MilliSecond(0));
+    return new SimulationClock(0);
   }
 
   after(milliSeconds: term.MilliSecond): SimulationClock {
-    const newSimulationTime = new term.MilliSecond(
-      this.#simulationTime.valueOf() + milliSeconds.valueOf()
-    );
+    const newSimulationTime = this.#simulationTime + milliSeconds;
 
     return new SimulationClock(newSimulationTime);
   }
@@ -25,13 +23,13 @@ export class SimulationClock implements Updatable {
   }
 
   reset(): SimulationClock {
-    return new SimulationClock(new term.MilliSecond(0));
+    return new SimulationClock(0);
   }
 
   state(): PublishableState {
     return {
       role: term.Role.Clock,
-      contents: (this.#simulationTime.valueOf() / 1000).toFixed(4),
+      contents: (this.#simulationTime / 1000).toFixed(4),
     };
   }
 }

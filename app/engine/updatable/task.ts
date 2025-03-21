@@ -18,11 +18,7 @@ export class Task implements Temporal {
   }
 
   static ready(estimatedProcessingDuration: term.MilliSecond): Task {
-    return new Task(
-      estimatedProcessingDuration,
-      new term.MilliSecond(0),
-      term.TaskStatus.Ready
-    );
+    return new Task(estimatedProcessingDuration, 0, term.TaskStatus.Ready);
   }
 
   status(): string {
@@ -50,16 +46,12 @@ export class Task implements Temporal {
         `Unable to update task status: task is terminated`
       );
     }
-    const elapsedTime = this.#elapsedTime.valueOf() + deltaTime.valueOf();
+    const elapsedTime = this.#elapsedTime + deltaTime;
     let status: term.TaskStatus = this.#status;
-    if (elapsedTime >= this.#estimatedProcessingDuration.valueOf()) {
+    if (elapsedTime >= this.#estimatedProcessingDuration) {
       status = term.TaskStatus.Terminated;
     }
-    return new Task(
-      this.#estimatedProcessingDuration,
-      new term.MilliSecond(elapsedTime),
-      status
-    );
+    return new Task(this.#estimatedProcessingDuration, elapsedTime, status);
   }
 
   start(): Task {
