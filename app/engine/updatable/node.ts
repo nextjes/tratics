@@ -3,11 +3,11 @@ import { type PublishableState, type Updatable } from "./temporal";
 import { Task } from "./task";
 
 export class Node implements Updatable {
-  readonly #cores: Array<Task | null>;
+  readonly cores: Array<Task | null>;
   readonly #readyQueue: Task[];
 
   private constructor(cores: Array<Task | null>, taskQueue: Task[]) {
-    this.#cores = cores;
+    this.cores = cores;
     this.#readyQueue = taskQueue;
   }
 
@@ -17,7 +17,7 @@ export class Node implements Updatable {
   }
 
   workingCoreNum(): number {
-    return this.#cores.filter((task) => task !== null).length;
+    return this.cores.filter((task) => task !== null).length;
   }
 
   waitingTaskNum(): number {
@@ -27,12 +27,12 @@ export class Node implements Updatable {
   }
 
   registerTask(task: Task): Node {
-    return new Node(this.#cores, this.#readyQueue.concat(task));
+    return new Node(this.cores, this.#readyQueue.concat(task));
   }
 
   after(deltaTime: term.MilliSecond): Node {
     // 불변성을 위해 데이터 복사
-    const cores = [...this.#cores];
+    const cores = [...this.cores];
     const readyQueue = [...this.#readyQueue];
     const remainingTimePerCore = cores.map(() => deltaTime.valueOf());
 
@@ -130,13 +130,13 @@ export class Node implements Updatable {
   }
 
   reset(): Node {
-    return Node.boot(this.#cores.length);
+    return Node.boot(this.cores.length);
   }
 
   state(): PublishableState {
     return {
       role: term.Role.Node,
-      contents: `${this.workingCoreNum()}/${this.#cores.length}`,
+      contents: `${this.workingCoreNum()}/${this.cores.length}`,
     };
   }
 }

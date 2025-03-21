@@ -42,6 +42,7 @@ describe("Node.after", () => {
       new MilliSecond(1),
       0,
       1,
+      [new MilliSecond(2999), undefined],
     ],
     [
       Node.boot(2)
@@ -50,6 +51,7 @@ describe("Node.after", () => {
       new MilliSecond(1000),
       0,
       2,
+      [new MilliSecond(2000), new MilliSecond(2000)],
     ],
     [
       Node.boot(2)
@@ -58,6 +60,7 @@ describe("Node.after", () => {
       new MilliSecond(3000),
       0,
       0,
+      [undefined, undefined],
     ],
     [
       Node.boot(2)
@@ -67,6 +70,7 @@ describe("Node.after", () => {
       new MilliSecond(5000),
       0,
       1,
+      [new MilliSecond(2000), undefined],
     ],
   ])(
     "processes tasks correctly after advancing time by %s milliseconds",
@@ -74,12 +78,16 @@ describe("Node.after", () => {
       node: Node,
       deltaTime: MilliSecond,
       expectedWaitingTaskNum: number,
-      expectedWorkingCoreNum: number
+      expectedWorkingCoreNum: number,
+      expectedCoreElapsedTimes: Array<MilliSecond | undefined>
     ) => {
       const updatedNode = node.after(deltaTime);
 
       expect(updatedNode.waitingTaskNum()).toEqual(expectedWaitingTaskNum);
       expect(updatedNode.workingCoreNum()).toEqual(expectedWorkingCoreNum);
+      expect(updatedNode.cores.map((core) => core?.elapsedTime())).toEqual(
+        expectedCoreElapsedTimes
+      );
     }
   );
 });
