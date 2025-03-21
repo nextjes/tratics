@@ -3,12 +3,12 @@ import * as term from "~/engine/term";
 import * as error from "~/engine/error";
 
 export class Task implements Temporal {
-  readonly #estimatedProcessingDuration: term.Second;
+  readonly #estimatedProcessingDuration: term.MilliSecond;
   readonly #elapsedTime: term.MilliSecond;
   readonly #status: term.TaskStatus;
 
   private constructor(
-    estimatedProcessingDuration: term.Second,
+    estimatedProcessingDuration: term.MilliSecond,
     elapsedTime: term.MilliSecond,
     status: term.TaskStatus
   ) {
@@ -17,12 +17,8 @@ export class Task implements Temporal {
     this.#status = status;
   }
 
-  static ready(estimatedProcessingDuration: term.Second): Task {
-    return new Task(
-      estimatedProcessingDuration,
-      new term.MilliSecond(0),
-      term.TaskStatus.Ready
-    );
+  static ready(estimatedProcessingDuration: term.MilliSecond): Task {
+    return new Task(estimatedProcessingDuration, 0, term.TaskStatus.Ready);
   }
 
   status(): string {
@@ -33,7 +29,7 @@ export class Task implements Temporal {
     return this.#elapsedTime;
   }
 
-  estimatedProcessingDuration(): term.Second {
+  estimatedProcessingDuration(): term.MilliSecond {
     return this.#estimatedProcessingDuration;
   }
 
@@ -50,19 +46,12 @@ export class Task implements Temporal {
         `Unable to update task status: task is terminated`
       );
     }
-    const elapsedTime = this.#elapsedTime.valueOf() + deltaTime.valueOf();
+    const elapsedTime = this.#elapsedTime + deltaTime;
     let status: term.TaskStatus = this.#status;
-    if (
-      elapsedTime >=
-      this.#estimatedProcessingDuration.toMilliSeconds().valueOf()
-    ) {
+    if (elapsedTime >= this.#estimatedProcessingDuration) {
       status = term.TaskStatus.Terminated;
     }
-    return new Task(
-      this.#estimatedProcessingDuration,
-      new term.MilliSecond(elapsedTime),
-      status
-    );
+    return new Task(this.#estimatedProcessingDuration, elapsedTime, status);
   }
 
   start(): Task {
