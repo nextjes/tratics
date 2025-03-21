@@ -88,10 +88,7 @@ export class Node implements Updatable {
     // 작업 상태에 따른 처리
     if (task.status() === term.TaskStatus.Terminated) {
       // 작업이 완료된 경우 남은 시간 계산
-      const taskDuration = task
-        .estimatedProcessingDuration()
-        .toMilliSeconds()
-        .valueOf();
+      const taskDuration = task.estimatedProcessingDuration().valueOf();
       remainingTime[index] = Math.max(0, remainingTime[index] - taskDuration);
     } else {
       // 작업이 아직 실행 중인 경우
@@ -124,7 +121,7 @@ export class Node implements Updatable {
 
   private static estimateTaskRemainingTime(task: Task): number {
     return (
-      task.estimatedProcessingDuration().toMilliSeconds().valueOf() -
+      task.estimatedProcessingDuration().valueOf() -
       task.elapsedTime().valueOf()
     );
   }

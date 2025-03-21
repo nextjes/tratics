@@ -43,7 +43,7 @@ class SimulationEngine {
 
 const tickInterval = 100; // 밀리초 단위로 100ms 간격
 const clock = SimulationClock.init();
-const node = Node.boot(2).registerTask(Task.ready(new term.Second(3)));
+const node = Node.boot(2).registerTask(Task.ready(new term.MilliSecond(3000)));
 const engine = new SimulationEngine(tickInterval, [clock, node]);
 
 export function start() {

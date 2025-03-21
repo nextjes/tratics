@@ -3,12 +3,12 @@ import * as term from "~/engine/term";
 import * as error from "~/engine/error";
 
 export class Task implements Temporal {
-  readonly #estimatedProcessingDuration: term.Second;
+  readonly #estimatedProcessingDuration: term.MilliSecond;
   readonly #elapsedTime: term.MilliSecond;
   readonly #status: term.TaskStatus;
 
   private constructor(
-    estimatedProcessingDuration: term.Second,
+    estimatedProcessingDuration: term.MilliSecond,
     elapsedTime: term.MilliSecond,
     status: term.TaskStatus
   ) {
@@ -17,7 +17,7 @@ export class Task implements Temporal {
     this.#status = status;
   }
 
-  static ready(estimatedProcessingDuration: term.Second): Task {
+  static ready(estimatedProcessingDuration: term.MilliSecond): Task {
     return new Task(
       estimatedProcessingDuration,
       new term.MilliSecond(0),
@@ -33,7 +33,7 @@ export class Task implements Temporal {
     return this.#elapsedTime;
   }
 
-  estimatedProcessingDuration(): term.Second {
+  estimatedProcessingDuration(): term.MilliSecond {
     return this.#estimatedProcessingDuration;
   }
 
@@ -52,10 +52,7 @@ export class Task implements Temporal {
     }
     const elapsedTime = this.#elapsedTime.valueOf() + deltaTime.valueOf();
     let status: term.TaskStatus = this.#status;
-    if (
-      elapsedTime >=
-      this.#estimatedProcessingDuration.toMilliSeconds().valueOf()
-    ) {
+    if (elapsedTime >= this.#estimatedProcessingDuration.valueOf()) {
       status = term.TaskStatus.Terminated;
     }
     return new Task(

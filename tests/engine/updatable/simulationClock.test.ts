@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { SimulationClock } from "~/engine/updatable";
-import { MilliSecond, Second } from "~/engine/term";
+import { MilliSecond } from "~/engine/term";
 
 describe("SimulationClock.init", () => {
   it("initializes the clock with 0 seconds", () => {

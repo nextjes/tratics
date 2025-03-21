@@ -1,5 +1,5 @@
 import { expect, it, describe } from "vitest";
-import { MilliSecond, Second } from "~/engine/term";
+import { MilliSecond } from "~/engine/term";
 import { Node, Task } from "~/engine/updatable";
 
 describe("Node.boot", () => {
@@ -12,17 +12,17 @@ describe("Node.boot", () => {
 
 describe("Node.registerTask", () => {
   it.concurrent.each([
-    [Node.boot(2), Task.ready(new Second(3)), 1],
+    [Node.boot(2), Task.ready(new MilliSecond(3000)), 1],
     [
-      Node.boot(2).registerTask(Task.ready(new Second(3))),
-      Task.ready(new Second(3)),
+      Node.boot(2).registerTask(Task.ready(new MilliSecond(3000))),
+      Task.ready(new MilliSecond(3000)),
       2,
     ],
     [
       Node.boot(2)
-        .registerTask(Task.ready(new Second(3)))
-        .registerTask(Task.ready(new Second(3))),
-      Task.ready(new Second(3)),
+        .registerTask(Task.ready(new MilliSecond(3000)))
+        .registerTask(Task.ready(new MilliSecond(3000))),
+      Task.ready(new MilliSecond(3000)),
       3,
     ],
   ])(
@@ -38,7 +38,7 @@ describe("Node.registerTask", () => {
 describe("Node.after", () => {
   it.concurrent.each([
     [
-      Node.boot(2).registerTask(Task.ready(new Second(3))),
+      Node.boot(2).registerTask(Task.ready(new MilliSecond(3000))),
       new MilliSecond(1),
       0,
       1,
@@ -46,8 +46,8 @@ describe("Node.after", () => {
     ],
     [
       Node.boot(2)
-        .registerTask(Task.ready(new Second(3)))
-        .registerTask(Task.ready(new Second(3))),
+        .registerTask(Task.ready(new MilliSecond(3000)))
+        .registerTask(Task.ready(new MilliSecond(3000))),
       new MilliSecond(1000),
       0,
       2,
@@ -55,8 +55,8 @@ describe("Node.after", () => {
     ],
     [
       Node.boot(2)
-        .registerTask(Task.ready(new Second(3)))
-        .registerTask(Task.ready(new Second(3))),
+        .registerTask(Task.ready(new MilliSecond(3000)))
+        .registerTask(Task.ready(new MilliSecond(3000))),
       new MilliSecond(3000),
       0,
       0,
@@ -64,9 +64,9 @@ describe("Node.after", () => {
     ],
     [
       Node.boot(2)
-        .registerTask(Task.ready(new Second(3)))
-        .registerTask(Task.ready(new Second(3)))
-        .registerTask(Task.ready(new Second(3))),
+        .registerTask(Task.ready(new MilliSecond(3000)))
+        .registerTask(Task.ready(new MilliSecond(3000)))
+        .registerTask(Task.ready(new MilliSecond(3000))),
       new MilliSecond(5000),
       0,
       1,
