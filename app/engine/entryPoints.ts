@@ -8,7 +8,7 @@ class SimulationEngine {
   private tickInterval: term.MilliSecond;
   private updatables: Updatable[];
 
-  constructor(tickInterval: number, updatables: Updatable[]) {
+  constructor(tickInterval: term.MilliSecond, updatables: Updatable[]) {
     this.tickInterval = tickInterval;
     this.updatables = updatables;
   }
@@ -19,7 +19,7 @@ class SimulationEngine {
       const deltaTime = this.tickInterval;
       this.updatables = this.updatables.map((obj) => obj.after(deltaTime));
       new Scene(this.updatables).publish();
-    }, this.tickInterval);
+    }, this.tickInterval.valueOf());
   }
 
   // pause() 함수: 시뮬레이션 업데이트 루프 중단
@@ -41,7 +41,7 @@ class SimulationEngine {
   }
 }
 
-const tickInterval: term.MilliSecond = 100; // 밀리초 단위로 100ms 간격
+const tickInterval = new term.MilliSecond(100);
 const clock = SimulationClock.init();
 const node = Node.boot(2).registerTask(Task.ready(3000));
 const engine = new SimulationEngine(tickInterval, [clock, node]);

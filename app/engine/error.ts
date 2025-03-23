@@ -5,9 +5,9 @@ export class TraticsError extends Error {
   }
 }
 
-export class TaskStateError extends TraticsError {
+export class InvalidTimeError extends TraticsError {
   constructor(message: string) {
     super(message);
-    this.name = "TaskStateError";
+    this.name = "InvalidTimeError";
   }
 }
