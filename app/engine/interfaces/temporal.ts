@@ -10,13 +10,13 @@ export interface Temporal {
    * @param deltaTime 진행할 시간
    * @returns 자기 자신(메서드 체이닝 지원)
    */
-  after(deltaTime: term.MilliSecond): this;
+  after(deltaTime: term.MilliSecond): Temporal;
 
   /**
    * 초기 상태로 리셋
    * @returns 자기 자신(메서드 체이닝 지원)
    */
-  reset(): this;
+  reset(): Temporal;
 }
 
 /**
