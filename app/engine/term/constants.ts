@@ -6,4 +6,5 @@ export enum Role {
   Link = "link",
   Message = "message",
   Clock = "clock",
+  Topology = "topology",
 }
