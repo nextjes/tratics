@@ -7,13 +7,3 @@ export enum Role {
   Message = "message",
   Clock = "clock",
 }
-
-/**
- * 메시지의 상태를 추적하기 위한 열거형
- */
-export enum MessageStatus {
-  Created = "created",
-  InTransit = "in-transit",
-  Delivered = "delivered",
-  Failed = "failed",
-}

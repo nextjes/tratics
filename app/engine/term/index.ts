@@ -1,5 +1,5 @@
 export { MilliSecond } from "./time";
-export { MessageStatus, Role } from "./constants";
+export { Role } from "./constants";
 export {
   Identifier,
   SequentialIdGenerator,

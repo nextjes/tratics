@@ -25,3 +25,10 @@ export class NoTaskError extends TraticsError {
     this.name = "NoTaskError";
   }
 }
+
+export class InvalidMessageStatusError extends TraticsError {
+  constructor(message: string) {
+    super(message);
+    this.name = "InvalidMessageStatusError";
+  }
+}
