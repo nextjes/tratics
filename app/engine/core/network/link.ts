@@ -26,6 +26,7 @@ export class NetworkLink implements Updatable {
   readonly #latency: term.MilliSecond;
   readonly #reliability: number;
   readonly #inTransitMessages: Message[];
+  readonly #throughput: number;
 
   /**
    * 네트워크 링크 생성자
@@ -37,7 +38,8 @@ export class NetworkLink implements Updatable {
     bandwidth: number,
     latency: term.MilliSecond,
     reliability: number,
-    inTransitMessages: Message[]
+    inTransitMessages: Message[],
+    throughput: number
   ) {
     this.#id = id;
     this.#srcId = srcId;
@@ -46,6 +48,7 @@ export class NetworkLink implements Updatable {
     this.#latency = latency;
     this.#reliability = reliability;
     this.#inTransitMessages = [...inTransitMessages];
+    this.#throughput = throughput;
   }
 
   private clone(
@@ -57,6 +60,7 @@ export class NetworkLink implements Updatable {
       latency: term.MilliSecond;
       reliability: number;
       inTransitMessages: Message[];
+      throughput: number;
     }> = {}
   ): NetworkLink {
     return new NetworkLink(
@@ -66,7 +70,8 @@ export class NetworkLink implements Updatable {
       update.bandwidth ?? this.#bandwidth,
       update.latency ?? this.#latency,
       update.reliability ?? this.#reliability,
-      update.inTransitMessages ?? this.#inTransitMessages
+      update.inTransitMessages ?? this.#inTransitMessages,
+      update.throughput ?? this.#throughput
     );
   }
 
@@ -81,7 +86,8 @@ export class NetworkLink implements Updatable {
       3000000,
       new term.MilliSecond(100),
       1.0,
-      []
+      [],
+      0
     );
   }
 
@@ -91,7 +97,7 @@ export class NetworkLink implements Updatable {
    */
   public after(deltaTime: term.MilliSecond): NetworkLink {
     if (this.#inTransitMessages.length === 0) {
-      return this.clone();
+      return this.clone({ throughput: 0 });
     }
 
     // 이 시간 간격 동안 전송할 수 있는 총 바이트 계산
@@ -104,13 +110,13 @@ export class NetworkLink implements Updatable {
       0
     );
 
-    const updatedMessages = this.#inTransitMessages.map((msg) => {
-      // 메시지의 대역폭 점유율 계산
+    const bytesForMessages = this.#inTransitMessages.map((msg) => {
       const share = totalSize > 0 ? msg.size() / totalSize : 0;
-      const bytesForThisMessage = Math.floor(totalBytesTransmittable * share);
+      return Math.floor(totalBytesTransmittable * share);
+    });
 
-      // 시간 경과와 전송된 바이트로 메시지 업데이트
-      return msg.transmit(bytesForThisMessage);
+    const updatedMessages = this.#inTransitMessages.map((msg, index) => {
+      return msg.transmit(bytesForMessages[index]);
     });
 
     // 아직 전송 중인 메시지 필터링
@@ -118,7 +124,12 @@ export class NetworkLink implements Updatable {
       msg.isInTransit()
     );
 
-    return this.clone({ inTransitMessages: stillActiveMessages });
+    return this.clone({
+      inTransitMessages: stillActiveMessages,
+      throughput:
+        bytesForMessages.reduce((acc, bytes) => acc + bytes, 0) *
+        (1000 / deltaTime.valueOf()),
+    });
   }
 
   /**
@@ -142,7 +153,8 @@ export class NetworkLink implements Updatable {
       this.#bandwidth,
       this.#latency,
       this.#reliability,
-      [...this.#inTransitMessages, message.startTransit()]
+      [...this.#inTransitMessages, message.startTransit()],
+      0
     );
   }
 
@@ -153,13 +165,14 @@ export class NetworkLink implements Updatable {
     return {
       id: this.#id.toString(),
       role: term.Role.Link,
-      sourceId: this.#srcId,
-      targetId: this.#dstId,
+      srcId: this.#srcId,
+      dstId: this.#dstId,
       bandwidth: this.#bandwidth,
       latency: this.#latency.valueOf(),
       reliability: this.#reliability,
       activeMessages: this.#inTransitMessages.map((msg) => msg.id()),
       messageCount: this.#inTransitMessages.length,
+      throughput: this.#throughput,
     };
   }
 

@@ -1,62 +1,122 @@
-import { Scene } from "./scene";
-import { Node, SimulationClock, Task, type Updatable } from "./updatable";
+import {
+  SimulationEngine,
+  SimulationState,
+  TopologyType,
+  SimulationDifficulty,
+} from "./core/simulation";
 import { useMemoryState } from "~/store/memory";
 import * as term from "./term";
 
-class SimulationEngine {
-  private intervalId: ReturnType<typeof setInterval> | null = null;
-  private tickInterval: term.MilliSecond;
-  private updatables: Updatable[];
+// 전역 시뮬레이션 엔진 인스턴스
+let config = {
+  requestCount: 1000,
+  difficulty: SimulationDifficulty.Normal,
+  topologyType: TopologyType.Star,
+  nodeCount: 5,
+  coresPerNode: 2,
+  tickInterval: new term.MilliSecond(100),
+  timeScale: 1.0,
+};
+let simulationEngine = SimulationEngine.create().configure(config);
 
-  constructor(tickInterval: term.MilliSecond, updatables: Updatable[]) {
-    this.tickInterval = tickInterval;
-    this.updatables = updatables;
+/**
+ * 시뮬레이션 시작
+ */
+export function start(): void {
+  // 현재 엔진이 실행 중이면 중지
+  if (simulationEngine.getState() === SimulationState.Running) {
+    simulationEngine.stop();
   }
 
-  start(): void {
-    if (this.intervalId !== null) return;
-    this.intervalId = setInterval(() => {
-      const deltaTime = this.tickInterval;
-      this.updatables = this.updatables.map((obj) => obj.after(deltaTime));
-      new Scene(this.updatables).publish();
-    }, this.tickInterval.valueOf());
-  }
+  // 시뮬레이션 시작
+  simulationEngine.start();
 
-  // pause() 함수: 시뮬레이션 업데이트 루프 중단
-  pause(): void {
-    if (this.intervalId !== null) {
-      clearInterval(this.intervalId);
-      this.intervalId = null;
-      console.log("Simulation paused.");
-    }
-  }
-
-  stop(): void {
-    if (this.intervalId !== null) {
-      clearInterval(this.intervalId);
-      this.intervalId = null;
-      this.updatables = this.updatables.map((obj) => obj.reset());
-      console.log("Simulation stopped.");
-    }
-  }
-}
-
-const tickInterval = new term.MilliSecond(100);
-const clock = SimulationClock.init();
-const node = Node.boot(2).registerTask(Task.ready(3000));
-const engine = new SimulationEngine(tickInterval, [clock, node]);
-
-export function start() {
-  engine.start();
+  // UI 상태 업데이트
   useMemoryState.getState().setIsRunning(true);
 }
 
-export function pause() {
-  engine.pause();
+/**
+ * 시뮬레이션 일시 중지
+ */
+export function pause(): void {
+  simulationEngine.pause();
   useMemoryState.getState().setIsRunning(false);
 }
 
-export function stop() {
-  engine.stop();
+/**
+ * 시뮬레이션 중지 및 초기화
+ */
+export function stop(): void {
+  simulationEngine.stop();
+  simulationEngine = simulationEngine.configure(config);
   useMemoryState.getState().setIsRunning(false);
+}
+
+/**
+ * 시뮬레이션 난이도 변경
+ */
+export function setDifficulty(difficulty: string): void {
+  let difficultyEnum = SimulationDifficulty.Normal;
+  switch (difficulty.toLowerCase()) {
+    case "easy":
+      difficultyEnum = SimulationDifficulty.Easy;
+      break;
+    case "normal":
+      difficultyEnum = SimulationDifficulty.Normal;
+      break;
+    case "hard":
+      difficultyEnum = SimulationDifficulty.Hard;
+      break;
+    case "extreme":
+      difficultyEnum = SimulationDifficulty.Extreme;
+      break;
+  }
+
+  simulationEngine = simulationEngine.configure({
+    difficulty: difficultyEnum,
+  });
+}
+
+/**
+ * 시뮬레이션 토폴로지 변경
+ */
+export function setTopologyType(topology: string): void {
+  let topologyEnum = TopologyType.Star;
+  switch (topology.toLowerCase()) {
+    case "star":
+      topologyEnum = TopologyType.Star;
+      break;
+    case "ring":
+      topologyEnum = TopologyType.Ring;
+      break;
+    case "mesh":
+      topologyEnum = TopologyType.Mesh;
+      break;
+    case "custom":
+      topologyEnum = TopologyType.Custom;
+      break;
+  }
+
+  simulationEngine = simulationEngine.configure({
+    topologyType: topologyEnum,
+  });
+}
+
+/**
+ * 시뮬레이션 스케일 변경
+ */
+export function setTimeScale(scale: number): void {
+  if (scale <= 0) {
+    console.error("Time scale must be greater than 0");
+    return;
+  }
+
+  simulationEngine = simulationEngine.configure({
+    timeScale: scale,
+  });
+}
+
+// 디버깅용 엔진 인스턴스 노출
+export function getEngine(): SimulationEngine {
+  return simulationEngine;
 }
