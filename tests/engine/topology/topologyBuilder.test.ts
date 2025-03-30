@@ -34,7 +34,10 @@ describe("TopologyBuilder", () => {
         Node.boot(2),
       ];
 
-      const topology = TopologyBuilder.buildStarTopology(centerNode, edgeNodes);
+      const topology = TopologyBuilder.buildStarTopology([
+        centerNode,
+        ...edgeNodes,
+      ]);
 
       // 중앙 노드 + 에지 노드
       expect(topology.nodeCount()).toBe(5);
