@@ -5,9 +5,30 @@ export class TraticsError extends Error {
   }
 }
 
-export class TaskStateError extends TraticsError {
+export class InvalidTimeError extends TraticsError {
   constructor(message: string) {
     super(message);
-    this.name = "TaskStateError";
+    this.name = "InvalidTimeError";
+  }
+}
+
+export class BusyCoreError extends TraticsError {
+  constructor(message: string) {
+    super(message);
+    this.name = "BusyCoreError";
+  }
+}
+
+export class NoTaskError extends TraticsError {
+  constructor(message: string) {
+    super(message);
+    this.name = "NoTaskError";
+  }
+}
+
+export class InvalidMessageStatusError extends TraticsError {
+  constructor(message: string) {
+    super(message);
+    this.name = "InvalidMessageStatusError";
   }
 }

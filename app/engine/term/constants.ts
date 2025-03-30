@@ -1,10 +1,10 @@
-export const enum Role {
-  Clock = "clock",
+/**
+ * 시뮬레이션 요소의 역할을 나타내는 열거형
+ */
+export enum Role {
   Node = "node",
-}
-
-export const enum TaskStatus {
-  Ready = "ready",
-  Running = "running",
-  Terminated = "terminated",
+  Link = "link",
+  Message = "message",
+  Clock = "clock",
+  Topology = "topology",
 }

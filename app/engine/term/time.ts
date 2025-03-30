@@ -1,40 +1,41 @@
-// export class MilliSecond {
-//   readonly #value: number;
+import * as error from "~/engine/error";
 
-//   constructor(value: number) {
-//     this.#value = value;
-//   }
+export class MilliSecond {
+  #value: number;
 
-//   valueOf(): number {
-//     return this.#value;
-//   }
-
-//   toString(): string {
-//     return this.#value.toString();
-//   }
-
-//   toSeconds(): number {
-//     return this.#value / 1000;
-//   }
-// }
-export type MilliSecond = number;
-
-export class Second {
-  readonly #value: number;
-
-  constructor(value: number) {
+  constructor(value: number = 0) {
+    if (value < 0) {
+      throw new error.InvalidTimeError("Time cannot be negative");
+    }
     this.#value = value;
   }
 
-  valueOf(): number {
+  public valueOf(): number {
     return this.#value;
   }
 
-  toString(): string {
-    return this.#value.toString();
+  public add(ms: MilliSecond): MilliSecond {
+    return new MilliSecond(this.#value + ms.valueOf());
   }
 
-  toMilliSeconds(): number {
-    return this.#value * 1000;
+  public subtract(ms: MilliSecond): MilliSecond {
+    const result = this.#value - ms.valueOf();
+    return new MilliSecond(result);
+  }
+
+  public lessThan(ms: MilliSecond): boolean {
+    return this.#value < ms.valueOf();
+  }
+
+  public greaterThan(ms: MilliSecond): boolean {
+    return this.#value > ms.valueOf();
+  }
+
+  public equals(ms: MilliSecond): boolean {
+    return this.#value === ms.valueOf();
+  }
+
+  public toString(): string {
+    return `${this.#value}ms`;
   }
 }
