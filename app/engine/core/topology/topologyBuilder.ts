@@ -56,10 +56,14 @@ export class TopologyBuilder {
   /**
    * 스타 토폴로지 생성 (중앙 노드와 여러 에지 노드)
    */
-  public static createStarTopology(
-    centerNode: Node,
-    edgeNodes: Node[]
-  ): NetworkTopology {
+  public static buildStarTopology(nodes: Node[]): NetworkTopology {
+    if (nodes.length < 2) {
+      throw new Error("Star topology needs at least 2 nodes");
+    }
+
+    const centerNode = nodes[0];
+    const edgeNodes = nodes.slice(1);
+
     const builder = new TopologyBuilder();
 
     // 중앙 노드 추가
@@ -87,7 +91,7 @@ export class TopologyBuilder {
   /**
    * 링 토폴로지 생성 (각 노드가 양쪽 이웃 노드와 연결)
    */
-  public static createRingTopology(nodes: Node[]): NetworkTopology {
+  public static buildRingTopology(nodes: Node[]): NetworkTopology {
     if (nodes.length < 3) {
       throw new Error("Ring topology requires at least 3 nodes");
     }
@@ -119,7 +123,7 @@ export class TopologyBuilder {
   /**
    * 메시 토폴로지 생성 (완전 연결 또는 부분 연결)
    */
-  public static createMeshTopology(
+  public static buildMeshTopology(
     nodes: Node[],
     fullyConnected: boolean = false
   ): NetworkTopology {

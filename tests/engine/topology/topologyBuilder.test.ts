@@ -34,10 +34,7 @@ describe("TopologyBuilder", () => {
         Node.boot(2),
       ];
 
-      const topology = TopologyBuilder.createStarTopology(
-        centerNode,
-        edgeNodes
-      );
+      const topology = TopologyBuilder.buildStarTopology(centerNode, edgeNodes);
 
       // 중앙 노드 + 에지 노드
       expect(topology.nodeCount()).toBe(5);
@@ -51,7 +48,7 @@ describe("TopologyBuilder", () => {
     it("should create ring topology", () => {
       const nodes = [Node.boot(2), Node.boot(2), Node.boot(2), Node.boot(2)];
 
-      const topology = TopologyBuilder.createRingTopology(nodes);
+      const topology = TopologyBuilder.buildRingTopology(nodes);
 
       expect(topology.nodeCount()).toBe(4);
 
@@ -63,7 +60,7 @@ describe("TopologyBuilder", () => {
       const nodes = [Node.boot(2), Node.boot(2)]; // 2개 노드로는 링 불가
 
       expect(() => {
-        TopologyBuilder.createRingTopology(nodes);
+        TopologyBuilder.buildRingTopology(nodes);
       }).toThrow();
     });
   });
@@ -72,7 +69,7 @@ describe("TopologyBuilder", () => {
     it("should create fully connected mesh topology", () => {
       const nodes = [Node.boot(2), Node.boot(2), Node.boot(2), Node.boot(2)];
 
-      const topology = TopologyBuilder.createMeshTopology(nodes, true);
+      const topology = TopologyBuilder.buildMeshTopology(nodes, true);
 
       expect(topology.nodeCount()).toBe(4);
 
@@ -83,7 +80,7 @@ describe("TopologyBuilder", () => {
     it("should create partially connected mesh topology", () => {
       const nodes = [Node.boot(2), Node.boot(2), Node.boot(2), Node.boot(2)];
 
-      const topology = TopologyBuilder.createMeshTopology(nodes, false);
+      const topology = TopologyBuilder.buildMeshTopology(nodes, false);
 
       expect(topology.nodeCount()).toBe(4);
 

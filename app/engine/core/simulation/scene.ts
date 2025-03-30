@@ -40,28 +40,26 @@ export class Scene {
     const clockState = states.find((state) => state.role === term.Role.Clock);
     setClock((clockState!.currentTime / 1000).toFixed(1));
 
-    const nodeStates = states.filter((state) => state.role === term.Role.Node);
-    if (nodeStates.length > 0) {
-      const newNodeStates = nodeStates.map((state) => ({
-        id: state.id,
-        cores: `${state.reduce(
-          (acc: number, core: any) => acc + (core.isBusy() ? 1 : 0),
-          0
-        )}/${state.coreCount()}`,
-      }));
-      setNodeStatus(newNodeStates);
-    }
+    const topologyState = states.find(
+      (state) => state.role === term.Role.Topology
+    );
 
-    const linkStates = states.filter((state) => state.role === term.Role.Link);
-    if (linkStates.length > 0) {
-      const activeLinks = linkStates.map((state) => ({
-        id: state.id,
-        srcId: state.srcId,
-        dstId: state.dstId,
-        bandwidth: state.bandwidth,
-        throughput: state.throughput,
-      }));
-      setLinkStatus(activeLinks.toString());
-    }
+    const nodeStates = topologyState!.nodes;
+    const linkStates = topologyState!.links;
+    const newNodeStates = nodeStates.map((state: any) => ({
+      id: state.id,
+      cores: state.cores.length,
+      busyCores: state.cores.filter((core: any) => core.busy === true).length,
+    }));
+    setNodeStatus(newNodeStates);
+
+    const activeLinks = linkStates.map((state: any) => ({
+      id: state.id,
+      srcId: state.srcId,
+      dstId: state.dstId,
+      bandwidth: state.bandwidth,
+      throughput: state.throughput,
+    }));
+    setLinkStatus(activeLinks);
   }
 }

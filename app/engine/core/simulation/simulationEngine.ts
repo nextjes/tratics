@@ -28,7 +28,7 @@ export class SimulationEngine {
   #state: SimulationState;
   #clock: Clock;
   #config: SimulationConfig;
-  #updatables: Updatable[];
+  #topology: NetworkTopology;
   #requestsProcessed: number;
   #requestsRemaining: number;
 
@@ -37,14 +37,14 @@ export class SimulationEngine {
    */
   private constructor(
     config: SimulationConfig,
-    updatables: Updatable[] = [],
+    topology: NetworkTopology,
     state: SimulationState = SimulationState.Stopped,
     clock: Clock = Clock.init(),
     requestsProcessed: number = 0,
     requestsRemaining: number = 0
   ) {
     this.#config = config;
-    this.#updatables = [...updatables];
+    this.#topology = topology;
     this.#state = state;
     this.#clock = clock;
     this.#requestsProcessed = requestsProcessed;
@@ -57,7 +57,58 @@ export class SimulationEngine {
   public static create(config?: SimulationConfigProps): SimulationEngine {
     const defaultConfig = SimulationConfig.defaults();
     const finalConfig = config ? defaultConfig.with(config) : defaultConfig;
-    return new SimulationEngine(finalConfig);
+    return new SimulationEngine(
+      finalConfig,
+      this.initializeTopology(
+        finalConfig.nodeCount(),
+        finalConfig.coresPerNode(),
+        finalConfig.topologyType()
+      )
+    );
+  }
+
+  /**
+   * 시뮬레이션 설정 변경
+   */
+  public configure(config: SimulationConfigProps): SimulationEngine {
+    const newConfig = this.#config.with(config);
+    return new SimulationEngine(
+      newConfig,
+      this.#topology,
+      this.#state,
+      this.#clock,
+      this.#requestsProcessed,
+      this.#requestsRemaining
+    );
+  }
+
+  public static initializeTopology(
+    nodeCount: number,
+    coresPerNode: number,
+    topologyType: TopologyType
+  ): NetworkTopology {
+    // 노드 생성
+    const nodes: Node[] = Array.from({ length: nodeCount }, () => {
+      return Node.boot(coresPerNode);
+    });
+
+    // 토폴로지 생성
+    let topology: NetworkTopology;
+    switch (topologyType) {
+      case TopologyType.Star:
+        topology = TopologyBuilder.buildStarTopology(nodes);
+        break;
+      case TopologyType.Ring:
+        topology = TopologyBuilder.buildRingTopology(nodes);
+        break;
+      case TopologyType.Mesh:
+        topology = TopologyBuilder.buildMeshTopology(nodes);
+        break;
+      default:
+        topology = TopologyBuilder.buildStarTopology(nodes);
+    }
+
+    return topology;
   }
 
   /**
@@ -109,26 +160,11 @@ export class SimulationEngine {
     }
 
     this.#state = SimulationState.Stopped;
-    this.#updatables = this.#updatables.map((entity) => entity.reset());
+    this.#topology = this.#topology.reset();
     this.#clock = this.#clock.reset();
     this.#requestsProcessed = 0;
     this.#requestsRemaining = this.#config.requestCount();
-    Scene.capture([this.#clock, ...this.#updatables]).publish();
-  }
-
-  /**
-   * 시뮬레이션 설정 변경
-   */
-  public configure(config: SimulationConfigProps): SimulationEngine {
-    const newConfig = this.#config.with(config);
-    return new SimulationEngine(
-      newConfig,
-      this.#updatables,
-      this.#state,
-      this.#clock,
-      this.#requestsProcessed,
-      this.#requestsRemaining
-    );
+    Scene.capture([this.#clock, this.#topology]).publish();
   }
 
   /**
@@ -141,14 +177,12 @@ export class SimulationEngine {
     this.generateNewMessages();
 
     // 모든 엔티티 업데이트
-    const updatedEntities = this.#updatables.map((entity) =>
-      entity.after(deltaTime)
-    );
-    this.#updatables = updatedEntities;
+    const updatedEntities = this.#topology.after(deltaTime);
+    this.#topology = updatedEntities;
     this.#clock = this.#clock.after(deltaTime);
 
     // 상태 발행
-    Scene.capture([this.#clock, ...updatedEntities]).publish();
+    Scene.capture([this.#clock, this.#topology]).publish();
 
     // 종료 조건 확인
     if (
@@ -171,12 +205,9 @@ export class SimulationEngine {
     const messageProbability = this.calculateMessageProbability();
 
     // 메시지 생성 여부 결정
-    if (Math.random() < messageProbability && this.#updatables.length > 1) {
+    if (Math.random() < messageProbability) {
       // 토폴로지 객체 찾기
-      const topology = this.#updatables.find((entity) => {
-        const state = entity.state();
-        return state.role === term.Role.Topology;
-      });
+      const topology = this.#topology;
 
       if (topology && topology instanceof NetworkTopology) {
         // 랜덤 소스/목적지 노드 선택
@@ -205,12 +236,7 @@ export class SimulationEngine {
           );
 
           // 토폴로지에 메시지 전송
-          this.#updatables = this.#updatables.map((entity) => {
-            if (entity === topology) {
-              return topology.sendMessage(message);
-            }
-            return entity;
-          });
+          this.#topology = topology.sendMessage(message);
 
           this.#requestsRemaining--;
         }
