@@ -164,21 +164,6 @@ export class Node implements Updatable {
   }
 
   /**
-   * 특정 위치에 노드 생성
-   * @param coreCount 코어 개수
-   * @param x X 좌표
-   * @param y Y 좌표
-   */
-  public static bootAt(coreCount: number, x: number, y: number): Node {
-    return new Node(
-      new term.Identifier("node"),
-      Array.from({ length: coreCount }, () => Core.idle()),
-      [],
-      new term.Position(x, y)
-    );
-  }
-
-  /**
    * 노드를 초기 상태로 리셋
    */
   public reset(): Node {
@@ -194,14 +179,6 @@ export class Node implements Updatable {
    */
   public registerTask(task: Task): Node {
     return this.clone({ taskQueue: [...this.#taskQueue, task] });
-  }
-
-  /**
-   * 여러 작업 등록
-   * @param tasks 등록할 작업 배열
-   */
-  public registerTasks(tasks: Task[]): Node {
-    return this.clone({ taskQueue: [...this.#taskQueue, ...tasks] });
   }
 
   /**
@@ -263,13 +240,6 @@ export class Node implements Updatable {
       cores: this.#cores.map((core) => core.state()),
       queueLength: this.#taskQueue.length,
     };
-  }
-
-  /**
-   * 노드 위치 이동
-   */
-  public move(to: term.Position): Node {
-    return this.clone({ position: to });
   }
 
   /**
