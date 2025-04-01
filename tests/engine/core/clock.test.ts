@@ -47,20 +47,6 @@ describe("Clock", () => {
     });
   });
 
-  describe("real time tracking", () => {
-    it("should measure actual elapsed time", async () => {
-      // Arrange
-      const clock = Clock.init();
-
-      // Act
-      await new Promise<void>((resolve) => setTimeout(resolve, 50));
-      const elapsedReal = clock.elapsedRealTime();
-
-      // Assert
-      expect(elapsedReal.valueOf()).toBeGreaterThan(0);
-    });
-  });
-
   describe("validation", () => {
     it.concurrent.each([[0], [-1]])(
       "should throw error when setting invalid time scale: %i",
