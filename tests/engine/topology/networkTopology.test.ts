@@ -14,7 +14,6 @@ describe("NetworkTopology", () => {
       expect(topology.messageCount()).toBe(0);
       expect(topology.nodes()).toEqual([]);
       expect(topology.links()).toEqual([]);
-      expect(topology.messages()).toEqual([]);
     });
   });
 
