@@ -59,7 +59,7 @@ export class Core implements Updatable {
 
     const updatedTask = this.#currentTask.after(deltaTime);
 
-    if (updatedTask.isCompleted() || updatedTask.isFailed()) {
+    if (updatedTask.isCompleted()) {
       return this.releaseTask();
     }
     return this.clone({ currentTask: updatedTask });
