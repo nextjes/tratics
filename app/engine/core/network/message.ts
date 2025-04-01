@@ -1,5 +1,4 @@
 import { error } from "~/engine";
-import type { PublishableState, Updatable } from "~/engine/interfaces";
 import * as term from "~/engine/term";
 
 /**
@@ -9,7 +8,6 @@ export enum MessageStatus {
   Created = "created",
   InTransit = "inTransit",
   Delivered = "delivered",
-  Failed = "failed",
 }
 
 /**
@@ -72,10 +70,6 @@ export class Message {
       MessageStatus.Created,
       0
     );
-  }
-
-  public reset(): Message {
-    return this.clone({ status: MessageStatus.Created });
   }
 
   public startTransit(): Message {
