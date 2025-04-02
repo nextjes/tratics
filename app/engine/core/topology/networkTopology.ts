@@ -138,9 +138,6 @@ export class NetworkTopology implements Updatable {
     const linkStates = Array.from(this.#links.values()).map((link) =>
       link.state()
     );
-    const messageStates = Array.from(this.#messages.values()).map((msg) => ({
-      id: msg.id(),
-    }));
 
     return {
       id: this.#id.toString(),
@@ -151,7 +148,6 @@ export class NetworkTopology implements Updatable {
       pendingMessageCount: this.#pendingMessages.length,
       nodes: nodeStates,
       links: linkStates,
-      messages: messageStates,
     };
   }
 
@@ -274,20 +270,12 @@ export class NetworkTopology implements Updatable {
     return this.#links.get(id) || null;
   }
 
-  public getMessage(id: string): Message | null {
-    return this.#messages.get(id) || null;
-  }
-
   public nodes(): Node[] {
     return Array.from(this.#nodes.values());
   }
 
   public links(): NetworkLink[] {
     return Array.from(this.#links.values());
-  }
-
-  public messages(): Message[] {
-    return Array.from(this.#messages.values());
   }
 
   public nodeCount(): number {

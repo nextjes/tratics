@@ -10,14 +10,6 @@ describe("Node", () => {
     });
   });
 
-  describe("bootAt", () => {
-    it("Should create node at specific position", () => {
-      const node = Node.bootAt(4, 10, 20);
-      expect(node.position().x).toBe(10);
-      expect(node.position().y).toBe(20);
-    });
-  });
-
   describe("registerTask", () => {
     it("Should register task to node", () => {
       const node = Node.boot(4);
@@ -34,28 +26,6 @@ describe("Node", () => {
 
       const registered = node.registerTask(task1).registerTask(task2);
       expect(registered.queueLength()).toBe(2);
-    });
-  });
-
-  describe("registerTasks", () => {
-    it("Should register multiple tasks to node", () => {
-      const node = Node.boot(4);
-      const task1 = Task.ready(1000);
-      const task2 = Task.ready(2000);
-
-      const registered = node.registerTasks([task1, task2]);
-      expect(registered.queueLength()).toBe(2);
-    });
-  });
-
-  describe("move", () => {
-    it("Should move node to new position", () => {
-      const node = Node.boot(4);
-      const newPosition = new Position(100, 200);
-
-      const moved = node.move(newPosition);
-      expect(moved.position().x).toBe(100);
-      expect(moved.position().y).toBe(200);
     });
   });
 
@@ -94,11 +64,11 @@ describe("Node", () => {
     });
 
     it("Should complete two tasks and partially process the next task on multiple cores", () => {
-      const node = Node.boot(2).registerTasks([
-        Task.ready(1000),
-        Task.ready(1000),
-        Task.ready(1000),
-      ]);
+      const node = Node.boot(2)
+        .registerTask(Task.ready(1000))
+        .registerTask(Task.ready(1000))
+        .registerTask(Task.ready(1000));
+
       const updated = node.after(new MilliSecond(1500));
       expect(updated.queueLength()).toBe(0);
       expect(updated.core(0).state().task.elapsed).toBe(500);

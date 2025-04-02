@@ -4,17 +4,6 @@ import { Message } from "./message";
 import { error } from "~/engine";
 
 /**
- * 네트워크 링크 속성을 정의하는 인터페이스
- */
-export interface NetworkLinkProperties {
-  sourceId: string;
-  targetId: string;
-  bandwidth: number; // 대역폭 (bytes/sec)
-  latency: term.MilliSecond; // 기본 지연 시간
-  reliability?: number; // 0-1 사이의 신뢰도 (1 = 100% 신뢰)
-}
-
-/**
  * 네트워크 링크를 표현하는 클래스
  * 불변성을 유지하기 위해 상태 변경 시 새 객체 반환
  */

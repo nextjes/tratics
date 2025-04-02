@@ -91,14 +91,6 @@ export class Clock implements Updatable {
   }
 
   /**
-   * 시뮬레이션 시작 이후 경과한 실제 시간 가져오기
-   */
-  public elapsedRealTime(): term.MilliSecond {
-    const now = Date.now();
-    return new term.MilliSecond(now - this.#startRealTime);
-  }
-
-  /**
    * 시계의 현재 상태를 발행 가능한 형태로 반환
    */
   public state(): PublishableState {
@@ -106,7 +98,6 @@ export class Clock implements Updatable {
       id: this.#id.toString(),
       role: term.Role.Clock,
       currentTime: this.#currentTime.valueOf(),
-      elapsedRealTime: this.elapsedRealTime().valueOf(),
       timeScale: this.#timeScale,
     };
   }

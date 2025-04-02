@@ -39,17 +39,6 @@ describe("Task", () => {
     expect(completed.isRunning()).toBe(false);
     expect(completed.isCompleted()).toBe(true);
     expect(completed.state().progress).toBe(100);
-    expect(completed.state().result.success).toBe(true);
-  });
-
-  it("Should be able to be marked as failed", () => {
-    const task = Task.ready(1000);
-    const failed = task.fail("Error occurred");
-
-    expect(failed.isFailed()).toBe(true);
-    expect(failed.state().status).toBe(TaskStatus.Failed);
-    expect(failed.state().result.success).toBe(false);
-    expect(failed.state().result.message).toBe("Error occurred");
   });
 
   it("Should not progress after completion", () => {

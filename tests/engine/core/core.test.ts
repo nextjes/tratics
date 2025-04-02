@@ -92,13 +92,5 @@ describe("Core", () => {
 
       expect(updated.currentTask()).toEqual(null);
     });
-
-    it("Should release task when failed", () => {
-      const task = Task.ready(1000).fail("Error occurred");
-      const core = Core.idle().assignTask(task);
-      const updated = core.after(new MilliSecond(1000));
-
-      expect(updated.currentTask()).toEqual(null);
-    });
   });
 });

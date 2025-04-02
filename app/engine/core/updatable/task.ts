@@ -12,17 +12,7 @@ export enum TaskStatus {
   Ready = "ready", // 실행 준비됨
   Running = "running", // 현재 실행 중
   Completed = "completed", // 완료됨
-  Failed = "failed", // 실패함
 }
-
-/**
- * 작업 처리 결과를 나타내는 타입
- */
-export type TaskResult = {
-  success: boolean;
-  message?: string;
-  data?: any;
-};
 
 /**
  * 노드에서 처리하는 작업을 표현하는 클래스
@@ -33,7 +23,6 @@ export class Task implements Temporal, Publishable {
   #status: TaskStatus;
   #duration: term.MilliSecond;
   #elapsed: term.MilliSecond;
-  #result: TaskResult | null;
 
   /**
    * 작업 생성자
@@ -43,14 +32,12 @@ export class Task implements Temporal, Publishable {
     id: term.Identifier,
     status: TaskStatus,
     duration: term.MilliSecond,
-    elapsed: term.MilliSecond,
-    result: TaskResult | null
+    elapsed: term.MilliSecond
   ) {
     this.#id = id;
     this.#status = status;
     this.#duration = duration;
     this.#elapsed = elapsed;
-    this.#result = result;
   }
 
   private clone(
@@ -59,15 +46,13 @@ export class Task implements Temporal, Publishable {
       status: TaskStatus;
       duration: term.MilliSecond;
       elapsed: term.MilliSecond;
-      result: TaskResult | null;
     }> = {}
   ): Task {
     return new Task(
       update.id ?? this.#id,
       update.status ?? this.#status,
       update.duration ?? this.#duration,
-      update.elapsed ?? this.#elapsed,
-      update.result !== undefined ? update.result : this.#result
+      update.elapsed ?? this.#elapsed
     );
   }
 
@@ -80,8 +65,7 @@ export class Task implements Temporal, Publishable {
       new term.Identifier("task"),
       TaskStatus.Ready,
       new term.MilliSecond(durationMs),
-      new term.MilliSecond(0),
-      null
+      new term.MilliSecond(0)
     );
   }
 
@@ -90,7 +74,7 @@ export class Task implements Temporal, Publishable {
    * @param deltaTime 진행할 시간
    */
   public after(deltaTime: term.MilliSecond): Task {
-    if (this.isCompleted() || this.isFailed()) {
+    if (this.isCompleted()) {
       return this.clone();
     }
     const elaspsedTime = this.#elapsed.add(deltaTime);
@@ -109,7 +93,6 @@ export class Task implements Temporal, Publishable {
       return this.clone({
         status: TaskStatus.Completed,
         elapsed: elaspsedTime,
-        result: { success: true },
       });
     }
 
@@ -122,11 +105,9 @@ export class Task implements Temporal, Publishable {
   public reset(): Task {
     this.#status = TaskStatus.Ready;
     this.#elapsed = new term.MilliSecond(0);
-    this.#result = null;
     return this.clone({
       status: TaskStatus.Ready,
       elapsed: new term.MilliSecond(0),
-      result: null,
     });
   }
 
@@ -141,7 +122,6 @@ export class Task implements Temporal, Publishable {
       elapsed: this.#elapsed.valueOf(),
       duration: this.#duration.valueOf(),
       progress: this.calculateProgress(),
-      result: this.#result,
     };
   }
 
@@ -179,20 +159,5 @@ export class Task implements Temporal, Publishable {
 
   public isCompleted(): boolean {
     return this.#status === TaskStatus.Completed;
-  }
-
-  public isFailed(): boolean {
-    return this.#status === TaskStatus.Failed;
-  }
-
-  /**
-   * 작업 실패 처리
-   * @param message 실패 원인 메시지
-   */
-  public fail(message: string): Task {
-    return this.clone({
-      status: TaskStatus.Failed,
-      result: { success: false, message: message },
-    });
   }
 }
