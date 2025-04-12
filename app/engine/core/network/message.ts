@@ -72,6 +72,10 @@ export class Message {
     );
   }
 
+  public static request(srcId: string, dstId: string, size: number): Message {
+    return Message.written(srcId, dstId, size);
+  }
+
   public startTransit(): Message {
     if (!this.isCreated()) {
       throw new error.InvalidMessageStatusError(

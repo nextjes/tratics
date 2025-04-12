@@ -2,6 +2,7 @@ import * as term from "~/engine/term";
 import { type Updatable, type PublishableState } from "~/engine/interfaces";
 import { Task } from "./task";
 import { Core } from "./core";
+import * as network from "~/engine/core/network";
 
 /**
  * 다중 코어를 가진 노드를 표현하는 클래스
@@ -49,13 +50,13 @@ export class Node implements Updatable {
    * 새 노드 인스턴스 생성
    * @param coreCount 코어 개수
    */
-  public static boot<T extends Node>(coreCount: number): T {
+  public static boot(coreCount: number): Node {
     return new Node(
       new term.Identifier("node"),
       Array.from({ length: coreCount }, () => Core.idle()),
       [],
       new term.Position(0, 0)
-    ) as T;
+    );
   }
 
   /**
@@ -171,5 +172,22 @@ export class Node implements Updatable {
    */
   public queueLength(): number {
     return this.#taskQueue.length;
+  }
+}
+
+export class Server extends Node {
+  public static boot(coreCount: number): Server {
+    return new Server(
+      new term.Identifier("server"),
+      Array.from({ length: coreCount }, () => Core.idle()),
+      [],
+      new term.Position(0, 0)
+    );
+  }
+
+  public receiveRequest(req: network.Message): Server {
+    const taskProcessDuration = req.size() * 10;
+    const task = Task.ready(taskProcessDuration);
+    return this.registerTask(task);
   }
 }
