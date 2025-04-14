@@ -5,18 +5,8 @@ import {
   SimulationDifficulty,
 } from "./core/simulation";
 import { useMemoryState } from "~/store/memory";
-import * as term from "./term";
+import { config } from "./settings";
 
-// 전역 시뮬레이션 엔진 인스턴스
-let config = {
-  requestCount: 1000,
-  difficulty: SimulationDifficulty.Normal,
-  topologyType: TopologyType.Star,
-  nodeCount: 5,
-  coresPerNode: 2,
-  tickInterval: new term.MilliSecond(100),
-  timeScale: 1.0,
-};
 let simulationEngine = SimulationEngine.create().configure(config);
 
 /**
