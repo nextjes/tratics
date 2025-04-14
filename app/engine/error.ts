@@ -32,3 +32,10 @@ export class InvalidMessageStatusError extends TraticsError {
     this.name = "InvalidMessageStatusError";
   }
 }
+
+export class NotFoundError extends TraticsError {
+  constructor(message: string) {
+    super(message);
+    this.name = "NotFoundError";
+  }
+}
