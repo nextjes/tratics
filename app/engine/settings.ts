@@ -13,6 +13,6 @@ export let config = {
   timeScale: 1.0,
 };
 export const router = network.Router.config([
-  network.NetworkLink.connect("client", "server"),
-  network.NetworkLink.connect("server", "client"),
+  network.NetworkLink.connect("client-1", "server-1"),
+  network.NetworkLink.connect("server-1", "client-1"),
 ]);

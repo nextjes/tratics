@@ -3,6 +3,7 @@ import { type Updatable, type PublishableState } from "~/engine/interfaces";
 import { Task } from "./task";
 import { Core } from "./core";
 import * as network from "~/engine/core/network";
+import { router } from "~/engine/settings";
 
 /**
  * 다중 코어를 가진 노드를 표현하는 클래스
@@ -189,5 +190,20 @@ export class Server extends Node {
     const taskProcessDuration = req.size() * 10;
     const task = Task.ready(taskProcessDuration);
     return this.registerTask(task);
+  }
+}
+
+export class Client extends Node {
+  public static boot(coreCount: number): Client {
+    return new Client(
+      new term.Identifier("client"),
+      Array.from({ length: coreCount }, () => Core.idle()),
+      [],
+      new term.Position(0, 0)
+    );
+  }
+
+  public sendRequest(req: network.Message): void {
+    router.route(req);
   }
 }
