@@ -1,6 +1,6 @@
 import { term } from ".";
-import * as network from "./core/network";
 import { SimulationDifficulty, TopologyType } from "./core/simulation";
+import { Router } from "./router";
 
 // 전역 시뮬레이션 엔진 인스턴스
 export let config = {
@@ -12,7 +12,13 @@ export let config = {
   tickInterval: new term.MilliSecond(100),
   timeScale: 1.0,
 };
-export const router = network.Router.config([
-  network.NetworkLink.connect("client-1", "server-1"),
-  network.NetworkLink.connect("server-1", "client-1"),
-]);
+// router는 null로 초기화
+export let router: Router | null = null;
+
+// 지연 초기화 함수
+export function initializeRouter() {
+  router = Router.config([
+    ["client-1", "server-1"],
+    ["server-1", "client-1"],
+  ]);
+}

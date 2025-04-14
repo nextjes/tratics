@@ -5,9 +5,10 @@ import {
   SimulationDifficulty,
 } from "./core/simulation";
 import { useMemoryState } from "~/store/memory";
-import { config } from "./settings";
+import { config, initializeRouter } from "./settings";
 
 let simulationEngine = SimulationEngine.create().configure(config);
+initializeRouter();
 
 /**
  * 시뮬레이션 시작
