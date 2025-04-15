@@ -99,6 +99,7 @@ export class Task implements Temporal, Publishable {
     }
 
     if (this.isRunning() && isOverDuration) {
+      this.#callback();
       return this.clone({
         status: TaskStatus.Completed,
         elapsed: elaspsedTime,

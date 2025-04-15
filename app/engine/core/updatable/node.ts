@@ -206,12 +206,26 @@ export class Server extends Node {
 }
 
 export class Client extends Node {
+  #status: string;
+
+  constructor(
+    id: term.Identifier,
+    cores: Core[],
+    taskQueue: Task[],
+    position: term.Position,
+    status: string
+  ) {
+    super(id, cores, taskQueue, position);
+    this.#status = status;
+  }
+
   public static boot(coreCount: number): Client {
     return new Client(
       new term.Identifier("client"),
       Array.from({ length: coreCount }, () => Core.idle()),
       [],
-      new term.Position(0, 0)
+      new term.Position(0, 0),
+      "idle"
     );
   }
 
@@ -220,6 +234,12 @@ export class Client extends Node {
       console.error("Router is not initialized");
       return;
     }
+    this.#status = "waiting";
     router.route(req);
+  }
+
+  public receiveResponse(res: network.Message): Client {
+    this.#status = "idle";
+    return this;
   }
 }
