@@ -204,6 +204,10 @@ export class Client extends Node {
   }
 
   public sendRequest(req: network.Message): void {
+    if (router === null) {
+      console.error("Router is not initialized");
+      return;
+    }
     router.route(req);
   }
 }
