@@ -188,22 +188,58 @@ export class Server extends Node {
 
   public receiveRequest(req: network.Message): Server {
     const taskProcessDuration = req.size() * 10;
-    const task = Task.ready(taskProcessDuration);
+    const task = Task.ready(
+      taskProcessDuration,
+      this.sendResponse.bind(this, req.srcId())
+    );
     return this.registerTask(task);
+  }
+
+  public sendResponse(dstId: string): void {
+    if (router === null) {
+      console.error("Router is not initialized");
+      return;
+    }
+    const response = network.Message.response(this.id(), dstId, 40);
+    router.route(response);
   }
 }
 
 export class Client extends Node {
+  #status: string;
+
+  constructor(
+    id: term.Identifier,
+    cores: Core[],
+    taskQueue: Task[],
+    position: term.Position,
+    status: string
+  ) {
+    super(id, cores, taskQueue, position);
+    this.#status = status;
+  }
+
   public static boot(coreCount: number): Client {
     return new Client(
       new term.Identifier("client"),
       Array.from({ length: coreCount }, () => Core.idle()),
       [],
-      new term.Position(0, 0)
+      new term.Position(0, 0),
+      "idle"
     );
   }
 
   public sendRequest(req: network.Message): void {
+    if (router === null) {
+      console.error("Router is not initialized");
+      return;
+    }
+    this.#status = "waiting";
     router.route(req);
+  }
+
+  public receiveResponse(res: network.Message): Client {
+    this.#status = "idle";
+    return this;
   }
 }
