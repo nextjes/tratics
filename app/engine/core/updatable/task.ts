@@ -86,15 +86,15 @@ export class Task implements Temporal, Publishable {
     if (this.isCompleted()) {
       return this.clone();
     }
-    const elaspsedTime = this.#elapsed.add(deltaTime);
+    const elapsedTime = this.#elapsed.add(deltaTime);
     const isOverDuration =
-      elaspsedTime.greaterThan(this.#duration) ||
-      elaspsedTime.equals(this.#duration);
+      elapsedTime.greaterThan(this.#duration) ||
+      elapsedTime.equals(this.#duration);
 
     if (this.isReady()) {
       return this.clone({
         status: isOverDuration ? TaskStatus.Completed : TaskStatus.Running,
-        elapsed: elaspsedTime,
+        elapsed: elapsedTime,
       });
     }
 
@@ -102,11 +102,11 @@ export class Task implements Temporal, Publishable {
       this.#callback();
       return this.clone({
         status: TaskStatus.Completed,
-        elapsed: elaspsedTime,
+        elapsed: elapsedTime,
       });
     }
 
-    return this.clone({ elapsed: elaspsedTime });
+    return this.clone({ elapsed: elapsedTime });
   }
 
   /**
