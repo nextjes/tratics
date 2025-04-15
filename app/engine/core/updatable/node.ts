@@ -188,8 +188,20 @@ export class Server extends Node {
 
   public receiveRequest(req: network.Message): Server {
     const taskProcessDuration = req.size() * 10;
-    const task = Task.ready(taskProcessDuration);
+    const task = Task.ready(
+      taskProcessDuration,
+      this.sendResponse.bind(this, req.srcId())
+    );
     return this.registerTask(task);
+  }
+
+  public sendResponse(dstId: string): void {
+    if (router === null) {
+      console.error("Router is not initialized");
+      return;
+    }
+    const response = network.Message.response(this.id(), dstId, 40);
+    router.route(response);
   }
 }
 

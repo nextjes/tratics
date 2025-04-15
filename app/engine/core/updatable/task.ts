@@ -23,6 +23,7 @@ export class Task implements Temporal, Publishable {
   #status: TaskStatus;
   #duration: term.MilliSecond;
   #elapsed: term.MilliSecond;
+  #callback: () => void;
 
   /**
    * 작업 생성자
@@ -32,12 +33,14 @@ export class Task implements Temporal, Publishable {
     id: term.Identifier,
     status: TaskStatus,
     duration: term.MilliSecond,
-    elapsed: term.MilliSecond
+    elapsed: term.MilliSecond,
+    callback: () => void
   ) {
     this.#id = id;
     this.#status = status;
     this.#duration = duration;
     this.#elapsed = elapsed;
+    this.#callback = callback;
   }
 
   private clone(
@@ -46,13 +49,15 @@ export class Task implements Temporal, Publishable {
       status: TaskStatus;
       duration: term.MilliSecond;
       elapsed: term.MilliSecond;
+      callback: () => void;
     }> = {}
   ): Task {
     return new Task(
       update.id ?? this.#id,
       update.status ?? this.#status,
       update.duration ?? this.#duration,
-      update.elapsed ?? this.#elapsed
+      update.elapsed ?? this.#elapsed,
+      update.callback ?? this.#callback
     );
   }
 
@@ -60,12 +65,16 @@ export class Task implements Temporal, Publishable {
    * 새 작업 인스턴스 생성
    * @param durationMs 작업 처리에 필요한 시간 (밀리초)
    */
-  public static ready(durationMs: number): Task {
+  public static ready(
+    durationMs: number,
+    callback: () => void = () => {}
+  ): Task {
     return new Task(
       new term.Identifier("task"),
       TaskStatus.Ready,
       new term.MilliSecond(durationMs),
-      new term.MilliSecond(0)
+      new term.MilliSecond(0),
+      callback
     );
   }
 
