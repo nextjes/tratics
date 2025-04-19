@@ -11,7 +11,7 @@ import {
 import { Client, RequestResponseCycle, Link, Node, Server } from "./tag";
 import {
   CleanPreEndTimeInDelta,
-  PerformanceIndicatorRelease,
+  SimulationIndicatorRelease,
   RequestTransmission,
   ResponseReception,
   ResponseTransmission,
@@ -41,7 +41,7 @@ function createWorld(): World {
     .registerSystem(ResponseTransmission)
     .registerSystem(ResponseReception)
     .registerSystem(CleanPreEndTimeInDelta)
-    .registerSystem(PerformanceIndicatorRelease);
+    .registerSystem(SimulationIndicatorRelease);
 
   world
     .createEntity()

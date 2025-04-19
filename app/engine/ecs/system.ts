@@ -40,7 +40,7 @@ export class CleanPreEndTimeInDelta extends System {
   }
 }
 
-export class PerformanceIndicatorRelease extends System {
+export class SimulationIndicatorRelease extends System {
   static queries = {
     nodes: { components: [Server] },
     links: { components: [Link] },
