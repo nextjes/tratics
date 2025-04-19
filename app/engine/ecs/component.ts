@@ -1,5 +1,6 @@
 import { Component, Types } from "ecsy";
 import type { Core } from "./infra";
+import type { Message, Task } from "./types";
 
 export class PreEndTimeInDelta extends Component<PreEndTimeInDelta> {
   value!: number;
@@ -25,22 +26,6 @@ export class Cores extends Component<Cores> {
   };
 }
 
-export class Message extends Component<Message> {
-  rrcId!: string;
-  srcId!: string;
-  dstId!: string;
-  size!: number;
-  transmittedSize!: number;
-
-  static schema = {
-    rrcId: { type: Types.String },
-    srcId: { type: Types.String },
-    dstId: { type: Types.String },
-    size: { type: Types.Number },
-    transmittedSize: { type: Types.Number },
-  };
-}
-
 export class RequestQueue extends Component<RequestQueue> {
   requests!: Message[];
 
@@ -58,7 +43,7 @@ export class ResponseQueue extends Component<ResponseQueue> {
 }
 
 export class TaskQueue extends Component<TaskQueue> {
-  tasks!: Message[];
+  tasks!: Task[];
 
   static schema = {
     tasks: { type: Types.Array },
@@ -89,14 +74,10 @@ export class Throughput extends Component<Throughput> {
   };
 }
 
-export class Task extends Component<Task> {
-  rrcId!: string;
-  duration!: number;
-  elapsed!: number;
+export class EndPoints extends Component<EndPoints> {
+  points!: string[];
 
   static schema = {
-    rrcId: { type: Types.String },
-    duration: { type: Types.Number },
-    elapsed: { type: Types.Number },
+    points: { type: Types.Array },
   };
 }

@@ -5,3 +5,4 @@ export class Node extends TagComponent {}
 export class Client extends TagComponent {}
 export class Server extends TagComponent {}
 export class Link extends TagComponent {}
+export class ClusterEntryPoint extends TagComponent {}

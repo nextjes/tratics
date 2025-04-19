@@ -1,6 +1,7 @@
 import { World } from "ecsy";
 import {
   Cores,
+  EndPoints,
   Identity,
   LinkSpec,
   RequestQueue,
@@ -8,7 +9,14 @@ import {
   TaskQueue,
   Throughput,
 } from "./component";
-import { Client, RequestResponseCycle, Link, Node, Server } from "./tag";
+import {
+  Client,
+  RequestResponseCycle,
+  Link,
+  Node,
+  Server,
+  ClusterEntryPoint,
+} from "./tag";
 import {
   CleanPreEndTimeInDelta,
   SimulationIndicatorRelease,
@@ -28,11 +36,17 @@ function createWorld(): World {
     .registerComponent(Client)
     .registerComponent(Server)
     .registerComponent(Link)
+    .registerComponent(ClusterEntryPoint);
+
+  world
     .registerComponent(Identity)
     .registerComponent(Cores)
     .registerComponent(RequestQueue)
     .registerComponent(ResponseQueue)
-    .registerComponent(TaskQueue);
+    .registerComponent(TaskQueue)
+    .registerComponent(LinkSpec)
+    .registerComponent(Throughput)
+    .registerComponent(EndPoints);
 
   world
     .registerSystem(TrafficGeneration)
@@ -53,6 +67,7 @@ function createWorld(): World {
   world
     .createEntity()
     .addComponent(Server)
+    .addComponent(ClusterEntryPoint)
     .addComponent(Identity, { id: "server-1" })
     .addComponent(Cores, { value: [{ taskId: null }, { taskId: null }] })
     .addComponent(TaskQueue, { tasks: [] });
