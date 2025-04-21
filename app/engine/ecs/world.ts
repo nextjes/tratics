@@ -8,6 +8,7 @@ import {
   ResponseQueue,
   TaskQueue,
   Throughput,
+  InTransitMessages,
 } from "./component";
 import {
   Client,
@@ -46,7 +47,8 @@ function createWorld(): World {
     .registerComponent(TaskQueue)
     .registerComponent(LinkSpec)
     .registerComponent(Throughput)
-    .registerComponent(EndPoints);
+    .registerComponent(EndPoints)
+    .registerComponent(InTransitMessages);
 
   world
     .registerSystem(TrafficGeneration)
@@ -77,6 +79,7 @@ function createWorld(): World {
     .addComponent(Link)
     .addComponent(Identity, { id: "link-1" })
     .addComponent(Throughput, { value: 0 })
+    .addComponent(InTransitMessages, { messages: [] })
     .addComponent(LinkSpec, {
       srcId: "client-1",
       dstId: "server-1",
@@ -90,6 +93,7 @@ function createWorld(): World {
     .addComponent(Link)
     .addComponent(Identity, { id: "link-2" })
     .addComponent(Throughput, { value: 0 })
+    .addComponent(InTransitMessages, { messages: [] })
     .addComponent(LinkSpec, {
       srcId: "server-1",
       dstId: "client-1",

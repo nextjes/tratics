@@ -1,6 +1,6 @@
 import { Component, Types } from "ecsy";
 import type { Core } from "./infra";
-import type { Message, Task } from "./types";
+import type { IMessage, ITask } from "./types";
 
 export class PreEndTimeInDelta extends Component<PreEndTimeInDelta> {
   value!: number;
@@ -27,7 +27,7 @@ export class Cores extends Component<Cores> {
 }
 
 export class RequestQueue extends Component<RequestQueue> {
-  requests!: Message[];
+  requests!: IMessage[];
 
   static schema = {
     requests: { type: Types.Array },
@@ -35,19 +35,37 @@ export class RequestQueue extends Component<RequestQueue> {
 }
 
 export class ResponseQueue extends Component<ResponseQueue> {
-  responses!: Message[];
+  responses!: IMessage[];
 
   static schema = {
     responses: { type: Types.Array },
   };
 }
 
+export class InTransitMessages extends Component<InTransitMessages> {
+  messages!: IMessage[];
+
+  static schema = {
+    messages: { type: Types.Array },
+  };
+}
+
 export class TaskQueue extends Component<TaskQueue> {
-  tasks!: Task[];
+  tasks!: ITask[];
 
   static schema = {
     tasks: { type: Types.Array },
   };
+
+  registerTask(message: IMessage): void {
+    const taskProcessDuration = message.size * 10;
+    const task: ITask = {
+      rrcId: message.rrcId,
+      duration: taskProcessDuration,
+      elapsed: 0,
+    };
+    this.tasks.push(task);
+  }
 }
 
 export class LinkSpec extends Component<LinkSpec> {
