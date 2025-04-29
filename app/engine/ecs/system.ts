@@ -6,24 +6,31 @@ import {
   Client,
   RequestResponseCycle,
   ClusterEntryPoint,
+  Message,
 } from "./tag";
 import {
   Cores,
+  DestinationId,
   EndPoints,
   Identity,
   InTransitMessages,
   LinkSpec,
+  MessageSize,
   PreEndTimeInDelta,
   RequestQueue,
+  SourceId,
   TaskQueue,
   Throughput,
 } from "./component";
 import type { Core } from "./infra";
 import type { IMessage } from "./types";
 import { NotFoundError } from "../error";
-import { Message } from "./data";
+import type { CreateRequest } from "./command";
+import { generateRequests } from "./handler";
 
 export class TrafficGeneration extends System {
+  commands: CreateRequest[] = [];
+
   static queries = {
     clients: { components: [Client] },
     clusterEntryPoints: { components: [ClusterEntryPoint, Server] },
@@ -31,29 +38,38 @@ export class TrafficGeneration extends System {
   execute(delta: number, time: number): void {
     const clients = this.queries.clients.results;
     const clusterEntryPoint = this.queries.clusterEntryPoints.results[0];
-    clients.forEach((client: Entity) => {
-      const requestQueue = client.getMutableComponent(RequestQueue)!;
 
-      if (Math.random() < 0.5) {
-        // todo: Random 요소 별도 알고리즘으로 구현
-        const newRRC = this.world.createEntity();
-        const rrcId = `rrc-${newRRC.id}`;
-        const srdId = client.getComponent(Identity)!.id;
-        const dstId = clusterEntryPoint.getComponent(Identity)!.id;
-        newRRC
-          .addComponent(RequestResponseCycle)
-          .addComponent(Identity, { id: rrcId })
-          .addComponent(EndPoints, { points: [srdId, dstId] })
-          .addComponent(PreEndTimeInDelta, { value: 0 });
-        const message = new Message({
-          rrcId: rrcId,
-          srcId: srdId,
-          dstId: dstId,
-          status: "Created",
-          size: Math.floor(Math.random() * 1000), // todo: Random size 요소 제거
-          transmittedSize: 0,
-        });
-        requestQueue.requests.push(message);
+    const commands = generateRequests({
+      algorhythm: () => Math.random() > 0.5,
+      clientIds: clients.map(
+        (client: Entity) => client.getComponent(Identity)!.id
+      ),
+      entryPointId: clusterEntryPoint.getComponent(Identity)!.id,
+      requestIdFactory: () => Math.random().toString(36).substring(2, 15),
+      sizeFactory: () => 400,
+    });
+    this.commands.push(...commands);
+    this.commit();
+  }
+
+  commit(): void {
+    this.commands.forEach((command) => {
+      switch (command.type) {
+        case "create":
+          this.world
+            .createEntity()
+            .addComponent(Message)
+            .addComponent(Identity, { id: command.requestId })
+            .addComponent(SourceId, { srcId: command.srcId })
+            .addComponent(DestinationId, { dstId: command.dstId })
+            .addComponent(MessageSize, { size: command.size });
+          break;
+        case "delete":
+          // Handle delete command
+          break;
+        case "update":
+          // Handle update command
+          break;
       }
     });
   }

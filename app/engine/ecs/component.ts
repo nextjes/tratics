@@ -99,3 +99,27 @@ export class EndPoints extends Component<EndPoints> {
     points: { type: Types.Array },
   };
 }
+
+export class SourceId extends Component<SourceId> {
+  srcId!: string;
+
+  static schema = {
+    srcId: { type: Types.String },
+  };
+}
+
+export class DestinationId extends Component<DestinationId> {
+  dstId!: string;
+
+  static schema = {
+    dstId: { type: Types.String },
+  };
+}
+
+export class MessageSize extends Component<MessageSize> {
+  size!: number;
+
+  static schema = {
+    size: { type: Types.Number },
+  };
+}

@@ -9,6 +9,9 @@ import {
   TaskQueue,
   Throughput,
   InTransitMessages,
+  SourceId,
+  DestinationId,
+  MessageSize,
 } from "./component";
 import {
   Client,
@@ -17,6 +20,7 @@ import {
   Node,
   Server,
   ClusterEntryPoint,
+  Message,
 } from "./tag";
 import {
   CleanPreEndTimeInDelta,
@@ -37,7 +41,8 @@ function createWorld(): World {
     .registerComponent(Client)
     .registerComponent(Server)
     .registerComponent(Link)
-    .registerComponent(ClusterEntryPoint);
+    .registerComponent(ClusterEntryPoint)
+    .registerComponent(Message);
 
   world
     .registerComponent(Identity)
@@ -48,7 +53,10 @@ function createWorld(): World {
     .registerComponent(LinkSpec)
     .registerComponent(Throughput)
     .registerComponent(EndPoints)
-    .registerComponent(InTransitMessages);
+    .registerComponent(InTransitMessages)
+    .registerComponent(SourceId)
+    .registerComponent(DestinationId)
+    .registerComponent(MessageSize);
 
   world
     .registerSystem(TrafficGeneration)
