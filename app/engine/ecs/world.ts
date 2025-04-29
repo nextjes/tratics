@@ -12,6 +12,7 @@ import {
   SourceId,
   DestinationId,
   MessageSize,
+  InTransit,
 } from "./component";
 import {
   Client,
@@ -32,7 +33,7 @@ import {
   TrafficGeneration,
 } from "./system";
 
-function createWorld(): World {
+export function createWorld(): World {
   const world = new World();
 
   world
@@ -56,7 +57,8 @@ function createWorld(): World {
     .registerComponent(InTransitMessages)
     .registerComponent(SourceId)
     .registerComponent(DestinationId)
-    .registerComponent(MessageSize);
+    .registerComponent(MessageSize)
+    .registerComponent(InTransit);
 
   world
     .registerSystem(TrafficGeneration)

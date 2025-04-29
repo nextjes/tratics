@@ -21,6 +21,7 @@ import {
   SourceId,
   TaskQueue,
   Throughput,
+  InTransit,
 } from "./component";
 import type { Core } from "./infra";
 import type { IMessage } from "./types";
@@ -62,7 +63,8 @@ export class TrafficGeneration extends System {
             .addComponent(Identity, { id: command.requestId })
             .addComponent(SourceId, { srcId: command.srcId })
             .addComponent(DestinationId, { dstId: command.dstId })
-            .addComponent(MessageSize, { size: command.size });
+            .addComponent(MessageSize, { size: command.size })
+            .addComponent(InTransit, { value: false });
           break;
         case "delete":
           // Handle delete command
@@ -71,6 +73,37 @@ export class TrafficGeneration extends System {
           // Handle update command
           break;
       }
+    });
+  }
+}
+
+export class RequestSender extends System {
+  static queries = {
+    messages: { components: [Message, Not(InTransit)] },
+    links: { components: [Link] },
+  };
+
+  execute(delta: number, time: number): void {
+    const messages = this.queries.messages.results;
+    const links = this.queries.links.results;
+
+    messages.forEach((message: Entity) => {
+      const messageId = message.getComponent(Identity)!.id;
+      const srcId = message.getComponent(SourceId)!.srcId;
+      const dstId = message.getComponent(DestinationId)!.dstId;
+
+      const link = links.find(
+        (link: Entity) =>
+          link.getComponent(LinkSpec)!.srcId === srcId &&
+          link.getComponent(LinkSpec)!.dstId === dstId
+      );
+
+      if (link === undefined) {
+        throw new NotFoundError("Link not found");
+      }
+
+      const inTransitMessages = link.getMutableComponent(InTransitMessages)!;
+      inTransitMessages.messages.push(messageId);
     });
   }
 }
