@@ -1,4 +1,8 @@
-export interface Command {}
+export type CommandType = "create" | "delete" | "update";
+
+export interface Command {
+  type: CommandType;
+}
 
 export interface CreateRequest extends Command {
   requestId: string;
