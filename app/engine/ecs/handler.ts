@@ -2,7 +2,7 @@ import type { CreateRequest } from "./command";
 import type { GenerateRequestsProps } from "./props";
 
 export function generateRequests({
-  algorhythm,
+  algorithm,
   clientIds,
   entryPointId,
   requestIdFactory,
@@ -10,7 +10,7 @@ export function generateRequests({
 }: GenerateRequestsProps): CreateRequest[] {
   return clientIds
     .map((clientId) => {
-      if (algorhythm()) {
+      if (algorithm()) {
         return {
           type: "create",
           requestId: requestIdFactory(),

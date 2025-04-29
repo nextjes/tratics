@@ -1,5 +1,5 @@
 export interface GenerateRequestsProps {
-  algorhythm: () => boolean;
+  algorithm: () => boolean;
   clientIds: string[];
   entryPointId: string;
   requestIdFactory: () => string;

@@ -11,7 +11,7 @@ describe("generateRequests", () => {
 
     it("should return CreateRequest commands", () => {
       const commands = generateRequests({
-        algorhythm: alwaysGenAlgorythm,
+        algorithm: alwaysGenAlgorythm,
         clientIds: clientIds,
         entryPointId: entryPointId,
         requestIdFactory: fakeRequestIdFactory,
@@ -46,7 +46,7 @@ describe("generateRequests", () => {
 
     it("should return empty array", () => {
       const commands = generateRequests({
-        algorhythm: neverGenAlgorythm,
+        algorithm: neverGenAlgorythm,
         clientIds: clientIds,
         entryPointId: entryPointId,
         requestIdFactory: fakeRequestIdFactory,
