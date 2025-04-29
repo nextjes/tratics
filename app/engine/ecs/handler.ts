@@ -12,6 +12,7 @@ export function generateRequests({
     .map((clientId) => {
       if (algorhythm()) {
         return {
+          type: "create",
           requestId: requestIdFactory(),
           srcId: clientId,
           dstId: entryPointId,
