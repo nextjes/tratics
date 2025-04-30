@@ -1,14 +1,9 @@
 import type { MessageStatus } from "./status";
 
 export interface IMessage {
-  rrcId: string;
-  srcId: string;
-  dstId: string;
+  requestId: string;
   size: number;
-  status: MessageStatus;
   transmittedSize: number;
-
-  transmit(bytes: number): IMessage;
 }
 
 export interface ITask {
