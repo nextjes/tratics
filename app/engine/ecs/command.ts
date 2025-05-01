@@ -10,3 +10,13 @@ export interface CreateRequest extends Command {
   dstId: string;
   size: number;
 }
+
+export interface ProceedMessage extends Command {
+  requestId: string;
+  transmittedSize: number;
+}
+
+export interface PublishArrivedMessage extends Command {
+  requestId: string;
+  arrivedAt: number;
+}
