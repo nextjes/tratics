@@ -10,6 +10,7 @@ import {
   Request,
   RequestLink,
   Task,
+  Queued,
 } from "./tag";
 import {
   Cores,
@@ -214,7 +215,7 @@ export class RequestTransmission extends System {
 
 export class EnqueueTask extends System {
   static queries = {
-    servers: { components: [Server, TaskQueue] },
+    servers: { components: [Server, TaskQueue, Not(Queued)] },
     tasks: { components: [Task] },
   };
 
@@ -235,6 +236,7 @@ export class EnqueueTask extends System {
       }
 
       const taskQueue = server.getMutableComponent(TaskQueue)!;
+      task.addComponent(Queued, { value: true });
       taskQueue.tasks.push(taskId);
     });
   }

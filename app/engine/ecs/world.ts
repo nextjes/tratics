@@ -27,6 +27,7 @@ import {
   RequestLink,
   ResponseLink,
   Task,
+  Queued,
 } from "./tag";
 import {
   CleanPreEndTimeInDelta,
@@ -52,7 +53,8 @@ export function createWorld(): World {
     .registerComponent(Request)
     .registerComponent(RequestLink)
     .registerComponent(ResponseLink)
-    .registerComponent(Task);
+    .registerComponent(Task)
+    .registerComponent(Queued);
 
   world
     .registerComponent(Identity)
