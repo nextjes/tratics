@@ -51,21 +51,11 @@ export class InTransitMessages extends Component<InTransitMessages> {
 }
 
 export class TaskQueue extends Component<TaskQueue> {
-  tasks!: ITask[];
+  tasks!: string[];
 
   static schema = {
     tasks: { type: Types.Array },
   };
-
-  registerTask(message: IMessage): void {
-    const taskProcessDuration = message.size * 10;
-    const task: ITask = {
-      rrcId: message.rrcId,
-      duration: taskProcessDuration,
-      elapsed: 0,
-    };
-    this.tasks.push(task);
-  }
 }
 
 export class LinkSpec extends Component<LinkSpec> {
@@ -133,6 +123,14 @@ export class InTransit extends Component<InTransit> {
 }
 
 export class TransmittedSize extends Component<TransmittedSize> {
+  value!: number;
+
+  static schema = {
+    value: { type: Types.Number },
+  };
+}
+
+export class CreatedAt extends Component<CreatedAt> {
   value!: number;
 
   static schema = {

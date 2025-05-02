@@ -26,6 +26,7 @@ import {
   Throughput,
   InTransit,
   TransmittedSize,
+  CreatedAt,
 } from "./component";
 import type { Core } from "./infra";
 import type { IMessage } from "./types";
@@ -177,10 +178,24 @@ export class RequestTransmission extends System {
           cmd.transmittedSize;
       } else if (command.name === "CreateTask") {
         const cmd = command as CreateTask;
+        const message = this.queries.messages.results.find(
+          (message: Entity) =>
+            message.getComponent(Identity)!.id === cmd.requestId
+        );
+        if (message === undefined) {
+          throw new NotFoundError("Message not found");
+        }
         this.world
           .createEntity()
           .addComponent(Task)
-          .addComponent(Identity, { id: cmd.requestId });
+          .addComponent(Identity, { id: cmd.requestId })
+          .addComponent(SourceId, {
+            srcId: message.getComponent(SourceId)!.srcId,
+          })
+          .addComponent(DestinationId, {
+            dstId: message.getComponent(DestinationId)!.dstId,
+          })
+          .addComponent(CreatedAt, { value: cmd.createdAt });
       } else if (command.name === "DeleteMessage") {
         const cmd = command as DeleteMessage;
         const message = this.queries.messages.results.find(
@@ -194,6 +209,34 @@ export class RequestTransmission extends System {
       }
     });
     this.commands = [];
+  }
+}
+
+export class EnqueueTask extends System {
+  static queries = {
+    servers: { components: [Server, TaskQueue] },
+    tasks: { components: [Task] },
+  };
+
+  execute(delta: number, time: number): void {
+    const servers = this.queries.servers.results;
+    const tasks = this.queries.tasks.results;
+
+    tasks.forEach((task: Entity) => {
+      const taskId = task.getComponent(Identity)!.id;
+      const dstId = task.getComponent(DestinationId)!.dstId;
+
+      const server = servers.find(
+        (server: Entity) => server.getComponent(Identity)!.id === dstId
+      );
+
+      if (server === undefined) {
+        throw new NotFoundError("Server not found");
+      }
+
+      const taskQueue = server.getMutableComponent(TaskQueue)!;
+      taskQueue.tasks.push(taskId);
+    });
   }
 }
 
