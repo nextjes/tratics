@@ -2,7 +2,8 @@ import type {
   Command,
   CreateRequest,
   ProceedMessage,
-  PublishArrivedMessage,
+  CreateTask,
+  DeleteMessage,
 } from "./command";
 import type { GenerateRequestsProps } from "./props";
 import type { IMessage } from "./types";
@@ -19,6 +20,7 @@ export function generateRequests({
       if (algorithm()) {
         return {
           type: "create",
+          name: "CreateRequest",
           requestId: requestIdFactory(),
           srcId: clientId,
           dstId: entryPointId,
@@ -56,15 +58,22 @@ export function transmitMessages(
     if (arrivedTimeInDelta === null) {
       result.push({
         type: "update",
+        name: "ProceedMessage",
         requestId,
         transmittedSize,
       } as ProceedMessage);
     } else {
       result.push({
-        type: "create",
+        type: "delete",
+        name: "DeleteMessage",
         requestId,
-        arrivedAt: elapsedTime + arrivedTimeInDelta,
-      } as PublishArrivedMessage);
+      } as DeleteMessage);
+      result.push({
+        type: "create",
+        name: "CreateTask",
+        requestId,
+        createdAt: elapsedTime + arrivedTimeInDelta,
+      } as CreateTask);
     }
   }
 

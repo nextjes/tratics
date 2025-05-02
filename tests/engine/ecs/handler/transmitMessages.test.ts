@@ -39,12 +39,19 @@ describe("transmitMessages", () => {
 
     expect(commands).toEqual([
       {
-        type: "create",
+        type: "delete",
+        name: "DeleteMessage",
         requestId: "req1",
-        arrivedAt: 3.2,
+      },
+      {
+        type: "create",
+        name: "CreateTask",
+        requestId: "req1",
+        createdAt: 3.2,
       },
       {
         type: "update",
+        name: "ProceedMessage",
         requestId: "req2",
         transmittedSize: 100,
       },

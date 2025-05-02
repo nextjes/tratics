@@ -13,6 +13,7 @@ import {
   DestinationId,
   MessageSize,
   InTransit,
+  TransmittedSize,
 } from "./component";
 import {
   Client,
@@ -22,6 +23,10 @@ import {
   Server,
   ClusterEntryPoint,
   Message,
+  Request,
+  RequestLink,
+  ResponseLink,
+  Task,
 } from "./tag";
 import {
   CleanPreEndTimeInDelta,
@@ -43,7 +48,11 @@ export function createWorld(): World {
     .registerComponent(Server)
     .registerComponent(Link)
     .registerComponent(ClusterEntryPoint)
-    .registerComponent(Message);
+    .registerComponent(Message)
+    .registerComponent(Request)
+    .registerComponent(RequestLink)
+    .registerComponent(ResponseLink)
+    .registerComponent(Task);
 
   world
     .registerComponent(Identity)
@@ -58,7 +67,8 @@ export function createWorld(): World {
     .registerComponent(SourceId)
     .registerComponent(DestinationId)
     .registerComponent(MessageSize)
-    .registerComponent(InTransit);
+    .registerComponent(InTransit)
+    .registerComponent(TransmittedSize);
 
   world
     .registerSystem(TrafficGeneration)

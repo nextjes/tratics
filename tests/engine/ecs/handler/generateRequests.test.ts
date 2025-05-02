@@ -21,6 +21,7 @@ describe("generateRequests", () => {
       expect(commands).toEqual([
         {
           type: "create",
+          name: "CreateRequest",
           requestId: "reqId",
           srcId: "client1",
           dstId: "server1",
@@ -28,6 +29,7 @@ describe("generateRequests", () => {
         },
         {
           type: "create",
+          name: "CreateRequest",
           requestId: "reqId",
           srcId: "client2",
           dstId: "server1",

@@ -1,7 +1,6 @@
 import { Component, Types } from "ecsy";
 import type { Core } from "./infra";
 import type { IMessage, ITask } from "./types";
-import type { MessageStatus } from "./status";
 
 export class PreEndTimeInDelta extends Component<PreEndTimeInDelta> {
   value!: number;
@@ -130,5 +129,13 @@ export class InTransit extends Component<InTransit> {
 
   static schema = {
     value: { type: Types.Boolean },
+  };
+}
+
+export class TransmittedSize extends Component<TransmittedSize> {
+  value!: number;
+
+  static schema = {
+    value: { type: Types.Number },
   };
 }
