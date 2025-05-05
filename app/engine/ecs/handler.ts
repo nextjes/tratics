@@ -114,6 +114,9 @@ export function terminateTasks(tasks: ITask[]): Command[] {
         type: "create",
         name: "CreateResponse",
         requestId: task.requestId,
+        srcId: task.dstId,
+        dstId: task.srcId,
+        size: 40,
       } as CreateResponse,
     ]);
   return commandPairs.flat();

@@ -10,5 +10,6 @@ export class ResponseLink extends TagComponent {}
 export class ClusterEntryPoint extends TagComponent {}
 export class Message extends TagComponent {}
 export class Request extends TagComponent {}
+export class Response extends TagComponent {}
 export class Task extends TagComponent {}
 export class Queued extends TagComponent {}

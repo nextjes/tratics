@@ -10,6 +10,7 @@ import {
   RequestLink,
   Task,
   Queued,
+  Response,
 } from "./tag";
 import {
   Cores,
@@ -38,7 +39,12 @@ import type {
   DeleteMessage,
   ProceedTask,
 } from "./command";
-import { generateRequests, proceedTasks, transmitMessages } from "./handler";
+import {
+  generateRequests,
+  proceedTasks,
+  terminateTasks,
+  transmitMessages,
+} from "./handler";
 import { estimateTransmissionAmount } from "./algorithm";
 
 export class TrafficGeneration extends System {
@@ -218,8 +224,8 @@ export class RequestTransmission extends System {
 
 export class EnqueueTask extends System {
   static queries = {
-    servers: { components: [Server, TaskQueue, Not(Queued)] },
-    tasks: { components: [Task] },
+    servers: { components: [Server, TaskQueue] },
+    tasks: { components: [Task, Not(Queued)] },
   };
 
   execute(delta: number, time: number): void {
@@ -300,6 +306,72 @@ export class TaskProcessing extends System {
           throw new NotFoundError("Task not found");
         }
         task.getMutableComponent(Elapsed)!.value += cmd.proceeded;
+      }
+    });
+  }
+}
+
+export class TaskTerminating extends System {
+  commands: Command[] = [];
+
+  static queries = {
+    servers: { components: [Server, TaskQueue] },
+    tasks: { components: [Task] },
+  };
+
+  execute(delta: number, time: number): void {
+    const servers = this.queries.servers.results;
+
+    servers.forEach((server: Entity) => {
+      const taskQueue = server
+        .getComponent(TaskQueue)!
+        .tasks.map((taskId: string) => {
+          const task = this.queries.tasks.results.find(
+            (task: Entity) => task.getComponent(Identity)!.id === taskId
+          );
+          if (task === undefined) {
+            throw new NotFoundError("Task not found");
+          }
+          return {
+            requestId: task.getComponent(Identity)!.id,
+            srcId: task.getComponent(SourceId)!.srcId,
+            dstId: task.getComponent(DestinationId)!.dstId,
+            duration: task.getComponent(Duration)!.value,
+            elapsed: task.getComponent(Elapsed)!.value,
+            createdAt: task.getComponent(CreatedAt)!.value,
+          } as ITask;
+        });
+      const cmds = terminateTasks(taskQueue);
+      this.commands.push(...cmds);
+    });
+
+    this.commit();
+    this.commands = [];
+  }
+
+  commit(): void {
+    this.commands.forEach((command) => {
+      if (command.name === "DequeueTask") {
+        const cmd = command as DeleteMessage;
+        const task = this.queries.tasks.results.find(
+          (task: Entity) => task.getComponent(Identity)!.id === cmd.requestId
+        );
+        if (task === undefined) {
+          throw new NotFoundError("Task not found");
+        }
+        task.remove(true);
+      } else if (command.name === "CreateResponse") {
+        const cmd = command as CreateRequest;
+        this.world
+          .createEntity()
+          .addComponent(Message)
+          .addComponent(Response)
+          .addComponent(Identity, { id: cmd.requestId })
+          .addComponent(SourceId, { srcId: cmd.srcId })
+          .addComponent(DestinationId, { dstId: cmd.dstId })
+          .addComponent(MessageSize, { size: cmd.size })
+          .addComponent(InTransit, { value: false })
+          .addComponent(TransmittedSize, { value: 0 });
       }
     });
   }

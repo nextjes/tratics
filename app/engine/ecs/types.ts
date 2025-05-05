@@ -6,6 +6,8 @@ export interface IMessage {
 
 export interface ITask {
   requestId: string;
+  srcId: string;
+  dstId: string;
   duration: number;
   elapsed: number;
   createdAt: number;
