@@ -7,7 +7,12 @@ export interface IMessage {
 }
 
 export interface ITask {
-  rrcId: string;
+  requestId: string;
   duration: number;
   elapsed: number;
+  createdAt: number;
+}
+
+export interface ICore {
+  task: ITask | null;
 }
