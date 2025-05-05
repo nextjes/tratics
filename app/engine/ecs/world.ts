@@ -1,7 +1,6 @@
 import { World } from "ecsy";
 import {
   Cores,
-  EndPoints,
   Identity,
   LinkSpec,
   TaskQueue,
@@ -31,13 +30,15 @@ import {
   Queued,
 } from "./tag";
 import {
-  CleanPreEndTimeInDelta,
   SimulationIndicatorRelease,
   RequestTransmission,
-  ResponseReception,
   ResponseTransmission,
   TaskProcessing,
   TrafficGeneration,
+  RequestSender,
+  EnqueueTask,
+  TaskTerminating,
+  ResponseSender,
 } from "./system";
 
 export function createWorld(): World {
@@ -63,7 +64,6 @@ export function createWorld(): World {
     .registerComponent(TaskQueue)
     .registerComponent(LinkSpec)
     .registerComponent(Throughput)
-    .registerComponent(EndPoints)
     .registerComponent(InTransitMessages)
     .registerComponent(SourceId)
     .registerComponent(DestinationId)
@@ -75,13 +75,15 @@ export function createWorld(): World {
     .registerComponent(Elapsed);
 
   world
-    .registerSystem(TrafficGeneration)
-    .registerSystem(RequestTransmission)
-    .registerSystem(TaskProcessing)
-    .registerSystem(ResponseTransmission)
-    .registerSystem(ResponseReception)
-    .registerSystem(CleanPreEndTimeInDelta)
-    .registerSystem(SimulationIndicatorRelease);
+    .registerSystem(TrafficGeneration, { priority: 0 })
+    .registerSystem(RequestSender, { priority: 1 })
+    .registerSystem(RequestTransmission, { priority: 2 })
+    .registerSystem(EnqueueTask, { priority: 3 })
+    .registerSystem(TaskProcessing, { priority: 4 })
+    .registerSystem(TaskTerminating, { priority: 5 })
+    .registerSystem(ResponseSender, { priority: 6 })
+    .registerSystem(ResponseTransmission, { priority: 7 })
+    .registerSystem(SimulationIndicatorRelease, { priority: 8 });
 
   world
     .createEntity()

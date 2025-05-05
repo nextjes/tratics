@@ -1,14 +1,6 @@
 import { Component, Types } from "ecsy";
 import type { Core } from "./infra";
 
-export class PreEndTimeInDelta extends Component<PreEndTimeInDelta> {
-  value!: number;
-
-  static schema = {
-    value: { type: Types.Number, default: 0 },
-  };
-}
-
 export class Identity extends Component<Identity> {
   id!: string;
 
@@ -62,14 +54,6 @@ export class Throughput extends Component<Throughput> {
 
   static schema = {
     value: { type: Types.Number },
-  };
-}
-
-export class EndPoints extends Component<EndPoints> {
-  points!: string[];
-
-  static schema = {
-    points: { type: Types.Array },
   };
 }
 
