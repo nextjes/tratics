@@ -427,13 +427,14 @@ export class ResponseSender extends ecsy.System {
       const srcId = message.getComponent(SourceId)!.srcId;
       const dstId = message.getComponent(DestinationId)!.dstId;
 
-      const link = links.find(
-        (link: ecsy.Entity) =>
-          link.getComponent(LinkSpec)!.srcId === srcId &&
-          link.getComponent(LinkSpec)!.dstId === dstId
-      );
+      const link =
+        links.find(
+          (link: ecsy.Entity) =>
+            link.getComponent(LinkSpec)!.srcId === srcId &&
+            link.getComponent(LinkSpec)!.dstId === dstId
+        ) ?? null;
 
-      if (link === undefined) {
+      if (link === null) {
         throw new NotFoundError("Link not found");
       }
 
@@ -514,6 +515,17 @@ export class ResponseTransmission extends ecsy.System {
           throw new NotFoundError("Message not found");
         }
         message.remove(true);
+      } else if (command.name === "RecordThroughput") {
+        const cmd = command as RecordThroughput;
+        const link =
+          this.queries.links.results.find(
+            (link: ecsy.Entity) =>
+              link.getComponent(Identity)!.id === cmd.linkId
+          ) ?? null;
+        if (link === null) {
+          throw new NotFoundError("Link not found");
+        }
+        link.getMutableComponent(Throughput)!.value = cmd.throughput;
       }
     });
     this.commands = [];
