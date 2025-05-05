@@ -1,10 +1,8 @@
 import {
   SimulationEngine,
-  SimulationState,
   TopologyType,
   SimulationDifficulty,
 } from "./core/simulation";
-import { useMemoryState } from "~/store/memory";
 import { initializeRouter } from "./settings";
 import { term } from ".";
 import { createWorld } from "./ecs/world";
@@ -21,16 +19,26 @@ export let config = {
 };
 let simulationEngine = SimulationEngine.create().configure(config);
 initializeRouter();
+
 const world = createWorld();
+let intervalId: ReturnType<typeof setInterval> | null = null;
 
 /**
  * 시뮬레이션 시작
  */
 export function start(): void {
   const delta = 16.67;
-  const time = 0;
+  let time = 0;
 
-  world.execute(delta, time);
+  if (intervalId !== null) {
+    clearInterval(intervalId);
+    intervalId = null;
+  }
+
+  intervalId = setInterval(() => {
+    world.execute(delta, time);
+    time += delta;
+  }, delta);
 }
 
 /**
@@ -38,10 +46,19 @@ export function start(): void {
  */
 export function pause(): void {
   world.stop();
+  if (intervalId !== null) {
+    clearInterval(intervalId);
+    intervalId = null;
+  }
 }
 
 export function resume(): void {
   world.play();
+  const delta = 16.67;
+  let time = 0;
+  intervalId = setInterval(() => {
+    world.execute(delta, time);
+  }, delta);
 }
 
 /**
@@ -49,6 +66,10 @@ export function resume(): void {
  */
 export function stop(): void {
   world.stop();
+  if (intervalId !== null) {
+    clearInterval(intervalId);
+    intervalId = null;
+  }
 }
 
 /**
