@@ -9,7 +9,6 @@ import {
   SourceId,
   DestinationId,
   MessageSize,
-  InTransit,
   TransmittedSize,
   CreatedAt,
   Duration,
@@ -24,10 +23,12 @@ import {
   ClusterEntryPoint,
   Message,
   Request,
+  Response,
   RequestLink,
   ResponseLink,
   Task,
   Queued,
+  InTransit,
 } from "./tag";
 import {
   SimulationIndicatorRelease,
@@ -56,7 +57,9 @@ export function createWorld(): ecsy.World {
     .registerComponent(RequestLink)
     .registerComponent(ResponseLink)
     .registerComponent(Task)
-    .registerComponent(Queued);
+    .registerComponent(Queued)
+    .registerComponent(Response)
+    .registerComponent(InTransit);
 
   world
     .registerComponent(Identity)
@@ -68,7 +71,6 @@ export function createWorld(): ecsy.World {
     .registerComponent(SourceId)
     .registerComponent(DestinationId)
     .registerComponent(MessageSize)
-    .registerComponent(InTransit)
     .registerComponent(TransmittedSize)
     .registerComponent(CreatedAt)
     .registerComponent(Duration)

@@ -81,14 +81,6 @@ export class MessageSize extends ecsy.Component<MessageSize> {
   };
 }
 
-export class InTransit extends ecsy.Component<InTransit> {
-  value!: boolean;
-
-  static schema = {
-    value: { type: ecsy.Types.Boolean },
-  };
-}
-
 export class TransmittedSize extends ecsy.Component<TransmittedSize> {
   value!: number;
 

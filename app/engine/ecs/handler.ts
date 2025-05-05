@@ -1,4 +1,3 @@
-import { link } from "fs";
 import { processTasks } from "./algorithm";
 import type {
   Command,
@@ -71,16 +70,16 @@ export function transmitMessages(
       } as ProceedMessage);
     } else {
       result.push({
-        type: "delete",
-        name: "DeleteMessage",
-        requestId,
-      } as DeleteMessage);
-      result.push({
         type: "create",
         name: "CreateTask",
         requestId,
         createdAt: elapsedTime + arrivedTimeInDelta,
       } as CreateTask);
+      result.push({
+        type: "delete",
+        name: "DeleteMessage",
+        requestId,
+      } as DeleteMessage);
     }
   }
   const throughput = transmissionResults.reduce(

@@ -13,3 +13,4 @@ export class Request extends ecsy.TagComponent {}
 export class Response extends ecsy.TagComponent {}
 export class Task extends ecsy.TagComponent {}
 export class Queued extends ecsy.TagComponent {}
+export class InTransit extends ecsy.TagComponent {}

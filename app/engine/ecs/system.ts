@@ -12,6 +12,7 @@ import {
   Queued,
   Response,
   ResponseLink,
+  InTransit,
 } from "./tag";
 import {
   Cores,
@@ -23,7 +24,6 @@ import {
   SourceId,
   TaskQueue,
   Throughput,
-  InTransit,
   TransmittedSize,
   CreatedAt,
   Duration,
@@ -85,7 +85,7 @@ export class TrafficGeneration extends ecsy.System {
             .addComponent(SourceId, { srcId: command.srcId })
             .addComponent(DestinationId, { dstId: command.dstId })
             .addComponent(MessageSize, { size: command.size })
-            .addComponent(InTransit, { value: false })
+            .addComponent(InTransit)
             .addComponent(TransmittedSize, { value: 0 });
       }
     });
@@ -176,22 +176,24 @@ export class RequestTransmission extends ecsy.System {
     this.commands.forEach((command) => {
       if (command.name === "ProceedMessage") {
         const cmd = command as ProceedMessage;
-        const message = this.queries.messages.results.find(
-          (message: ecsy.Entity) =>
-            message.getComponent(Identity)!.id === cmd.requestId
-        );
-        if (message === undefined) {
+        const message =
+          this.queries.messages.results.find(
+            (message: ecsy.Entity) =>
+              message.getComponent(Identity)!.id === cmd.requestId
+          ) ?? null;
+        if (message === null) {
           throw new NotFoundError("Message not found");
         }
         message.getMutableComponent(TransmittedSize)!.value +
           cmd.transmittedSize;
       } else if (command.name === "CreateTask") {
         const cmd = command as CreateTask;
-        const message = this.queries.messages.results.find(
-          (message: ecsy.Entity) =>
-            message.getComponent(Identity)!.id === cmd.requestId
-        );
-        if (message === undefined) {
+        const message =
+          this.queries.messages.results.find(
+            (message: ecsy.Entity) =>
+              message.getComponent(Identity)!.id === cmd.requestId
+          ) ?? null;
+        if (message === null) {
           throw new NotFoundError("Message not found");
         }
         this.world
@@ -211,20 +213,23 @@ export class RequestTransmission extends ecsy.System {
           .addComponent(Elapsed, { value: 0 });
       } else if (command.name === "DeleteMessage") {
         const cmd = command as DeleteMessage;
-        const message = this.queries.messages.results.find(
-          (message: ecsy.Entity) =>
-            message.getComponent(Identity)!.id === cmd.requestId
-        );
-        if (message === undefined) {
+        const message =
+          this.queries.messages.results.find(
+            (message: ecsy.Entity) =>
+              message.getComponent(Identity)!.id === cmd.requestId
+          ) ?? null;
+        if (message === null) {
           throw new NotFoundError("Message not found");
         }
         message.remove(true);
       } else if (command.name === "RecordThroughput") {
         const cmd = command as RecordThroughput;
-        const link = this.queries.links.results.find(
-          (link: ecsy.Entity) => link.getComponent(Identity)!.id === cmd.linkId
-        );
-        if (link === undefined) {
+        const link =
+          this.queries.links.results.find(
+            (link: ecsy.Entity) =>
+              link.getComponent(Identity)!.id === cmd.linkId
+          ) ?? null;
+        if (link === null) {
           throw new NotFoundError("Link not found");
         }
         link.getMutableComponent(Throughput)!.value = cmd.throughput;
@@ -384,7 +389,7 @@ export class TaskTerminating extends ecsy.System {
           .addComponent(SourceId, { srcId: cmd.srcId })
           .addComponent(DestinationId, { dstId: cmd.dstId })
           .addComponent(MessageSize, { size: cmd.size })
-          .addComponent(InTransit, { value: false })
+          .addComponent(InTransit)
           .addComponent(TransmittedSize, { value: 0 });
       }
     });

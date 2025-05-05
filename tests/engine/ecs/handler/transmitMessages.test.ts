@@ -41,15 +41,15 @@ describe("transmitMessages", () => {
 
     expect(commands).toEqual([
       {
-        type: "delete",
-        name: "DeleteMessage",
-        requestId: "req1",
-      },
-      {
         type: "create",
         name: "CreateTask",
         requestId: "req1",
         createdAt: 3.2,
+      },
+      {
+        type: "delete",
+        name: "DeleteMessage",
+        requestId: "req1",
       },
       {
         type: "update",
