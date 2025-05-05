@@ -40,11 +40,6 @@ describe("terminateTasks", () => {
 
     const expected = [
       {
-        type: "delete",
-        name: "DequeueTask",
-        requestId: "task-1",
-      },
-      {
         type: "create",
         name: "CreateResponse",
         requestId: "task-1",
@@ -55,7 +50,7 @@ describe("terminateTasks", () => {
       {
         type: "delete",
         name: "DequeueTask",
-        requestId: "task-2",
+        requestId: "task-1",
       },
       {
         type: "create",
@@ -64,6 +59,11 @@ describe("terminateTasks", () => {
         srcId: "server-1",
         dstId: "client-1",
         size: 40,
+      },
+      {
+        type: "delete",
+        name: "DequeueTask",
+        requestId: "task-2",
       },
     ];
 

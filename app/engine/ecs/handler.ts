@@ -117,11 +117,6 @@ export function terminateTasks(tasks: ITask[]): Command[] {
     .filter((task) => task.elapsed >= task.duration)
     .map((task) => [
       {
-        type: "delete",
-        name: "DequeueTask",
-        requestId: task.requestId,
-      } as DequeueTask,
-      {
         type: "create",
         name: "CreateResponse",
         requestId: task.requestId,
@@ -129,6 +124,11 @@ export function terminateTasks(tasks: ITask[]): Command[] {
         dstId: task.srcId,
         size: 40,
       } as CreateResponse,
+      {
+        type: "delete",
+        name: "DequeueTask",
+        requestId: task.requestId,
+      } as DequeueTask,
     ]);
   return commandPairs.flat();
 }

@@ -40,6 +40,7 @@ import type {
   DeleteMessage,
   ProceedTask,
   RecordThroughput,
+  DequeueTask,
 } from "./command";
 import {
   generateRequests,
@@ -370,14 +371,28 @@ export class TaskTerminating extends ecsy.System {
   commit(): void {
     this.commands.forEach((command) => {
       if (command.name === "DequeueTask") {
-        const cmd = command as DeleteMessage;
-        const task = this.queries.tasks.results.find(
-          (task: ecsy.Entity) =>
-            task.getComponent(Identity)!.id === cmd.requestId
-        );
-        if (task === undefined) {
+        const cmd = command as DequeueTask;
+        const task =
+          this.queries.tasks.results.find(
+            (task: ecsy.Entity) =>
+              task.getComponent(Identity)!.id === cmd.requestId
+          ) ?? null;
+        if (task === null) {
           throw new NotFoundError("Task not found");
         }
+        const server =
+          this.queries.servers.results.find(
+            (server: ecsy.Entity) =>
+              server.getComponent(Identity)!.id ===
+              task.getComponent(DestinationId)!.dstId
+          ) ?? null;
+        if (server === null) {
+          throw new NotFoundError("Server not found");
+        }
+        const taskQueue = server.getComponent(TaskQueue)!.tasks;
+        server.getMutableComponent(TaskQueue)!.tasks = taskQueue.filter(
+          (taskId: string) => taskId !== cmd.requestId
+        );
         task.remove(true);
       } else if (command.name === "CreateResponse") {
         const cmd = command as CreateRequest;
