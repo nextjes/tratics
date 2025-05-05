@@ -1,6 +1,5 @@
 import { Component, Types } from "ecsy";
 import type { Core } from "./infra";
-import type { IMessage, ITask } from "./types";
 
 export class PreEndTimeInDelta extends Component<PreEndTimeInDelta> {
   value!: number;
@@ -23,22 +22,6 @@ export class Cores extends Component<Cores> {
 
   static schema = {
     value: { type: Types.Array },
-  };
-}
-
-export class RequestQueue extends Component<RequestQueue> {
-  requests!: IMessage[];
-
-  static schema = {
-    requests: { type: Types.Array },
-  };
-}
-
-export class ResponseQueue extends Component<ResponseQueue> {
-  responses!: IMessage[];
-
-  static schema = {
-    responses: { type: Types.Array },
   };
 }
 
@@ -131,6 +114,22 @@ export class TransmittedSize extends Component<TransmittedSize> {
 }
 
 export class CreatedAt extends Component<CreatedAt> {
+  value!: number;
+
+  static schema = {
+    value: { type: Types.Number },
+  };
+}
+
+export class Duration extends Component<Duration> {
+  value!: number;
+
+  static schema = {
+    value: { type: Types.Number },
+  };
+}
+
+export class Elapsed extends Component<Elapsed> {
   value!: number;
 
   static schema = {

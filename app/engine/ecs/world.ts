@@ -14,6 +14,9 @@ import {
   MessageSize,
   InTransit,
   TransmittedSize,
+  CreatedAt,
+  Duration,
+  Elapsed,
 } from "./component";
 import {
   Client,
@@ -70,7 +73,10 @@ export function createWorld(): World {
     .registerComponent(DestinationId)
     .registerComponent(MessageSize)
     .registerComponent(InTransit)
-    .registerComponent(TransmittedSize);
+    .registerComponent(TransmittedSize)
+    .registerComponent(CreatedAt)
+    .registerComponent(Duration)
+    .registerComponent(Elapsed);
 
   world
     .registerSystem(TrafficGeneration)

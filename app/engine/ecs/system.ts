@@ -4,7 +4,6 @@ import {
   Server,
   Link,
   Client,
-  RequestResponseCycle,
   ClusterEntryPoint,
   Message,
   Request,
@@ -15,22 +14,21 @@ import {
 import {
   Cores,
   DestinationId,
-  EndPoints,
   Identity,
   InTransitMessages,
   LinkSpec,
   MessageSize,
-  PreEndTimeInDelta,
-  RequestQueue,
   SourceId,
   TaskQueue,
   Throughput,
   InTransit,
   TransmittedSize,
   CreatedAt,
+  Duration,
+  Elapsed,
 } from "./component";
 import type { Core } from "./infra";
-import type { IMessage } from "./types";
+import type { ICore, IMessage, ITask } from "./types";
 import { NotFoundError } from "../error";
 import type {
   Command,
@@ -38,8 +36,9 @@ import type {
   ProceedMessage,
   CreateTask,
   DeleteMessage,
+  ProceedTask,
 } from "./command";
-import { generateRequests, transmitMessages } from "./handler";
+import { generateRequests, proceedTasks, transmitMessages } from "./handler";
 import { estimateTransmissionAmount } from "./algorithm";
 
 export class TrafficGeneration extends System {
@@ -196,7 +195,11 @@ export class RequestTransmission extends System {
           .addComponent(DestinationId, {
             dstId: message.getComponent(DestinationId)!.dstId,
           })
-          .addComponent(CreatedAt, { value: cmd.createdAt });
+          .addComponent(CreatedAt, { value: cmd.createdAt })
+          .addComponent(Duration, {
+            value: message.getComponent(MessageSize)!.size * 100,
+          })
+          .addComponent(Elapsed, { value: 0 });
       } else if (command.name === "DeleteMessage") {
         const cmd = command as DeleteMessage;
         const message = this.queries.messages.results.find(
@@ -236,15 +239,69 @@ export class EnqueueTask extends System {
       }
 
       const taskQueue = server.getMutableComponent(TaskQueue)!;
-      task.addComponent(Queued, { value: true });
+      task.addComponent(Queued);
       taskQueue.tasks.push(taskId);
     });
   }
 }
 
 export class TaskProcessing extends System {
+  commands: Command[] = [];
+
+  static queries = {
+    servers: { components: [Server, TaskQueue, Cores] },
+    tasks: { components: [Task, Queued] },
+  };
+
   execute(delta: number, time: number): void {
-    // Implement the logic for task processing
+    const servers = this.queries.servers.results;
+    const tasks = this.queries.tasks.results;
+
+    servers.forEach((server: Entity) => {
+      const cores = server.getComponent(Cores)!.value.map((core: Core) => {
+        const task =
+          tasks.find(
+            (task: Entity) => task.getComponent(Identity)!.id === core.taskId
+          ) ?? null;
+        return { task: task } as ICore;
+      });
+      const taskQueue = server
+        .getComponent(TaskQueue)!
+        .tasks.map((taskId: string) => {
+          const task = tasks.find(
+            (task: Entity) => task.getComponent(Identity)!.id === taskId
+          );
+          if (task === undefined) {
+            throw new NotFoundError("Task not found");
+          }
+          return {
+            requestId: task.getComponent(Identity)!.id,
+            duration: task.getComponent(Duration)!.value,
+            elapsed: task.getComponent(Elapsed)!.value,
+            createdAt: task.getComponent(CreatedAt)!.value,
+          } as ITask;
+        });
+      const commands = proceedTasks(taskQueue, cores, delta, time);
+      this.commands.push(...commands);
+    });
+
+    this.commit();
+    this.commands = [];
+  }
+
+  commit(): void {
+    this.commands.forEach((command) => {
+      if (command.name === "ProceedTask") {
+        const cmd = command as ProceedTask;
+        const task = this.queries.tasks.results.find(
+          (task: Entity) => task.getComponent(Identity)!.id === cmd.requestId
+        );
+        if (task === undefined) {
+          throw new NotFoundError("Task not found");
+        }
+        task.getMutableComponent(Elapsed)!.value += cmd.proceeded;
+      }
+    });
   }
 }
 
