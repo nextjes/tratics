@@ -377,6 +377,37 @@ export class TaskTerminating extends System {
   }
 }
 
+export class ResponseSender extends System {
+  static queries = {
+    messages: { components: [Message, Not(InTransit)] },
+    links: { components: [Link] },
+  };
+
+  execute(delta: number, time: number): void {
+    const messages = this.queries.messages.results;
+    const links = this.queries.links.results;
+
+    messages.forEach((message: Entity) => {
+      const messageId = message.getComponent(Identity)!.id;
+      const srcId = message.getComponent(SourceId)!.srcId;
+      const dstId = message.getComponent(DestinationId)!.dstId;
+
+      const link = links.find(
+        (link: Entity) =>
+          link.getComponent(LinkSpec)!.srcId === srcId &&
+          link.getComponent(LinkSpec)!.dstId === dstId
+      );
+
+      if (link === undefined) {
+        throw new NotFoundError("Link not found");
+      }
+
+      const inTransitMessages = link.getMutableComponent(InTransitMessages)!;
+      inTransitMessages.messages.push(messageId);
+    });
+  }
+}
+
 export class ResponseTransmission extends System {
   execute(delta: number, time: number): void {
     // Implement the logic for response transmission
