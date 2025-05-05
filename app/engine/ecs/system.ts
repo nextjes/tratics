@@ -222,12 +222,12 @@ export class RequestTransmission extends System {
       } else if (command.name === "RecordThroughput") {
         const cmd = command as RecordThroughput;
         const link = this.queries.links.results.find(
-          (link: Entity) => link.getComponent(Identity)!.id === cmd.requestId
+          (link: Entity) => link.getComponent(Identity)!.id === cmd.linkId
         );
         if (link === undefined) {
           throw new NotFoundError("Link not found");
         }
-        link.getMutableComponent(Throughput)!.value += cmd.transmittedSize;
+        link.getMutableComponent(Throughput)!.value = cmd.throughput;
       }
     });
     this.commands = [];
