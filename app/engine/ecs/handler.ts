@@ -1,3 +1,4 @@
+import { link } from "fs";
 import { processTasks } from "./algorithm";
 import type {
   Command,
@@ -8,6 +9,7 @@ import type {
   ProceedTask,
   DequeueTask,
   CreateResponse,
+  RecordThroughput,
 } from "./command";
 import type { GenerateRequestsProps } from "./props";
 import type { ICore, IMessage, ITask } from "./types";
@@ -46,6 +48,7 @@ export function transmitMessages(
     transmittedSize: number;
     arrivedTimeInDelta: number | null;
   }[],
+  linkId: string,
   bandwidth: number,
   messages: IMessage[],
   delta: number,
@@ -80,7 +83,16 @@ export function transmitMessages(
       } as CreateTask);
     }
   }
-
+  const throughput = transmissionResults.reduce(
+    (acc, { transmittedSize }) => acc + transmittedSize,
+    0
+  );
+  result.push({
+    type: "update",
+    name: "RecordThroughput",
+    linkId: linkId,
+    throughput: throughput / (delta / 1000),
+  } as RecordThroughput);
   return result;
 }
 

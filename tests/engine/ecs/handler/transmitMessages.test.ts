@@ -22,6 +22,7 @@ describe("transmitMessages", () => {
         },
       ];
     };
+    const linkId = "link1";
     const bandwidth = 1000;
     const messages: IMessage[] = [
       { requestId: "req1", size: 200, transmittedSize: 0 },
@@ -31,6 +32,7 @@ describe("transmitMessages", () => {
     const elapsedTime = 3;
     const commands = transmitMessages(
       algorithm,
+      linkId,
       bandwidth,
       messages,
       delta,
@@ -54,6 +56,12 @@ describe("transmitMessages", () => {
         name: "ProceedMessage",
         requestId: "req2",
         transmittedSize: 100,
+      },
+      {
+        type: "update",
+        name: "RecordThroughput",
+        linkId: "link1",
+        throughput: 300000,
       },
     ]);
   });

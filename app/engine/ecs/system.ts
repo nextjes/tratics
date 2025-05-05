@@ -39,6 +39,7 @@ import type {
   CreateTask,
   DeleteMessage,
   ProceedTask,
+  RecordThroughput,
 } from "./command";
 import {
   generateRequests,
@@ -159,6 +160,7 @@ export class RequestTransmission extends System {
 
       const commands = transmitMessages(
         estimateTransmissionAmount,
+        link.getComponent(Identity)!.id,
         link.getComponent(LinkSpec)!.bandwidth,
         msgs,
         delta,
@@ -217,6 +219,15 @@ export class RequestTransmission extends System {
           throw new NotFoundError("Message not found");
         }
         message.remove(true);
+      } else if (command.name === "RecordThroughput") {
+        const cmd = command as RecordThroughput;
+        const link = this.queries.links.results.find(
+          (link: Entity) => link.getComponent(Identity)!.id === cmd.requestId
+        );
+        if (link === undefined) {
+          throw new NotFoundError("Link not found");
+        }
+        link.getMutableComponent(Throughput)!.value += cmd.transmittedSize;
       }
     });
     this.commands = [];
@@ -445,6 +456,7 @@ export class ResponseTransmission extends System {
 
       const commands = transmitMessages(
         estimateTransmissionAmount,
+        link.getComponent(Identity)!.id,
         link.getComponent(LinkSpec)!.bandwidth,
         msgs,
         delta,

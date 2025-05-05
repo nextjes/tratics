@@ -6,7 +6,8 @@ export type CommandName =
   | "CreateTask"
   | "ProceedTask"
   | "DequeueTask"
-  | "CreateResponse";
+  | "CreateResponse"
+  | "RecordThroughput";
 
 export interface Command {
   type: CommandType;
@@ -48,4 +49,9 @@ export interface CreateResponse extends Command {
   srcId: string;
   dstId: string;
   size: number;
+}
+
+export interface RecordThroughput extends Command {
+  linkId: string;
+  throughput: number; // in bytes per second
 }

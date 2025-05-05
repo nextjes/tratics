@@ -101,6 +101,7 @@ export function createWorld(): World {
   world
     .createEntity()
     .addComponent(Link)
+    .addComponent(RequestLink)
     .addComponent(Identity, { id: "link-1" })
     .addComponent(Throughput, { value: 0 })
     .addComponent(InTransitMessages, { messages: [] })
@@ -110,11 +111,13 @@ export function createWorld(): World {
       bandwidth: 1000,
       latency: 10,
       reliability: 0.99,
-    });
+    })
+    .addComponent(Throughput, { value: 0 });
 
   world
     .createEntity()
     .addComponent(Link)
+    .addComponent(ResponseLink)
     .addComponent(Identity, { id: "link-2" })
     .addComponent(Throughput, { value: 0 })
     .addComponent(InTransitMessages, { messages: [] })
@@ -124,6 +127,7 @@ export function createWorld(): World {
       bandwidth: 1000,
       latency: 10,
       reliability: 0.99,
-    });
+    })
+    .addComponent(Throughput, { value: 0 });
   return world;
 }
