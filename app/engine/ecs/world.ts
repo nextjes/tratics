@@ -60,8 +60,6 @@ export function createWorld(): World {
   world
     .registerComponent(Identity)
     .registerComponent(Cores)
-    .registerComponent(RequestQueue)
-    .registerComponent(ResponseQueue)
     .registerComponent(TaskQueue)
     .registerComponent(LinkSpec)
     .registerComponent(Throughput)
@@ -88,9 +86,7 @@ export function createWorld(): World {
   world
     .createEntity()
     .addComponent(Client)
-    .addComponent(Identity, { id: "client-1" })
-    .addComponent(RequestQueue, { requests: [] })
-    .addComponent(ResponseQueue, { responses: [] });
+    .addComponent(Identity, { id: "client-1" });
 
   world
     .createEntity()
