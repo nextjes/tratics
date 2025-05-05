@@ -3,7 +3,8 @@ export type CommandName =
   | "CreateRequest"
   | "ProceedMessage"
   | "DeleteMessage"
-  | "CreateTask";
+  | "CreateTask"
+  | "ProceedTask";
 
 export interface Command {
   type: CommandType;
@@ -29,4 +30,9 @@ export interface DeleteMessage extends Command {
 export interface CreateTask extends Command {
   requestId: string;
   createdAt: number;
+}
+
+export interface ProceedTask extends Command {
+  requestId: string;
+  proceeded: number;
 }

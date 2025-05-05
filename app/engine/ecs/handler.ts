@@ -1,12 +1,14 @@
+import { processTasks } from "./algorithm";
 import type {
   Command,
   CreateRequest,
   ProceedMessage,
   CreateTask,
   DeleteMessage,
+  ProceedTask,
 } from "./command";
 import type { GenerateRequestsProps } from "./props";
-import type { IMessage } from "./types";
+import type { ICore, IMessage, ITask } from "./types";
 
 export function generateRequests({
   algorithm,
@@ -78,4 +80,21 @@ export function transmitMessages(
   }
 
   return result;
+}
+
+export function proceedTasks(
+  tasks: ITask[],
+  cores: ICore[],
+  delta: number,
+  elapsedTime: number
+): ProceedTask[] {
+  return processTasks(tasks, cores, delta, elapsedTime).map(
+    ({ requestId, proceeded }) =>
+      ({
+        type: "update",
+        name: "ProceedTask",
+        requestId,
+        proceeded,
+      } as ProceedTask)
+  );
 }
