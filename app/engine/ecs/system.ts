@@ -209,7 +209,7 @@ export class RequestTransmission extends ecsy.System {
           })
           .addComponent(CreatedAt, { value: cmd.createdAt })
           .addComponent(Duration, {
-            value: message.getComponent(MessageSize)!.size * 100,
+            value: message.getComponent(MessageSize)!.size,
           })
           .addComponent(Elapsed, { value: 0 });
       } else if (command.name === "DeleteMessage") {
