@@ -6,6 +6,8 @@ import type {
   CreateTask,
   DeleteMessage,
   ProceedTask,
+  DequeueTask,
+  CreateResponse,
 } from "./command";
 import type { GenerateRequestsProps } from "./props";
 import type { ICore, IMessage, ITask } from "./types";
@@ -97,4 +99,22 @@ export function proceedTasks(
         proceeded,
       } as ProceedTask)
   );
+}
+
+export function terminateTasks(tasks: ITask[]): Command[] {
+  const commandPairs = tasks
+    .filter((task) => task.elapsed >= task.duration)
+    .map((task) => [
+      {
+        type: "delete",
+        name: "DequeueTask",
+        requestId: task.requestId,
+      } as DequeueTask,
+      {
+        type: "create",
+        name: "CreateResponse",
+        requestId: task.requestId,
+      } as CreateResponse,
+    ]);
+  return commandPairs.flat();
 }

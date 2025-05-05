@@ -1,5 +1,3 @@
-import type { MessageStatus } from "./status";
-
 export interface IMessage {
   requestId: string;
   size: number;

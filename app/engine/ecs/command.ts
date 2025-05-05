@@ -4,7 +4,9 @@ export type CommandName =
   | "ProceedMessage"
   | "DeleteMessage"
   | "CreateTask"
-  | "ProceedTask";
+  | "ProceedTask"
+  | "DequeueTask"
+  | "CreateResponse";
 
 export interface Command {
   type: CommandType;
@@ -35,4 +37,15 @@ export interface CreateTask extends Command {
 export interface ProceedTask extends Command {
   requestId: string;
   proceeded: number;
+}
+
+export interface DequeueTask extends Command {
+  requestId: string;
+}
+
+export interface CreateResponse extends Command {
+  requestId: string;
+  srcId: string;
+  dstId: string;
+  size: number;
 }
