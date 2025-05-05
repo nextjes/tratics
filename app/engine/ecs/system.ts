@@ -41,6 +41,8 @@ import type {
   ProceedTask,
   RecordThroughput,
   DequeueTask,
+  AssignTask,
+  ReleaseCore,
 } from "./command";
 import {
   generateRequests,
@@ -288,7 +290,20 @@ export class TaskProcessing extends ecsy.System {
             (task: ecsy.Entity) =>
               task.getComponent(Identity)!.id === core.taskId
           ) ?? null;
-        return { task: task } as ICore;
+        const assignedTask =
+          task === null
+            ? null
+            : {
+                requestId: task.getComponent(Identity)!.id,
+                srcId: task.getComponent(SourceId)!.srcId,
+                dstId: task.getComponent(DestinationId)!.dstId,
+                duration: task.getComponent(Duration)!.value,
+                elapsed: task.getComponent(Elapsed)!.value,
+                createdAt: task.getComponent(CreatedAt)!.value,
+              };
+        return {
+          task: assignedTask,
+        } as ICore;
       });
       const taskQueue = server
         .getComponent(TaskQueue)!
@@ -301,6 +316,8 @@ export class TaskProcessing extends ecsy.System {
           }
           return {
             requestId: task.getComponent(Identity)!.id,
+            srcId: task.getComponent(SourceId)!.srcId,
+            dstId: task.getComponent(DestinationId)!.dstId,
             duration: task.getComponent(Duration)!.value,
             elapsed: task.getComponent(Elapsed)!.value,
             createdAt: task.getComponent(CreatedAt)!.value,
@@ -317,14 +334,38 @@ export class TaskProcessing extends ecsy.System {
     this.commands.forEach((command) => {
       if (command.name === "ProceedTask") {
         const cmd = command as ProceedTask;
-        const task = this.queries.tasks.results.find(
-          (task: ecsy.Entity) =>
-            task.getComponent(Identity)!.id === cmd.requestId
-        );
-        if (task === undefined) {
+        const task =
+          this.queries.tasks.results.find(
+            (task: ecsy.Entity) =>
+              task.getComponent(Identity)!.id === cmd.requestId
+          ) ?? null;
+        if (task === null) {
           throw new NotFoundError("Task not found");
         }
         task.getMutableComponent(Elapsed)!.value += cmd.proceeded;
+      } else if (command.name === "AssignTask") {
+        const cmd = command as AssignTask;
+        const server =
+          this.queries.servers.results.find(
+            (server: ecsy.Entity) =>
+              server.getComponent(Identity)!.id === cmd.serverId
+          ) ?? null;
+        if (server === null) {
+          throw new NotFoundError("Server not found");
+        }
+        server.getMutableComponent(Cores)!.value[cmd.coreIndex].taskId =
+          cmd.requestId;
+      } else if (command.name === "ReleaseCore") {
+        const cmd = command as ReleaseCore;
+        const server =
+          this.queries.servers.results.find(
+            (server: ecsy.Entity) =>
+              server.getComponent(Identity)!.id === cmd.serverId
+          ) ?? null;
+        if (server === null) {
+          throw new NotFoundError("Server not found");
+        }
+        server.getMutableComponent(Cores)!.value[cmd.coreIndex].taskId = null;
       }
     });
     this.commands = [];

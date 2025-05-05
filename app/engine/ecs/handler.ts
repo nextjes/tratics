@@ -102,7 +102,6 @@ export function proceedTasks(
   delta: number,
   elapsedTime: number
 ): Command[] {
-  const serverId = tasks.map((task) => task.dstId)[0];
   const result: Command[] = [];
   const remainingDeltaPerCore = cores.map(() => delta);
 
@@ -119,6 +118,12 @@ export function proceedTasks(
           time > taskRemaingTime ? time - taskRemaingTime : 0;
         if (remainingDeltaPerCore[i] > 0) {
           cores[i].task = null;
+          result.push({
+            type: "update",
+            name: "ReleaseCore",
+            serverId: task!.dstId,
+            coreIndex: i,
+          } as ReleaseCore);
         }
         result.push({
           type: "update",
@@ -142,8 +147,21 @@ export function proceedTasks(
           remainingDeltaTime > taskRemaingTime
             ? remainingDeltaTime - taskRemaingTime
             : 0;
+        result.push({
+          type: "update",
+          name: "AssignTask",
+          requestId: task.requestId,
+          serverId: task.dstId,
+          coreIndex: i,
+        } as AssignTask);
         if (remainingDeltaPerCore[i] > 0) {
           cores[i].task = null;
+          result.push({
+            type: "update",
+            name: "ReleaseCore",
+            serverId: task.dstId,
+            coreIndex: i,
+          } as ReleaseCore);
         }
 
         result.push({
@@ -157,21 +175,14 @@ export function proceedTasks(
   }
 
   cores.forEach((core, i) => {
-    if (core.task !== null) {
-      result.push({
-        type: "update",
-        name: "AssignTask",
-        requestId: core.task.requestId,
-        serverId: serverId,
-        coreIndex: i,
-      } as AssignTask);
-    } else {
+    if (core.task !== null && core.task.elapsed === core.task.duration) {
       result.push({
         type: "update",
         name: "ReleaseCore",
-        serverId: serverId,
+        serverId: core.task.dstId,
         coreIndex: i,
       } as ReleaseCore);
+      cores[i].task = null;
     }
   });
 
