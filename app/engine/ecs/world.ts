@@ -4,8 +4,6 @@ import {
   EndPoints,
   Identity,
   LinkSpec,
-  RequestQueue,
-  ResponseQueue,
   TaskQueue,
   Throughput,
   InTransitMessages,
