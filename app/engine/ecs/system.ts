@@ -11,6 +11,7 @@ import {
   Task,
   Queued,
   Response,
+  ResponseLink,
 } from "./tag";
 import {
   Cores,
@@ -292,7 +293,6 @@ export class TaskProcessing extends System {
     });
 
     this.commit();
-    this.commands = [];
   }
 
   commit(): void {
@@ -308,6 +308,7 @@ export class TaskProcessing extends System {
         task.getMutableComponent(Elapsed)!.value += cmd.proceeded;
       }
     });
+    this.commands = [];
   }
 }
 
@@ -346,7 +347,6 @@ export class TaskTerminating extends System {
     });
 
     this.commit();
-    this.commands = [];
   }
 
   commit(): void {
@@ -374,6 +374,7 @@ export class TaskTerminating extends System {
           .addComponent(TransmittedSize, { value: 0 });
       }
     });
+    this.commands = [];
   }
 }
 
@@ -409,20 +410,78 @@ export class ResponseSender extends System {
 }
 
 export class ResponseTransmission extends System {
-  execute(delta: number, time: number): void {
-    // Implement the logic for response transmission
-  }
-}
+  commands: Command[] = [];
 
-export class ResponseReception extends System {
-  execute(delta: number, time: number): void {
-    // Implement the logic for response reception
-  }
-}
+  static queries = {
+    messages: { components: [Message, Response, InTransit] },
+    links: { components: [Link, ResponseLink] },
+  };
 
-export class CleanPreEndTimeInDelta extends System {
   execute(delta: number, time: number): void {
-    // Implement the logic for cleaning remaining delta
+    const links = this.queries.links.results;
+    const messages = this.queries.messages.results;
+
+    links.forEach((link: Entity) => {
+      const msgs: IMessage[] = messages
+        .filter((message: Entity) => {
+          const srcId = message.getComponent(SourceId)!.srcId;
+          const dstId = message.getComponent(DestinationId)!.dstId;
+          return (
+            link.getComponent(LinkSpec)!.srcId === srcId &&
+            link.getComponent(LinkSpec)!.dstId === dstId
+          );
+        })
+        .map((message: Entity) => {
+          const requestId = message.getComponent(Identity)!.id;
+          const size = message.getComponent(MessageSize)!.size;
+          const transmittedSize = message.getComponent(TransmittedSize)!.value;
+
+          return {
+            requestId,
+            size,
+            transmittedSize,
+          };
+        });
+
+      const commands = transmitMessages(
+        estimateTransmissionAmount,
+        link.getComponent(LinkSpec)!.bandwidth,
+        msgs,
+        delta,
+        time
+      );
+      this.commands.push(...commands);
+    });
+
+    this.commit();
+  }
+
+  commit(): void {
+    this.commands.forEach((command) => {
+      if (command.name === "ProceedMessage") {
+        const cmd = command as ProceedMessage;
+        const message = this.queries.messages.results.find(
+          (message: Entity) =>
+            message.getComponent(Identity)!.id === cmd.requestId
+        );
+        if (message === undefined) {
+          throw new NotFoundError("Message not found");
+        }
+        message.getMutableComponent(TransmittedSize)!.value +
+          cmd.transmittedSize;
+      } else if (command.name === "DeleteMessage") {
+        const cmd = command as DeleteMessage;
+        const message = this.queries.messages.results.find(
+          (message: Entity) =>
+            message.getComponent(Identity)!.id === cmd.requestId
+        );
+        if (message === undefined) {
+          throw new NotFoundError("Message not found");
+        }
+        message.remove(true);
+      }
+    });
+    this.commands = [];
   }
 }
 
