@@ -7,7 +7,9 @@ export type CommandName =
   | "ProceedTask"
   | "DequeueTask"
   | "CreateResponse"
-  | "RecordThroughput";
+  | "RecordThroughput"
+  | "AssignTask"
+  | "ReleaseCore";
 
 export interface Command {
   type: CommandType;
@@ -35,9 +37,20 @@ export interface CreateTask extends Command {
   createdAt: number;
 }
 
+export interface AssignTask extends Command {
+  requestId: string;
+  serverId: string;
+  coreIndex: number;
+}
+
 export interface ProceedTask extends Command {
   requestId: string;
   proceeded: number;
+}
+
+export interface ReleaseCore extends Command {
+  serverId: string;
+  coreIndex: number;
 }
 
 export interface DequeueTask extends Command {

@@ -1,4 +1,3 @@
-import { processTasks } from "./algorithm";
 import type {
   Command,
   CreateRequest,
@@ -9,6 +8,8 @@ import type {
   DequeueTask,
   CreateResponse,
   RecordThroughput,
+  AssignTask,
+  ReleaseCore,
 } from "./command";
 import type { GenerateRequestsProps } from "./props";
 import type { ICore, IMessage, ITask } from "./types";
@@ -100,16 +101,81 @@ export function proceedTasks(
   cores: ICore[],
   delta: number,
   elapsedTime: number
-): ProceedTask[] {
-  return processTasks(tasks, cores, delta, elapsedTime).map(
-    ({ requestId, proceeded }) =>
-      ({
+): Command[] {
+  const serverId = tasks.map((task) => task.dstId)[0];
+  const result: Command[] = [];
+  const remainingDeltaPerCore = cores.map(() => delta);
+
+  while (remainingDeltaPerCore.some((time) => time > 0) && tasks.length > 0) {
+    for (let i = 0; i < cores.length; i++) {
+      const time = remainingDeltaPerCore[i];
+
+      if (time === 0) continue;
+
+      if (cores[i].task !== null) {
+        const task = cores[i].task;
+        const taskRemaingTime = task!.duration - task!.elapsed;
+        remainingDeltaPerCore[i] =
+          time > taskRemaingTime ? time - taskRemaingTime : 0;
+        if (remainingDeltaPerCore[i] > 0) {
+          cores[i].task = null;
+        }
+        result.push({
+          type: "update",
+          name: "ProceedTask",
+          requestId: task!.requestId,
+          proceeded: Math.min(time, taskRemaingTime),
+        } as ProceedTask);
+      } else {
+        if (tasks.length === 0) continue;
+
+        const task = tasks.shift()!;
+        cores[i].task = task;
+
+        const taskRemaingTime = task.duration - task.elapsed;
+        const TaskStartTimeInDelta =
+          Math.max(elapsedTime, task.createdAt) - elapsedTime;
+        const CoreStartTimeInDelta = delta - time;
+        const remainingDeltaTime =
+          delta - Math.max(TaskStartTimeInDelta, CoreStartTimeInDelta);
+        remainingDeltaPerCore[i] =
+          remainingDeltaTime > taskRemaingTime
+            ? remainingDeltaTime - taskRemaingTime
+            : 0;
+        if (remainingDeltaPerCore[i] > 0) {
+          cores[i].task = null;
+        }
+
+        result.push({
+          type: "update",
+          name: "ProceedTask",
+          requestId: task.requestId,
+          proceeded: Math.min(remainingDeltaTime, taskRemaingTime),
+        } as ProceedTask);
+      }
+    }
+  }
+
+  cores.forEach((core, i) => {
+    if (core.task !== null) {
+      result.push({
         type: "update",
-        name: "ProceedTask",
-        requestId,
-        proceeded,
-      } as ProceedTask)
-  );
+        name: "AssignTask",
+        requestId: core.task.requestId,
+        serverId: serverId,
+        coreIndex: i,
+      } as AssignTask);
+    } else {
+      result.push({
+        type: "update",
+        name: "ReleaseCore",
+        serverId: serverId,
+        coreIndex: i,
+      } as ReleaseCore);
+    }
+  });
+
+  return result;
 }
 
 export function terminateTasks(tasks: ITask[]): Command[] {
