@@ -1,4 +1,4 @@
-import { Entity, Not, System } from "ecsy";
+import * as ecsy from "ecsy";
 import { useMemoryState } from "~/store/memory";
 import {
   Server,
@@ -49,7 +49,7 @@ import {
 } from "./handler";
 import { estimateTransmissionAmount } from "./algorithm";
 
-export class TrafficGeneration extends System {
+export class TrafficGeneration extends ecsy.System {
   commands: CreateRequest[] = [];
 
   static queries = {
@@ -63,7 +63,7 @@ export class TrafficGeneration extends System {
     const commands = generateRequests({
       algorithm: () => Math.random() > 0.5,
       clientIds: clients.map(
-        (client: Entity) => client.getComponent(Identity)!.id
+        (client: ecsy.Entity) => client.getComponent(Identity)!.id
       ),
       entryPointId: clusterEntryPoint.getComponent(Identity)!.id,
       requestIdFactory: () => Math.random().toString(36).substring(2, 15),
@@ -93,9 +93,9 @@ export class TrafficGeneration extends System {
   }
 }
 
-export class RequestSender extends System {
+export class RequestSender extends ecsy.System {
   static queries = {
-    messages: { components: [Message, Not(InTransit)] },
+    messages: { components: [Message, ecsy.Not(InTransit)] },
     links: { components: [Link] },
   };
 
@@ -103,13 +103,13 @@ export class RequestSender extends System {
     const messages = this.queries.messages.results;
     const links = this.queries.links.results;
 
-    messages.forEach((message: Entity) => {
+    messages.forEach((message: ecsy.Entity) => {
       const messageId = message.getComponent(Identity)!.id;
       const srcId = message.getComponent(SourceId)!.srcId;
       const dstId = message.getComponent(DestinationId)!.dstId;
 
       const link = links.find(
-        (link: Entity) =>
+        (link: ecsy.Entity) =>
           link.getComponent(LinkSpec)!.srcId === srcId &&
           link.getComponent(LinkSpec)!.dstId === dstId
       );
@@ -124,7 +124,7 @@ export class RequestSender extends System {
   }
 }
 
-export class RequestTransmission extends System {
+export class RequestTransmission extends ecsy.System {
   commands: Command[] = [];
 
   static queries = {
@@ -136,9 +136,9 @@ export class RequestTransmission extends System {
     const links = this.queries.links.results;
     const messages = this.queries.messages.results;
 
-    links.forEach((link: Entity) => {
+    links.forEach((link: ecsy.Entity) => {
       const msgs: IMessage[] = messages
-        .filter((message: Entity) => {
+        .filter((message: ecsy.Entity) => {
           const srcId = message.getComponent(SourceId)!.srcId;
           const dstId = message.getComponent(DestinationId)!.dstId;
           return (
@@ -146,7 +146,7 @@ export class RequestTransmission extends System {
             link.getComponent(LinkSpec)!.dstId === dstId
           );
         })
-        .map((message: Entity) => {
+        .map((message: ecsy.Entity) => {
           const requestId = message.getComponent(Identity)!.id;
           const size = message.getComponent(MessageSize)!.size;
           const transmittedSize = message.getComponent(TransmittedSize)!.value;
@@ -177,7 +177,7 @@ export class RequestTransmission extends System {
       if (command.name === "ProceedMessage") {
         const cmd = command as ProceedMessage;
         const message = this.queries.messages.results.find(
-          (message: Entity) =>
+          (message: ecsy.Entity) =>
             message.getComponent(Identity)!.id === cmd.requestId
         );
         if (message === undefined) {
@@ -188,7 +188,7 @@ export class RequestTransmission extends System {
       } else if (command.name === "CreateTask") {
         const cmd = command as CreateTask;
         const message = this.queries.messages.results.find(
-          (message: Entity) =>
+          (message: ecsy.Entity) =>
             message.getComponent(Identity)!.id === cmd.requestId
         );
         if (message === undefined) {
@@ -212,7 +212,7 @@ export class RequestTransmission extends System {
       } else if (command.name === "DeleteMessage") {
         const cmd = command as DeleteMessage;
         const message = this.queries.messages.results.find(
-          (message: Entity) =>
+          (message: ecsy.Entity) =>
             message.getComponent(Identity)!.id === cmd.requestId
         );
         if (message === undefined) {
@@ -222,7 +222,7 @@ export class RequestTransmission extends System {
       } else if (command.name === "RecordThroughput") {
         const cmd = command as RecordThroughput;
         const link = this.queries.links.results.find(
-          (link: Entity) => link.getComponent(Identity)!.id === cmd.linkId
+          (link: ecsy.Entity) => link.getComponent(Identity)!.id === cmd.linkId
         );
         if (link === undefined) {
           throw new NotFoundError("Link not found");
@@ -234,22 +234,22 @@ export class RequestTransmission extends System {
   }
 }
 
-export class EnqueueTask extends System {
+export class EnqueueTask extends ecsy.System {
   static queries = {
     servers: { components: [Server, TaskQueue] },
-    tasks: { components: [Task, Not(Queued)] },
+    tasks: { components: [Task, ecsy.Not(Queued)] },
   };
 
   execute(delta: number, time: number): void {
     const servers = this.queries.servers.results;
     const tasks = this.queries.tasks.results;
 
-    tasks.forEach((task: Entity) => {
+    tasks.forEach((task: ecsy.Entity) => {
       const taskId = task.getComponent(Identity)!.id;
       const dstId = task.getComponent(DestinationId)!.dstId;
 
       const server = servers.find(
-        (server: Entity) => server.getComponent(Identity)!.id === dstId
+        (server: ecsy.Entity) => server.getComponent(Identity)!.id === dstId
       );
 
       if (server === undefined) {
@@ -263,7 +263,7 @@ export class EnqueueTask extends System {
   }
 }
 
-export class TaskProcessing extends System {
+export class TaskProcessing extends ecsy.System {
   commands: Command[] = [];
 
   static queries = {
@@ -275,11 +275,12 @@ export class TaskProcessing extends System {
     const servers = this.queries.servers.results;
     const tasks = this.queries.tasks.results;
 
-    servers.forEach((server: Entity) => {
+    servers.forEach((server: ecsy.Entity) => {
       const cores = server.getComponent(Cores)!.value.map((core: Core) => {
         const task =
           tasks.find(
-            (task: Entity) => task.getComponent(Identity)!.id === core.taskId
+            (task: ecsy.Entity) =>
+              task.getComponent(Identity)!.id === core.taskId
           ) ?? null;
         return { task: task } as ICore;
       });
@@ -287,7 +288,7 @@ export class TaskProcessing extends System {
         .getComponent(TaskQueue)!
         .tasks.map((taskId: string) => {
           const task = tasks.find(
-            (task: Entity) => task.getComponent(Identity)!.id === taskId
+            (task: ecsy.Entity) => task.getComponent(Identity)!.id === taskId
           );
           if (task === undefined) {
             throw new NotFoundError("Task not found");
@@ -311,7 +312,8 @@ export class TaskProcessing extends System {
       if (command.name === "ProceedTask") {
         const cmd = command as ProceedTask;
         const task = this.queries.tasks.results.find(
-          (task: Entity) => task.getComponent(Identity)!.id === cmd.requestId
+          (task: ecsy.Entity) =>
+            task.getComponent(Identity)!.id === cmd.requestId
         );
         if (task === undefined) {
           throw new NotFoundError("Task not found");
@@ -323,7 +325,7 @@ export class TaskProcessing extends System {
   }
 }
 
-export class TaskTerminating extends System {
+export class TaskTerminating extends ecsy.System {
   commands: Command[] = [];
 
   static queries = {
@@ -334,12 +336,12 @@ export class TaskTerminating extends System {
   execute(delta: number, time: number): void {
     const servers = this.queries.servers.results;
 
-    servers.forEach((server: Entity) => {
+    servers.forEach((server: ecsy.Entity) => {
       const taskQueue = server
         .getComponent(TaskQueue)!
         .tasks.map((taskId: string) => {
           const task = this.queries.tasks.results.find(
-            (task: Entity) => task.getComponent(Identity)!.id === taskId
+            (task: ecsy.Entity) => task.getComponent(Identity)!.id === taskId
           );
           if (task === undefined) {
             throw new NotFoundError("Task not found");
@@ -365,7 +367,8 @@ export class TaskTerminating extends System {
       if (command.name === "DequeueTask") {
         const cmd = command as DeleteMessage;
         const task = this.queries.tasks.results.find(
-          (task: Entity) => task.getComponent(Identity)!.id === cmd.requestId
+          (task: ecsy.Entity) =>
+            task.getComponent(Identity)!.id === cmd.requestId
         );
         if (task === undefined) {
           throw new NotFoundError("Task not found");
@@ -389,9 +392,9 @@ export class TaskTerminating extends System {
   }
 }
 
-export class ResponseSender extends System {
+export class ResponseSender extends ecsy.System {
   static queries = {
-    messages: { components: [Message, Not(InTransit)] },
+    messages: { components: [Message, ecsy.Not(InTransit)] },
     links: { components: [Link] },
   };
 
@@ -399,13 +402,13 @@ export class ResponseSender extends System {
     const messages = this.queries.messages.results;
     const links = this.queries.links.results;
 
-    messages.forEach((message: Entity) => {
+    messages.forEach((message: ecsy.Entity) => {
       const messageId = message.getComponent(Identity)!.id;
       const srcId = message.getComponent(SourceId)!.srcId;
       const dstId = message.getComponent(DestinationId)!.dstId;
 
       const link = links.find(
-        (link: Entity) =>
+        (link: ecsy.Entity) =>
           link.getComponent(LinkSpec)!.srcId === srcId &&
           link.getComponent(LinkSpec)!.dstId === dstId
       );
@@ -420,7 +423,7 @@ export class ResponseSender extends System {
   }
 }
 
-export class ResponseTransmission extends System {
+export class ResponseTransmission extends ecsy.System {
   commands: Command[] = [];
 
   static queries = {
@@ -432,9 +435,9 @@ export class ResponseTransmission extends System {
     const links = this.queries.links.results;
     const messages = this.queries.messages.results;
 
-    links.forEach((link: Entity) => {
+    links.forEach((link: ecsy.Entity) => {
       const msgs: IMessage[] = messages
-        .filter((message: Entity) => {
+        .filter((message: ecsy.Entity) => {
           const srcId = message.getComponent(SourceId)!.srcId;
           const dstId = message.getComponent(DestinationId)!.dstId;
           return (
@@ -442,7 +445,7 @@ export class ResponseTransmission extends System {
             link.getComponent(LinkSpec)!.dstId === dstId
           );
         })
-        .map((message: Entity) => {
+        .map((message: ecsy.Entity) => {
           const requestId = message.getComponent(Identity)!.id;
           const size = message.getComponent(MessageSize)!.size;
           const transmittedSize = message.getComponent(TransmittedSize)!.value;
@@ -473,7 +476,7 @@ export class ResponseTransmission extends System {
       if (command.name === "ProceedMessage") {
         const cmd = command as ProceedMessage;
         const message = this.queries.messages.results.find(
-          (message: Entity) =>
+          (message: ecsy.Entity) =>
             message.getComponent(Identity)!.id === cmd.requestId
         );
         if (message === undefined) {
@@ -484,7 +487,7 @@ export class ResponseTransmission extends System {
       } else if (command.name === "DeleteMessage") {
         const cmd = command as DeleteMessage;
         const message = this.queries.messages.results.find(
-          (message: Entity) =>
+          (message: ecsy.Entity) =>
             message.getComponent(Identity)!.id === cmd.requestId
         );
         if (message === undefined) {
@@ -497,7 +500,7 @@ export class ResponseTransmission extends System {
   }
 }
 
-export class SimulationIndicatorRelease extends System {
+export class SimulationIndicatorRelease extends ecsy.System {
   static queries = {
     servers: { components: [Server] },
     links: { components: [Link] },
@@ -509,7 +512,7 @@ export class SimulationIndicatorRelease extends System {
 
     setClock((time / 1000).toFixed(1));
     const newNodeStates = this.queries.servers.results.map(
-      (server: Entity) => ({
+      (server: ecsy.Entity) => ({
         id: server.getComponent(Identity)!.id,
         cores: server.getComponent(Cores)!.value.length,
         busyCores: server
@@ -519,7 +522,7 @@ export class SimulationIndicatorRelease extends System {
     );
     setNodeStatus(newNodeStates);
 
-    const activeLinks = this.queries.links.results.map((link: Entity) => ({
+    const activeLinks = this.queries.links.results.map((link: ecsy.Entity) => ({
       id: link.getComponent(Identity)!.id,
       srcId: link.getComponent(LinkSpec)!.srcId,
       dstId: link.getComponent(LinkSpec)!.dstId,

@@ -1,4 +1,4 @@
-import { World } from "ecsy";
+import * as ecsy from "ecsy";
 import {
   Cores,
   Identity,
@@ -41,8 +41,8 @@ import {
   ResponseSender,
 } from "./system";
 
-export function createWorld(): World {
-  const world = new World();
+export function createWorld(): ecsy.World {
+  const world = new ecsy.World();
 
   world
     .registerComponent(RequestResponseCycle)

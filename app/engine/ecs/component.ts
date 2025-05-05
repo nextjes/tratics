@@ -1,39 +1,39 @@
-import { Component, Types } from "ecsy";
+import * as ecsy from "ecsy";
 import type { Core } from "./infra";
 
-export class Identity extends Component<Identity> {
+export class Identity extends ecsy.Component<Identity> {
   id!: string;
 
   static schema = {
-    id: { type: Types.String },
+    id: { type: ecsy.Types.String },
   };
 }
 
-export class Cores extends Component<Cores> {
+export class Cores extends ecsy.Component<Cores> {
   value!: Core[];
 
   static schema = {
-    value: { type: Types.Array },
+    value: { type: ecsy.Types.Array },
   };
 }
 
-export class InTransitMessages extends Component<InTransitMessages> {
+export class InTransitMessages extends ecsy.Component<InTransitMessages> {
   messages!: string[];
 
   static schema = {
-    messages: { type: Types.Array },
+    messages: { type: ecsy.Types.Array },
   };
 }
 
-export class TaskQueue extends Component<TaskQueue> {
+export class TaskQueue extends ecsy.Component<TaskQueue> {
   tasks!: string[];
 
   static schema = {
-    tasks: { type: Types.Array },
+    tasks: { type: ecsy.Types.Array },
   };
 }
 
-export class LinkSpec extends Component<LinkSpec> {
+export class LinkSpec extends ecsy.Component<LinkSpec> {
   srcId!: string;
   dstId!: string;
   bandwidth!: number;
@@ -41,82 +41,82 @@ export class LinkSpec extends Component<LinkSpec> {
   reliability!: number;
 
   static schema = {
-    srcId: { type: Types.String },
-    dstId: { type: Types.String },
-    bandwidth: { type: Types.Number },
-    latency: { type: Types.Number },
-    reliability: { type: Types.Number },
+    srcId: { type: ecsy.Types.String },
+    dstId: { type: ecsy.Types.String },
+    bandwidth: { type: ecsy.Types.Number },
+    latency: { type: ecsy.Types.Number },
+    reliability: { type: ecsy.Types.Number },
   };
 }
 
-export class Throughput extends Component<Throughput> {
+export class Throughput extends ecsy.Component<Throughput> {
   value!: number;
 
   static schema = {
-    value: { type: Types.Number },
+    value: { type: ecsy.Types.Number },
   };
 }
 
-export class SourceId extends Component<SourceId> {
+export class SourceId extends ecsy.Component<SourceId> {
   srcId!: string;
 
   static schema = {
-    srcId: { type: Types.String },
+    srcId: { type: ecsy.Types.String },
   };
 }
 
-export class DestinationId extends Component<DestinationId> {
+export class DestinationId extends ecsy.Component<DestinationId> {
   dstId!: string;
 
   static schema = {
-    dstId: { type: Types.String },
+    dstId: { type: ecsy.Types.String },
   };
 }
 
-export class MessageSize extends Component<MessageSize> {
+export class MessageSize extends ecsy.Component<MessageSize> {
   size!: number;
 
   static schema = {
-    size: { type: Types.Number },
+    size: { type: ecsy.Types.Number },
   };
 }
 
-export class InTransit extends Component<InTransit> {
+export class InTransit extends ecsy.Component<InTransit> {
   value!: boolean;
 
   static schema = {
-    value: { type: Types.Boolean },
+    value: { type: ecsy.Types.Boolean },
   };
 }
 
-export class TransmittedSize extends Component<TransmittedSize> {
+export class TransmittedSize extends ecsy.Component<TransmittedSize> {
   value!: number;
 
   static schema = {
-    value: { type: Types.Number },
+    value: { type: ecsy.Types.Number },
   };
 }
 
-export class CreatedAt extends Component<CreatedAt> {
+export class CreatedAt extends ecsy.Component<CreatedAt> {
   value!: number;
 
   static schema = {
-    value: { type: Types.Number },
+    value: { type: ecsy.Types.Number },
   };
 }
 
-export class Duration extends Component<Duration> {
+export class Duration extends ecsy.Component<Duration> {
   value!: number;
 
   static schema = {
-    value: { type: Types.Number },
+    value: { type: ecsy.Types.Number },
   };
 }
 
-export class Elapsed extends Component<Elapsed> {
+export class Elapsed extends ecsy.Component<Elapsed> {
   value!: number;
 
   static schema = {
-    value: { type: Types.Number },
+    value: { type: ecsy.Types.Number },
   };
 }

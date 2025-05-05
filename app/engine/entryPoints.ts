@@ -7,6 +7,7 @@ import {
 import { useMemoryState } from "~/store/memory";
 import { initializeRouter } from "./settings";
 import { term } from ".";
+import { createWorld } from "./ecs/world";
 
 // 전역 시뮬레이션 엔진 인스턴스
 export let config = {
@@ -20,38 +21,34 @@ export let config = {
 };
 let simulationEngine = SimulationEngine.create().configure(config);
 initializeRouter();
+const world = createWorld();
 
 /**
  * 시뮬레이션 시작
  */
 export function start(): void {
-  // 현재 엔진이 실행 중이면 중지
-  if (simulationEngine.getState() === SimulationState.Running) {
-    simulationEngine.stop();
-  }
+  const delta = 16.67;
+  const time = 0;
 
-  // 시뮬레이션 시작
-  simulationEngine.start();
-
-  // UI 상태 업데이트
-  useMemoryState.getState().setIsRunning(true);
+  world.execute(delta, time);
 }
 
 /**
  * 시뮬레이션 일시 중지
  */
 export function pause(): void {
-  simulationEngine.pause();
-  useMemoryState.getState().setIsRunning(false);
+  world.stop();
+}
+
+export function resume(): void {
+  world.play();
 }
 
 /**
  * 시뮬레이션 중지 및 초기화
  */
 export function stop(): void {
-  simulationEngine.stop();
-  simulationEngine = simulationEngine.configure(config);
-  useMemoryState.getState().setIsRunning(false);
+  world.stop();
 }
 
 /**
