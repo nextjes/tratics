@@ -1,29 +1,27 @@
-// store.ts
 import { create } from "zustand";
 
-interface MemoryState {
-  isRunning: boolean;
-  clock: string;
-  nodeStatus: any;
-  linkStatus: any; // This property is missing in the interface
-  setClock: (clock: string) => void;
-  setNodeStatus: (nodeStatus: any) => void;
-  setLinkStatus: (linkStatus: any) => void;
-  setIsRunning: (isRunning: boolean) => void;
-}
-
-export const useMemoryState = create<MemoryState>((set) => ({
+export const useSimulationMetrics = create<SimulationStatus>((set) => ({
   isRunning: false,
-  clock: "0.0",
-  nodeStatus: null,
-  linkStatus: null,
-  setClock: (clock: string) => set(() => ({ clock })),
-  setNodeStatus: (nodeStatus: any) => set(() => ({ nodeStatus: nodeStatus })),
-  setLinkStatus: (linkStatus: any) => set(() => ({ linkStatus: linkStatus })),
-  setIsRunning: (isRunning: boolean) => set(() => ({ isRunning })),
+  time: "0",
+  totalRequest: 0,
+  successRequest: 0,
+  nodes: [],
+  links: [],
+  setTime: (time: string) => set(() => ({ time })),
+  setTotalRequest: (totalRequest: number) => set(() => ({ totalRequest })),
+  setSuccessRequest: (successRequest: number) =>
+    set(() => ({ successRequest })),
+  setNodes: (nodes: NodeMetrics[]) => set(() => ({ nodes })),
+  setLinks: (links: LinkMetrics[]) => set(() => ({ links })),
 }));
 
-export const useMemoryClock = () => useMemoryState((state) => state.clock);
-export const useNodeStatus = () => useMemoryState((state) => state.nodeStatus);
-export const useLinkStatus = () => useMemoryState((state) => state.linkStatus);
-export const useIsRunning = () => useMemoryState((state) => state.isRunning);
+export const useSimulationTime = () =>
+  useSimulationMetrics((state) => state.time);
+export const useTotalRequest = () =>
+  useSimulationMetrics((state) => state.totalRequest);
+export const useSuccessRequest = () =>
+  useSimulationMetrics((state) => state.successRequest);
+export const useNodes = () => useSimulationMetrics((state) => state.nodes);
+export const useLinks = () => useSimulationMetrics((state) => state.links);
+export const useIsRunning = () =>
+  useSimulationMetrics((state) => state.isRunning);

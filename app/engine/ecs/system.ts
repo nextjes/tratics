@@ -1,5 +1,5 @@
 import * as ecsy from "ecsy";
-import { useMemoryState } from "~/store/memory";
+import { useSimulationMetrics } from "~/store/memory";
 import {
   Server,
   Link,
@@ -580,28 +580,31 @@ export class SimulationIndicatorRelease extends ecsy.System {
   };
 
   execute(delta: number, time: number): void {
-    const { setClock, setNodeStatus, setLinkStatus } =
-      useMemoryState.getState();
+    const { setTime, setTotalRequest, setSuccessRequest, setNodes, setLinks } =
+      useSimulationMetrics.getState();
 
-    setClock((time / 1000).toFixed(1));
-    const newNodeStates = this.queries.servers.results.map(
-      (server: ecsy.Entity) => ({
-        id: server.getComponent(Identity)!.id,
-        cores: server.getComponent(Cores)!.value.length,
-        busyCores: server
-          .getComponent(Cores)!
-          .value.filter((core: Core) => core.taskId !== null).length,
+    setTime((time / 1000).toFixed(1));
+    const newNodeStates: NodeMetrics[] = this.queries.servers.results.map(
+      (server: ecsy.Entity) => {
+        return {
+          id: server.getComponent(Identity)!.id,
+          cores: server.getComponent(Cores)!.value.map((core: Core) => {
+            return {
+              status: core.taskId !== null ? "busy" : "idle",
+            };
+          }),
+        };
+      }
+    );
+    setNodes(newNodeStates);
+
+    const newLinkStates = this.queries.links.results.map(
+      (link: ecsy.Entity) => ({
+        srcId: link.getComponent(LinkSpec)!.srcId,
+        dstId: link.getComponent(LinkSpec)!.dstId,
+        throughput: link.getComponent(Throughput)!.value,
       })
     );
-    setNodeStatus(newNodeStates);
-
-    const activeLinks = this.queries.links.results.map((link: ecsy.Entity) => ({
-      id: link.getComponent(Identity)!.id,
-      srcId: link.getComponent(LinkSpec)!.srcId,
-      dstId: link.getComponent(LinkSpec)!.dstId,
-      bandwidth: link.getComponent(LinkSpec)!.bandwidth,
-      throughput: link.getComponent(Throughput)!.value,
-    }));
-    setLinkStatus(activeLinks);
+    setLinks(newLinkStates);
   }
 }
