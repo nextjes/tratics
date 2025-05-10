@@ -1,7 +1,7 @@
 import React from "react";
 import ClientIcon from "~/client/images/computer-monitor-svgrepo-com.svg?react";
 import ServerIcon from "~/client/images/server-svgrepo-com.svg?react";
-import { useNodeStatus, useMemoryClock, useLinkStatus } from "~/store/memory";
+import { useSimulationTime, useNodes, useLinks } from "~/store/memory";
 import ServerSpec from "../ui/ServerSpec";
 import type { ServerTask } from "../lib/types";
 
@@ -13,15 +13,15 @@ interface SectionProps {
 }
 
 const Section = ({ tasks, isStarted, addTask, deleteTask }: SectionProps) => {
-  const clock = useMemoryClock();
-  const nodeStatus = useNodeStatus();
-  const linkStatus = useLinkStatus();
+  const clock = useSimulationTime();
+  const nodeStatus = useNodes();
+  const linkStatus = useLinks();
 
   const formattedNodeStatus =
     nodeStatus && nodeStatus.length > 0
       ? nodeStatus.map((node: any, index: number) => (
           <React.Fragment key={node.id}>
-            {`${node.busyCores}/${node.cores} cores busy`}
+            [{`${node.cores.map((core: any) => core.status).join(", ")}`}]
             {index < nodeStatus.length - 1 && <br />}
           </React.Fragment>
         ))
@@ -31,7 +31,7 @@ const Section = ({ tasks, isStarted, addTask, deleteTask }: SectionProps) => {
     linkStatus && linkStatus.length > 0
       ? linkStatus.map((link: any, index: number) => (
           <React.Fragment key={link.id}>
-            {`${link.throughput} / ${link.bandwidth} bps`}
+            {`${link.throughput} bps`}
             {index < linkStatus.length - 1 && <br />}
           </React.Fragment>
         ))
