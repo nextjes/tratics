@@ -1,23 +1,31 @@
-import { stop, start } from "~/engine/entryPoints";
+import { stop, start, pause, resume } from "~/engine/entryPoints";
 import Header from "./Header";
 import Section from "./Section";
 import { useState } from "react";
-import type { ServerTask } from "../lib/types";
+import {
+  type ServerTask,
+  type SimulationConfig,
+  type Status,
+} from "../lib/types";
 import { getRandomId } from "../lib/utils";
 
 const Main = () => {
-  const [isStarted, setIsStarted] = useState(false);
+  const [status, setStatus] = useState<Status>("stopped");
   const [tasks, setTasks] = useState<ServerTask[]>([]);
 
-  const onStartClick = (requestCounts: number): void => {
-    console.log(requestCounts);
-    start();
-    setIsStarted(true);
+  const onStartClick = (form: SimulationConfig): void => {
+    console.log(form);
+    if (status === "paused") {
+      resume();
+    } else {
+      start();
+    }
+    setStatus("started");
   };
 
   const onStopClick = (): void => {
     stop();
-    setIsStarted(false);
+    setStatus("stopped");
   };
 
   const addTask = (taskTime: number): void => {
@@ -28,12 +36,22 @@ const Main = () => {
     setTasks((prev) => prev.filter((task) => task.id !== taskId));
   };
 
+  const onPauseClick = (): void => {
+    pause();
+    setStatus("paused");
+  };
+
   return (
     <main>
-      <Header onStartClick={onStartClick} onStopClick={onStopClick} />
+      <Header
+        status={status}
+        onStartClick={onStartClick}
+        onStopClick={onStopClick}
+        onPauseClick={onPauseClick}
+      />
       <Section
         tasks={tasks}
-        isStarted={isStarted}
+        status={status}
         addTask={addTask}
         deleteTask={deleteTask}
       />
