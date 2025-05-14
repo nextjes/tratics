@@ -1,11 +1,16 @@
 import ServerIcon from "~/client/images/server-svgrepo-com.svg?react";
 import { Dialog, DialogTrigger } from "~/components/ui/dialog";
 import AddTaskModal from "./AddTaskModal";
-import type { ServerTask } from "../lib/types";
+import type { ServerTask, Status } from "../lib/types";
 import { useState } from "react";
+import {
+  useSimulationTime,
+  useSuccessRequest,
+  useTotalRequest,
+} from "~/store/memory";
 
 interface ServerSpecProps {
-  isStarted: boolean;
+  status: Status;
   tasks: ServerTask[];
   addTask: (taskTime: number) => void;
   deleteTask: (taskId: string) => void;
@@ -13,11 +18,14 @@ interface ServerSpecProps {
 
 const ServerSpec = ({
   tasks,
-  isStarted,
+  status,
   addTask,
   deleteTask,
 }: ServerSpecProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const time = useSimulationTime();
+  const totalRequests = useTotalRequest();
+  const successRequests = useSuccessRequest();
 
   const onDialogClose = () => {
     setIsDialogOpen(false);
@@ -56,7 +64,7 @@ const ServerSpec = ({
             </div>
           ))}
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            {!isStarted && (
+            {status === "stopped" && (
               <DialogTrigger className="cursor-pointer border border-slate-300 bg-slate-800 px-1.5 py-2 rounded-md hover:bg-slate-400 hover:text-slate-800 mt-5">
                 add task
               </DialogTrigger>
@@ -64,6 +72,19 @@ const ServerSpec = ({
             <AddTaskModal addTask={addTask} onDialogClose={onDialogClose} />
           </Dialog>
         </div>
+        {status !== "stopped" && (
+          <div>
+            <h6>Status</h6>
+            <div className="grid grid-cols-[1fr_2fr] gap-2">
+              <div>Time</div>
+              <div>{time}s</div>
+              <div>Requests</div>
+              <div>{`${successRequests} / ${totalRequests} (${(
+                (successRequests / totalRequests) * 100 || 0
+              ).toFixed(2)}%)`}</div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

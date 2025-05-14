@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import type { LinkMetrics, NodeMetrics, SimulationStatus } from "./status";
 
 export const useSimulationMetrics = create<SimulationStatus>((set) => ({
   isRunning: false,

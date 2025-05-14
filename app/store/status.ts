@@ -2,18 +2,18 @@ interface CoreStatus {
   status: "busy" | "idle";
 }
 
-interface NodeMetrics {
+export interface NodeMetrics {
   id: string;
   cores: CoreStatus[];
 }
 
-interface LinkMetrics {
+export interface LinkMetrics {
   srcId: string;
   dstId: string;
   throughput: number;
 }
 
-interface SimulationStatus {
+export interface SimulationStatus {
   isRunning: boolean;
   time: string;
   totalRequest: number;

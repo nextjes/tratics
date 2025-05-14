@@ -2,16 +2,23 @@ import { useState } from "react";
 import { Button } from "~/client/ui/button";
 import { Input } from "~/client/ui/input";
 import { DEFAULT_REQUEST_COUNTS } from "~/client/lib/constants";
-import { useIsRunning } from "~/store/memory";
+import FormWithLabel from "~/components/ui/form-with-label";
+import type { SimulationConfig, Status } from "../lib/types";
 
 interface HeaderProps {
-  onStartClick: (requestCounts: number) => void;
+  status: Status;
+  onStartClick: (form: SimulationConfig) => void;
   onStopClick: () => void;
+  onPauseClick: () => void;
 }
 
-const Header = ({ onStartClick, onStopClick }: HeaderProps) => {
+const Header = ({
+  status,
+  onStartClick,
+  onStopClick,
+  onPauseClick,
+}: HeaderProps) => {
   const [requestCounts, setRequestCounts] = useState(DEFAULT_REQUEST_COUNTS);
-  const isRunning = useIsRunning();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const regExp = /^[0-9]*$/;
@@ -22,7 +29,12 @@ const Header = ({ onStartClick, onStopClick }: HeaderProps) => {
 
   const handleStartClick = () => {
     if (!requestCounts) return;
-    onStartClick(requestCounts);
+    onStartClick({
+      requests: requestCounts,
+      difficulty: "NORMAL",
+      nodes: 1,
+      cores: 2,
+    });
   };
 
   const handleStopClick = () => {
@@ -30,24 +42,41 @@ const Header = ({ onStartClick, onStopClick }: HeaderProps) => {
   };
 
   return (
-    <header className="py-8 bg-slate-800 text-slate-200 w-full flex justify-center items-center gap-10">
-      <div className="flex items-center justify-center gap-3">
-        <h6>Requests</h6>
-        <Input
-          onChange={handleInputChange}
-          value={requestCounts}
-          className="max-w-[150px] bg-slate-50 text-slate-950"
-        />
+    <header className="py-8 bg-slate-800 text-slate-200 w-full flex flex-col justify-center items-center gap-10">
+      <div className="flex justify-center items-center gap-5">
+        <FormWithLabel label="Difficulty">
+          <Input defaultValue={"NORMAL"} disabled />
+        </FormWithLabel>
+        <FormWithLabel label="Nodes">
+          <Input defaultValue={1} disabled />
+        </FormWithLabel>
+        <FormWithLabel label="Cores">
+          <Input defaultValue={2} disabled />
+        </FormWithLabel>
+        <FormWithLabel label="Requests">
+          <Input
+            onChange={handleInputChange}
+            value={requestCounts}
+            className="max-w-[150px] bg-slate-50 text-slate-950"
+          />
+        </FormWithLabel>
       </div>
-      {isRunning ? (
-        <Button onClick={handleStopClick} className="bg-red-400">
-          Stop
-        </Button>
-      ) : (
-        <Button onClick={handleStartClick} className="bg-slate-500">
-          Start
-        </Button>
-      )}
+      <div className="flex justify-center items-center gap-3">
+        {status !== "stopped" ? (
+          <>
+            <Button onClick={onPauseClick} className="bg-slate-500">
+              Pause
+            </Button>
+            <Button onClick={handleStopClick} className="bg-red-400">
+              Stop
+            </Button>
+          </>
+        ) : (
+          <Button onClick={handleStartClick} className="bg-slate-500">
+            Start
+          </Button>
+        )}
+      </div>
     </header>
   );
 };
