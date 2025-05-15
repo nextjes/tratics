@@ -60,7 +60,7 @@ export class TrafficGeneration extends ecsy.System {
     clients: { components: [Client] },
     clusterEntryPoints: { components: [ClusterEntryPoint, Server] },
   };
-  execute(delta: number, time: number): void {
+  override execute(): void {
     const clients = this.queries.clients.results;
     const clusterEntryPoint = this.queries.clusterEntryPoints.results[0];
 
@@ -103,7 +103,7 @@ export class RequestSender extends ecsy.System {
     links: { components: [Link] },
   };
 
-  execute(delta: number, time: number): void {
+  override execute(): void {
     const messages = this.queries.messages.results;
     const links = this.queries.links.results;
 
@@ -249,7 +249,7 @@ export class EnqueueTask extends ecsy.System {
     tasks: { components: [Task, ecsy.Not(Queued)] },
   };
 
-  execute(delta: number, time: number): void {
+  override execute(): void {
     const servers = this.queries.servers.results;
     const tasks = this.queries.tasks.results;
 
@@ -381,7 +381,7 @@ export class TaskTerminating extends ecsy.System {
     tasks: { components: [Task] },
   };
 
-  execute(delta: number, time: number): void {
+  override execute(): void {
     const servers = this.queries.servers.results;
 
     servers.forEach((server: ecsy.Entity) => {
@@ -460,7 +460,7 @@ export class ResponseSender extends ecsy.System {
     links: { components: [Link] },
   };
 
-  execute(delta: number, time: number): void {
+  override execute(): void {
     const messages = this.queries.messages.results;
     const links = this.queries.links.results;
 
@@ -581,8 +581,7 @@ export class SimulationIndicatorRelease extends ecsy.System {
   };
 
   execute(delta: number, time: number): void {
-    const { setTime, setTotalRequest, setSuccessRequest, setNodes, setLinks } =
-      useSimulationMetrics.getState();
+    const { setTime, setNodes, setLinks } = useSimulationMetrics.getState();
 
     setTime((time / 1000).toFixed(1));
     const newNodeStates: NodeMetrics[] = this.queries.servers.results.map(
