@@ -51,6 +51,7 @@ import {
   transmitMessages,
 } from "./handler";
 import { estimateTransmissionAmount } from "./algorithm";
+import type { LinkMetrics, NodeMetrics } from "~/store/status";
 
 export class TrafficGeneration extends ecsy.System {
   commands: CreateRequest[] = [];
@@ -187,7 +188,7 @@ export class RequestTransmission extends ecsy.System {
         if (message === null) {
           throw new NotFoundError("Message not found");
         }
-        message.getMutableComponent(TransmittedSize)!.value +
+        message.getMutableComponent(TransmittedSize)!.value +=
           cmd.transmittedSize;
       } else if (command.name === "CreateTask") {
         const cmd = command as CreateTask;
@@ -544,7 +545,7 @@ export class ResponseTransmission extends ecsy.System {
         if (message === undefined) {
           throw new NotFoundError("Message not found");
         }
-        message.getMutableComponent(TransmittedSize)!.value +
+        message.getMutableComponent(TransmittedSize)!.value +=
           cmd.transmittedSize;
       } else if (command.name === "DeleteMessage") {
         const cmd = command as DeleteMessage;
@@ -598,7 +599,7 @@ export class SimulationIndicatorRelease extends ecsy.System {
     );
     setNodes(newNodeStates);
 
-    const newLinkStates = this.queries.links.results.map(
+    const newLinkStates: LinkMetrics[] = this.queries.links.results.map(
       (link: ecsy.Entity) => ({
         srcId: link.getComponent(LinkSpec)!.srcId,
         dstId: link.getComponent(LinkSpec)!.dstId,

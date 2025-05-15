@@ -38,6 +38,7 @@ export function resume(): void {
   let time = 0;
   intervalId = setInterval(() => {
     world.execute(delta, time);
+    time += delta;
   }, delta);
 }
 
