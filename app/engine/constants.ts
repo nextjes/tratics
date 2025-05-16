@@ -1,0 +1,2 @@
+export const REQUEST_MESSAGE_SIZE = 400;
+export const REQUEST_GENERATION_POSSIBILITY = 0.5;
