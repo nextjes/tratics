@@ -1,2 +1,3 @@
 export const REQUEST_MESSAGE_SIZE = 400;
 export const REQUEST_GENERATION_POSSIBILITY = 0.5;
+export const SIMULATION_DELTA = 16.67; // 60 FPS
