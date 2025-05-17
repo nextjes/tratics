@@ -52,6 +52,10 @@ import {
 } from "./handler";
 import { estimateTransmissionAmount } from "./algorithm";
 import type { LinkMetrics, NodeMetrics } from "~/store/status";
+import {
+  REQUEST_GENERATION_POSSIBILITY,
+  REQUEST_MESSAGE_SIZE,
+} from "../constants";
 
 export class TrafficGeneration extends ecsy.System {
   commands: CreateRequest[] = [];
@@ -65,13 +69,13 @@ export class TrafficGeneration extends ecsy.System {
     const clusterEntryPoint = this.queries.clusterEntryPoints.results[0];
 
     const commands = generateRequests({
-      algorithm: () => Math.random() > 0.5,
+      algorithm: () => Math.random() > REQUEST_GENERATION_POSSIBILITY,
       clientIds: clients.map(
         (client: ecsy.Entity) => client.getComponent(Identity)!.id
       ),
       entryPointId: clusterEntryPoint.getComponent(Identity)!.id,
       requestIdFactory: () => Math.random().toString(36).substring(2, 15),
-      sizeFactory: () => 400,
+      sizeFactory: () => REQUEST_MESSAGE_SIZE,
     });
     this.commands.push(...commands);
     this.commit();
