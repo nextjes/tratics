@@ -1,5 +1,17 @@
-export type SimulationDifficulty = "easy" | "normal" | "hard";
-export type RunningStatus = "running" | "paused" | "stopped";
+export const SIMULATION_DIFFICULTY = {
+  EASY: "easy",
+  NORMAL: "normal",
+  HARD: "hard",
+};
+export const RUNNING_STATUS = {
+  RUNNING: "running",
+  PAUSED: "paused",
+  STOPPED: "stopped",
+};
+export type SimulationDifficulty =
+  (typeof SIMULATION_DIFFICULTY)[keyof typeof SIMULATION_DIFFICULTY];
+export type RunningStatus =
+  (typeof RUNNING_STATUS)[keyof typeof RUNNING_STATUS];
 
 export interface SimulationSettings {
   runningStatus: RunningStatus;

@@ -5,6 +5,7 @@ import type {
   SimulationDifficulty,
   SimulationSettings,
 } from "./settings";
+import { RUNNING_STATUS, SIMULATION_DIFFICULTY } from "./settings";
 
 export const useSimulationMetrics = create<TemporalStatus>((set) => ({
   time: "0",
@@ -26,9 +27,9 @@ export const useNodes = () => useSimulationMetrics((state) => state.nodes);
 export const useLinks = () => useSimulationMetrics((state) => state.links);
 
 export const useSimulationSettings = create<SimulationSettings>((set) => ({
-  runningStatus: "stopped",
+  runningStatus: RUNNING_STATUS.STOPPED,
   simulationScale: 1,
-  difficulty: "normal",
+  difficulty: SIMULATION_DIFFICULTY.NORMAL,
   totalRequest: 0,
   setRunningStatus: (runningStatus: RunningStatus) =>
     set(() => ({ runningStatus })),
