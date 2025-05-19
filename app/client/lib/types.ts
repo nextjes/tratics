@@ -10,4 +10,13 @@ export interface SimulationConfig {
   nodes: number;
   cores: number;
   difficulty: string;
+  speed: Speed;
 }
+
+export const SPPED = {
+  "2X": "2x",
+  "4X": "4x",
+  "8X": "8x",
+};
+
+export type Speed = (typeof SPPED)[keyof typeof SPPED];
