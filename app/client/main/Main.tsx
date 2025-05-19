@@ -3,6 +3,7 @@ import Header from "./Header";
 import Section from "./Section";
 import { useState } from "react";
 import {
+  STATUS,
   type ServerTask,
   type SimulationConfig,
   type Status,
@@ -10,22 +11,22 @@ import {
 import { getRandomId } from "../lib/utils";
 
 const Main = () => {
-  const [status, setStatus] = useState<Status>("stopped");
+  const [status, setStatus] = useState<Status>(STATUS.STOPPED);
   const [tasks, setTasks] = useState<ServerTask[]>([]);
 
   const onStartClick = (form: SimulationConfig): void => {
     console.log(form);
-    if (status === "paused") {
+    if (status === STATUS.PAUSED) {
       resume();
     } else {
       start();
     }
-    setStatus("started");
+    setStatus(STATUS.STARTED);
   };
 
   const onStopClick = (): void => {
     stop();
-    setStatus("stopped");
+    setStatus(STATUS.STOPPED);
   };
 
   const addTask = (taskTime: number): void => {

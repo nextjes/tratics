@@ -3,7 +3,14 @@ import { Button } from "~/client/ui/button";
 import { Input } from "~/client/ui/input";
 import { DEFAULT_REQUEST_COUNTS } from "~/client/lib/constants";
 import FormWithLabel from "~/components/ui/form-with-label";
-import type { SimulationConfig, Status } from "../lib/types";
+import { SPPED, type SimulationConfig, type Status } from "../lib/types";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
 
 interface HeaderProps {
   status: Status;
@@ -19,6 +26,7 @@ const Header = ({
   onPauseClick,
 }: HeaderProps) => {
   const [requestCounts, setRequestCounts] = useState(DEFAULT_REQUEST_COUNTS);
+  const [speed, setSpeed] = useState(SPPED["2X"]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const regExp = /^[0-9]*$/;
@@ -34,7 +42,12 @@ const Header = ({
       difficulty: "NORMAL",
       nodes: 1,
       cores: 2,
+      speed,
     });
+  };
+
+  const onSpeedChange = (value: string) => {
+    setSpeed(value);
   };
 
   const handleStopClick = () => {
@@ -76,6 +89,18 @@ const Header = ({
             Start
           </Button>
         )}
+        <Select value={speed} onValueChange={onSpeedChange}>
+          <SelectTrigger className="w-[80px]">
+            <SelectValue placeholder="Speed" />
+          </SelectTrigger>
+          <SelectContent>
+            {Object.keys(SPPED).map((key) => (
+              <SelectItem key={key} value={SPPED[key as keyof typeof SPPED]}>
+                {SPPED[key as keyof typeof SPPED]}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
     </header>
   );
