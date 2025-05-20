@@ -112,3 +112,11 @@ export class Elapsed extends ecsy.Component<Elapsed> {
     value: { type: ecsy.Types.Number },
   };
 }
+
+export class ProcessedRequestCount extends ecsy.Component<ProcessedRequestCount> {
+  value!: number;
+
+  static schema = {
+    value: { type: ecsy.Types.Number },
+  };
+}

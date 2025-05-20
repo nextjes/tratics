@@ -13,6 +13,7 @@ import {
   CreatedAt,
   Duration,
   Elapsed,
+  ProcessedRequestCount,
 } from "./component";
 import {
   Client,
@@ -29,6 +30,7 @@ import {
   Task,
   Queued,
   InTransit,
+  Dashboard,
 } from "./tag";
 import {
   SimulationIndicatorRelease,
@@ -59,7 +61,8 @@ export function createWorld(): ecsy.World {
     .registerComponent(Task)
     .registerComponent(Queued)
     .registerComponent(Response)
-    .registerComponent(InTransit);
+    .registerComponent(InTransit)
+    .registerComponent(Dashboard);
 
   world
     .registerComponent(Identity)
@@ -74,7 +77,8 @@ export function createWorld(): ecsy.World {
     .registerComponent(TransmittedSize)
     .registerComponent(CreatedAt)
     .registerComponent(Duration)
-    .registerComponent(Elapsed);
+    .registerComponent(Elapsed)
+    .registerComponent(ProcessedRequestCount);
 
   world
     .registerSystem(TrafficGeneration, { priority: 0 })
@@ -86,6 +90,11 @@ export function createWorld(): ecsy.World {
     .registerSystem(ResponseSender, { priority: 6 })
     .registerSystem(ResponseTransmission, { priority: 7 })
     .registerSystem(SimulationIndicatorRelease, { priority: 8 });
+  
+  world
+    .createEntity()
+    .addComponent(Dashboard)
+    .addComponent(ProcessedRequestCount, { value: 0 });
 
   world
     .createEntity()
