@@ -13,6 +13,7 @@ import {
   Response,
   ResponseLink,
   InTransit,
+  Dashboard,
 } from "./tag";
 import {
   Cores,
@@ -28,6 +29,7 @@ import {
   CreatedAt,
   Duration,
   Elapsed,
+  ProcessedRequestCount,
 } from "./component";
 import type { Core } from "./infra";
 import type { ICore, IMessage, ITask } from "./types";
@@ -496,6 +498,7 @@ export class ResponseTransmission extends ecsy.System {
   static queries = {
     messages: { components: [Message, Response, InTransit] },
     links: { components: [Link, ResponseLink] },
+    dashboard: {components: [Dashboard]},
   };
 
   execute(delta: number, time: number): void {
@@ -561,6 +564,8 @@ export class ResponseTransmission extends ecsy.System {
           throw new NotFoundError("Message not found");
         }
         message.remove(true);
+        this.queries.dashboard.results[0]
+          .getMutableComponent(ProcessedRequestCount)!.value += 1;
       } else if (command.name === "RecordThroughput") {
         const cmd = command as RecordThroughput;
         const link =
@@ -582,10 +587,11 @@ export class SimulationIndicatorRelease extends ecsy.System {
   static queries = {
     servers: { components: [Server] },
     links: { components: [Link] },
+    dashboard: { components: [Dashboard] },
   };
 
   execute(delta: number, time: number): void {
-    const { setTime, setNodes, setLinks } = useSimulationMetrics.getState();
+    const { setTime, setSuccessRequest, setNodes, setLinks } = useSimulationMetrics.getState();
 
     setTime((time / 1000).toFixed(1));
     const newNodeStates: NodeMetrics[] = this.queries.servers.results.map(
@@ -610,5 +616,7 @@ export class SimulationIndicatorRelease extends ecsy.System {
       })
     );
     setLinks(newLinkStates);
+    const dashboard = this.queries.dashboard.results[0];
+    setSuccessRequest(dashboard.getComponent(ProcessedRequestCount)!.value);
   }
 }
