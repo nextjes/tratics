@@ -9,13 +9,24 @@ import {
   type Status,
 } from "../lib/types";
 import { getRandomId } from "../lib/utils";
+import {
+  useSetDifficulty,
+  useSetScale,
+  useSetTotalRequest,
+} from "~/store/memory";
 
 const Main = () => {
   const [status, setStatus] = useState<Status>(STATUS.STOPPED);
   const [tasks, setTasks] = useState<ServerTask[]>([]);
 
+  const setTotalRequest = useSetTotalRequest();
+  const setScale = useSetScale();
+  const setDifficulty = useSetDifficulty();
+
   const onStartClick = (form: SimulationConfig): void => {
-    console.log(form);
+    setTotalRequest(form.requests);
+    setScale(form.speed);
+    setDifficulty(form.difficulty);
     if (status === STATUS.PAUSED) {
       resume();
     } else {

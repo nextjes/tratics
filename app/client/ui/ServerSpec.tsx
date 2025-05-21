@@ -8,6 +8,7 @@ import {
   useSuccessRequest,
   useTotalRequest,
 } from "~/store/memory";
+import { Progress } from "~/components/ui/progress";
 
 interface ServerSpecProps {
   status: Status;
@@ -79,9 +80,15 @@ const ServerSpec = ({
               <div>Time</div>
               <div>{time}s</div>
               <div>Requests</div>
-              <div>{`${successRequests} / ${totalRequests} (${(
-                (successRequests / totalRequests) * 100 || 0
-              ).toFixed(2)}%)`}</div>
+              <div className="flex gap-2">
+                <Progress
+                  value={(successRequests / totalRequests) * 100 || 0}
+                  className="h-5"
+                />
+                <span>{`${successRequests} / ${totalRequests} (${(
+                  (successRequests / totalRequests) * 100 || 0
+                ).toFixed(2)}%)`}</span>
+              </div>
             </div>
           </div>
         )}
