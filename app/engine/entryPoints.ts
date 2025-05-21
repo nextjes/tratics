@@ -1,7 +1,7 @@
 import { SIMULATION_DELTA } from "./constants";
 import { createWorld } from "./ecs/world";
 
-const world = createWorld();
+let world = createWorld();
 let intervalId: ReturnType<typeof setInterval> | null = null;
 
 /**
@@ -48,6 +48,7 @@ export function resume(): void {
  */
 export function stop(): void {
   world.stop();
+  world = createWorld();
   if (intervalId !== null) {
     clearInterval(intervalId);
     intervalId = null;
