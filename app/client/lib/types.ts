@@ -19,9 +19,10 @@ export interface SimulationConfig {
 }
 
 export const SPPED = {
-  "2X": "2x",
-  "4X": "4x",
-  "8X": "8x",
+  "1x": 1,
+  "2x": 2,
+  "4x": 4,
+  "8x": 8,
 };
 
 export type Speed = (typeof SPPED)[keyof typeof SPPED];

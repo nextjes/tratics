@@ -48,3 +48,9 @@ export const useDifficulty = () =>
   useSimulationSettings((state) => state.difficulty);
 export const useTotalRequest = () =>
   useSimulationSettings((state) => state.totalRequest);
+export const useSetTotalRequest = () =>
+  useSimulationSettings((state) => state.setTotalRequest);
+export const useSetScale = () =>
+  useSimulationSettings((state) => state.setSimulationScale);
+export const useSetDifficulty = () =>
+  useSimulationSettings((state) => state.setDifficulty);
