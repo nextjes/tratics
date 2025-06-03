@@ -1,5 +1,6 @@
 import { SIMULATION_DELTA } from "./constants";
 import { createWorld } from "./ecs/world";
+import { simulationSettings } from "./settings";
 
 let world = createWorld();
 let intervalId: ReturnType<typeof setInterval> | null = null;
@@ -8,7 +9,7 @@ let intervalId: ReturnType<typeof setInterval> | null = null;
  * 시뮬레이션 시작
  */
 export function start(): void {
-  const delta = SIMULATION_DELTA;
+  let delta = SIMULATION_DELTA;
   let time = 0;
 
   if (intervalId !== null) {
@@ -17,6 +18,8 @@ export function start(): void {
   }
 
   intervalId = setInterval(() => {
+    delta = delta * simulationSettings.simulationScale;
+    console.log(`start : ${simulationSettings.simulationScale}`);
     world.execute(delta, time);
     time += delta;
   }, delta);
@@ -35,9 +38,11 @@ export function pause(): void {
 
 export function resume(): void {
   world.play();
-  const delta = SIMULATION_DELTA;
+  let delta = SIMULATION_DELTA;
   let time = 0;
   intervalId = setInterval(() => {
+    delta = delta * simulationSettings.simulationScale;
+    console.log(`resume: ${simulationSettings.simulationScale}`);
     world.execute(delta, time);
     time += delta;
   }, delta);
@@ -53,4 +58,10 @@ export function stop(): void {
     clearInterval(intervalId);
     intervalId = null;
   }
+}
+
+export function setSimulationSettings(
+  settings: Partial<typeof simulationSettings>
+): void {
+  Object.assign(simulationSettings, settings);
 }
