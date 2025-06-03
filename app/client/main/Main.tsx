@@ -1,4 +1,4 @@
-import { stop, start, pause, resume } from "~/engine/entryPoints";
+import { stop, start, pause, resume, setSimulationSettings } from "~/engine/entryPoints";
 import Header from "./Header";
 import Section from "./Section";
 import { useState } from "react";
@@ -9,19 +9,14 @@ import {
   type Status,
 } from "../lib/types";
 import { getRandomId } from "../lib/utils";
-import {
-  useSetDifficulty,
-  useSetScale,
-  useSetTotalRequest,
-} from "~/store/memory";
 
 const Main = () => {
   const [status, setStatus] = useState<Status>(STATUS.STOPPED);
   const [tasks, setTasks] = useState<ServerTask[]>([]);
 
-  const setTotalRequest = useSetTotalRequest();
-  const setScale = useSetScale();
-  const setDifficulty = useSetDifficulty();
+  const setTotalRequest = (totalRequests: number) => setSimulationSettings({ totalRequest: totalRequests });
+  const setScale = (scale: number) => setSimulationSettings({ simulationScale: scale });
+  const setDifficulty = (difficulty: string) => setSimulationSettings({ difficulty });
 
   const onStartClick = (form: SimulationConfig): void => {
     setTotalRequest(form.requests);
