@@ -18,10 +18,10 @@ export function start(): void {
   }
 
   intervalId = setInterval(() => {
-    delta = delta * simulationSettings.simulationScale;
-    world.execute(delta, time);
-    time += delta;
-  }, delta);
+    const effectiveDelta = SIMULATION_DELTA * simulationSettings.simulationScale;
+    world.execute(effectiveDelta, time);
+    time += effectiveDelta;
+  }, SIMULATION_DELTA);
 }
 
 /**
@@ -37,13 +37,12 @@ export function pause(): void {
 
 export function resume(): void {
   world.play();
-  let delta = SIMULATION_DELTA;
   let time = 0;
   intervalId = setInterval(() => {
-    delta = delta * simulationSettings.simulationScale;
-    world.execute(delta, time);
-    time += delta;
-  }, delta);
+    const effectiveDelta = SIMULATION_DELTA * simulationSettings.simulationScale;
+    world.execute(effectiveDelta, time);
+    time += effectiveDelta;
+  }, SIMULATION_DELTA);
 }
 
 /**
