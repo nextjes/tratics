@@ -6,9 +6,9 @@ import { useState } from "react";
 import {
   useSimulationTime,
   useSuccessRequest,
-  useTotalRequest,
 } from "~/store/memory";
 import { Progress } from "~/components/ui/progress";
+import { simulationSettings } from "~/engine/settings";
 
 interface ServerSpecProps {
   status: Status;
@@ -25,7 +25,7 @@ const ServerSpec = ({
 }: ServerSpecProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const time = useSimulationTime();
-  const totalRequests = useTotalRequest();
+  const totalRequests = simulationSettings.totalRequest;
   const successRequests = useSuccessRequest();
 
   const onDialogClose = () => {

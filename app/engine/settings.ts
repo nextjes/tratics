@@ -18,9 +18,11 @@ export interface SimulationSettings {
   simulationScale: number;
   difficulty: SimulationDifficulty;
   totalRequest: number;
+}
 
-  setRunningStatus: (runningStatus: RunningStatus) => void;
-  setSimulationScale: (simulationScale: number) => void;
-  setDifficulty: (difficulty: SimulationDifficulty) => void;
-  setTotalRequest: (totalRequest: number) => void;
+export const simulationSettings: SimulationSettings = {
+  runningStatus: RUNNING_STATUS.STOPPED,
+  simulationScale: 1,
+  difficulty: SIMULATION_DIFFICULTY.NORMAL,
+  totalRequest: 0,
 }
