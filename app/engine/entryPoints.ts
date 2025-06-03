@@ -9,7 +9,6 @@ let intervalId: ReturnType<typeof setInterval> | null = null;
  * 시뮬레이션 시작
  */
 export function start(): void {
-  let delta = SIMULATION_DELTA;
   let time = 0;
 
   if (intervalId !== null) {
