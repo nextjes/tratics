@@ -19,7 +19,6 @@ export function start(): void {
 
   intervalId = setInterval(() => {
     delta = delta * simulationSettings.simulationScale;
-    console.log(`start : ${simulationSettings.simulationScale}`);
     world.execute(delta, time);
     time += delta;
   }, delta);
@@ -42,7 +41,6 @@ export function resume(): void {
   let time = 0;
   intervalId = setInterval(() => {
     delta = delta * simulationSettings.simulationScale;
-    console.log(`resume: ${simulationSettings.simulationScale}`);
     world.execute(delta, time);
     time += delta;
   }, delta);
