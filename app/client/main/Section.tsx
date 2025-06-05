@@ -3,7 +3,7 @@ import ClientIcon from "~/client/images/computer-monitor-svgrepo-com.svg?react";
 import ServerIcon from "~/client/images/server-svgrepo-com.svg?react";
 import { useNodes, useLinks } from "~/store/memory";
 import ServerSpec from "../ui/ServerSpec";
-import type { ServerTask, Status } from "../lib/types";
+import { STATUS, type ServerTask, type Status } from "../lib/types";
 
 interface SectionProps {
   tasks: ServerTask[];
@@ -26,6 +26,62 @@ const Section = ({ tasks, status, addTask, deleteTask }: SectionProps) => {
       />
       <div className="flex items-center">
         <ClientIcon className="size-[50px]" />
+        <div className="h-2.5 bg-gray-200 w-96 rounded-sm relative">
+          <div
+            className={`${
+              status === STATUS.STOPPED ? "" : "masking"
+            } h-2 w-5 bg-amber-600 absolute left-0 top-[1px] opacity-0`}
+            style={{
+              animationPlayState:
+                status === STATUS.STARTED ? "running" : "paused",
+            }}
+          ></div>
+          <div
+            className={`${
+              status === STATUS.STOPPED ? "" : "masking-1"
+            } h-2 w-5 bg-amber-600 absolute left-0 top-[1px] opacity-0`}
+            style={{
+              animationPlayState:
+                status === STATUS.STARTED ? "running" : "paused",
+            }}
+          ></div>
+          <div
+            className={`${
+              status === STATUS.STOPPED ? "" : "masking-2"
+            } h-2 w-5 bg-amber-600 absolute left-0 top-[1px] opacity-0`}
+            style={{
+              animationPlayState:
+                status === STATUS.STARTED ? "running" : "paused",
+            }}
+          ></div>
+          <div
+            className={`${
+              status === STATUS.STOPPED ? "" : "masking-3"
+            } h-2 w-5 bg-amber-600 absolute left-0 top-[1px] opacity-0`}
+            style={{
+              animationPlayState:
+                status === STATUS.STARTED ? "running" : "paused",
+            }}
+          ></div>
+          <div
+            className={`${
+              status === STATUS.STOPPED ? "" : "masking-4"
+            } h-2 w-5 bg-amber-600 absolute left-0 top-[1px] opacity-0`}
+            style={{
+              animationPlayState:
+                status === STATUS.STARTED ? "running" : "paused",
+            }}
+          ></div>
+          <div
+            className={`${
+              status === STATUS.STOPPED ? "" : "masking-5"
+            } h-2 w-5 bg-amber-600 absolute left-0 top-[1px] opacity-0`}
+            style={{
+              animationPlayState:
+                status === STATUS.STARTED ? "running" : "paused",
+            }}
+          ></div>
+        </div>
         <ServerIcon className="size-[50px]" />
       </div>
       {status !== "stopped" && (

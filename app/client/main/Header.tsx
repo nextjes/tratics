@@ -3,7 +3,12 @@ import { Button } from "~/client/ui/button";
 import { Input } from "~/client/ui/input";
 import { DEFAULT_REQUEST_COUNTS } from "~/client/lib/constants";
 import FormWithLabel from "~/components/ui/form-with-label";
-import { SPPED, type SimulationConfig, type Status } from "../lib/types";
+import {
+  SPPED,
+  STATUS,
+  type SimulationConfig,
+  type Status,
+} from "../lib/types";
 import {
   Select,
   SelectContent,
@@ -77,9 +82,15 @@ const Header = ({
       <div className="flex justify-center items-center gap-3">
         {status !== "stopped" ? (
           <>
-            <Button onClick={onPauseClick} className="bg-slate-500">
-              Pause
-            </Button>
+            {status === STATUS.STARTED ? (
+              <Button onClick={onPauseClick} className="bg-slate-500">
+                Pause
+              </Button>
+            ) : (
+              <Button onClick={handleStartClick} className="bg-slate-500">
+                Start
+              </Button>
+            )}
             <Button onClick={handleStopClick} className="bg-red-400">
               Stop
             </Button>
