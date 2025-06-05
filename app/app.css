@@ -136,3 +136,44 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes line-flow {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(364px);
+    opacity: 1;
+  }
+}
+
+.animation-paused {
+  animation-play-state: paused;
+}
+
+.masking {
+  animation: line-flow 2s linear infinite;
+}
+
+.masking-1 {
+  animation: line-flow 2s linear infinite;
+  animation-delay: 0.4s;
+}
+
+.masking-2 {
+  animation: line-flow 2s linear infinite;
+  animation-delay: 0.8s;
+}
+
+.masking-3 {
+  animation: line-flow 2s linear infinite;
+  animation-delay: 1.2s;
+}
+.masking-4 {
+  animation: line-flow 2s linear infinite;
+  animation-delay: 1.6s;
+}
+.masking-5 {
+  animation: line-flow 2s linear infinite;
+  animation-delay: 2s;
+}
