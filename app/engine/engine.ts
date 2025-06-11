@@ -43,12 +43,6 @@ export class SimulationEngine {
       this.lastTimestamp = timestamp;
     }
     const delta = timestamp - this.lastTimestamp;
-    console.log(
-      `Simulation step: timestamp=${timestamp}, delta=${delta}, elapsedTime=${this.elapsedTime}`
-    );
-    console.log(
-      `Simulation settings: scale=${simulationSettings.simulationScale}, difficulty=${simulationSettings.difficulty}`
-    );
     const effectiveDelta = delta * simulationSettings.simulationScale;
     this.elapsedTime += effectiveDelta;
     this.lastTimestamp = timestamp;
