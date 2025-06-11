@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
+import { setSimulationSettings } from "~/engine/entryPoints";
 
 interface HeaderProps {
   status: Status;
@@ -51,8 +52,14 @@ const Header = ({
     });
   };
 
+  const handleInputBlur = () => {
+    if (status === STATUS.STOPPED) return;
+    setSimulationSettings({ totalRequest: requestCounts });
+  };
+
   const onSpeedChange = (value: string) => {
     setSpeed(+value);
+    setSimulationSettings({ simulationScale: +value });
   };
 
   const handleStopClick = () => {
@@ -74,6 +81,7 @@ const Header = ({
         <FormWithLabel label="Requests">
           <Input
             onChange={handleInputChange}
+            onBlur={handleInputBlur}
             value={requestCounts}
             className="max-w-[150px] bg-slate-50 text-slate-950"
           />
