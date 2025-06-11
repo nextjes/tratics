@@ -39,3 +39,10 @@ export class NotFoundError extends TraticsError {
     this.name = "NotFoundError";
   }
 }
+
+export class InvalidSimulationStatusError extends TraticsError {
+  constructor(message: string) {
+    super(message);
+    this.name = "InvalidSimulationStatusError";
+  }
+}

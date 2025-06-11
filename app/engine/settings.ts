@@ -24,5 +24,5 @@ export const simulationSettings: SimulationSettings = {
   runningStatus: RUNNING_STATUS.STOPPED,
   simulationScale: 1,
   difficulty: SIMULATION_DIFFICULTY.NORMAL,
-  totalRequest: 0,
-}
+  totalRequest: 1000,
+};
