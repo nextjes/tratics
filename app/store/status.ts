@@ -1,3 +1,5 @@
+import type { SimulationSettings } from "~/engine/settings";
+
 interface CoreStatus {
   status: "busy" | "idle";
 }
@@ -23,4 +25,12 @@ export interface TemporalStatus {
   setSuccessRequest: (successRequest: number) => void;
   setNodes: (nodes: NodeMetrics[]) => void;
   setLinks: (links: LinkMetrics[]) => void;
+}
+
+export interface SimulationConfig extends SimulationSettings {
+  setTotalRequest: (totalRequest: number) => void;
+  setSimulationScale: (simulationScale: number) => void;
+  setDifficulty: (difficulty: "easy" | "normal" | "hard") => void;
+  setRunningStatus: (runningStatus: "running" | "paused" | "stopped") => void;
+  setSimulationConfig: (config: Partial<SimulationSettings>) => void;
 }
