@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { setSimulationSettings } from "~/engine/entryPoints";
+import { useSimulationScale } from "~/store/memory";
 
 interface HeaderProps {
   status: Status;
@@ -32,7 +33,7 @@ const Header = ({
   onPauseClick,
 }: HeaderProps) => {
   const [requestCounts, setRequestCounts] = useState(DEFAULT_REQUEST_COUNTS);
-  const [speed, setSpeed] = useState(SPPED["1x"]);
+  const speed = useSimulationScale();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const regExp = /^[0-9]*$/;
@@ -58,7 +59,6 @@ const Header = ({
   };
 
   const onSpeedChange = (value: string) => {
-    setSpeed(+value);
     setSimulationSettings({ simulationScale: +value });
   };
 
