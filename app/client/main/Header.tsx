@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "~/client/ui/button";
 import { Input } from "~/client/ui/input";
-import { DEFAULT_REQUEST_COUNTS } from "~/client/lib/constants";
+import { DEFAULT_CORES, DEFAULT_REQUEST_COUNTS } from "~/client/lib/constants";
 import FormWithLabel from "~/components/ui/form-with-label";
 import {
   SPPED,
@@ -33,7 +33,16 @@ const Header = ({
   onPauseClick,
 }: HeaderProps) => {
   const [requestCounts, setRequestCounts] = useState(DEFAULT_REQUEST_COUNTS);
+  const [cores, setCores] = useState(DEFAULT_CORES);
   const speed = useSimulationScale();
+
+  const handleCoreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const regExp = /^[0-9]*$/;
+    const { value } = e.target;
+    if (!regExp.test(value)) return;
+    const coreValue = Number(value);
+    setCores(coreValue);
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const regExp = /^[0-9]*$/;
@@ -44,18 +53,19 @@ const Header = ({
 
   const handleStartClick = () => {
     if (!requestCounts) return;
+
+    if (!cores) {
+      alert("Please set the number of cores.");
+      return;
+    }
+
     onStartClick({
       requests: requestCounts,
       difficulty: "NORMAL",
       nodes: 1,
-      cores: 2,
+      cores,
       speed,
     });
-  };
-
-  const handleInputBlur = () => {
-    if (status === STATUS.STOPPED) return;
-    setSimulationSettings({ totalRequest: requestCounts });
   };
 
   const onSpeedChange = (value: string) => {
@@ -76,12 +86,17 @@ const Header = ({
           <Input defaultValue={1} disabled />
         </FormWithLabel>
         <FormWithLabel label="Cores">
-          <Input defaultValue={2} disabled />
+          <Input
+            onChange={handleCoreChange}
+            disabled={status !== STATUS.STOPPED}
+            value={cores}
+            className="max-w-[150px] bg-slate-50 text-slate-950"
+          />
         </FormWithLabel>
         <FormWithLabel label="Requests">
           <Input
             onChange={handleInputChange}
-            onBlur={handleInputBlur}
+            disabled={status !== STATUS.STOPPED}
             value={requestCounts}
             className="max-w-[150px] bg-slate-50 text-slate-950"
           />
