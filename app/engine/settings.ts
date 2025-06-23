@@ -31,7 +31,7 @@ export const simulationSettings: SimulationSettings = {
   runningStatus: RUNNING_STATUS.STOPPED,
   simulationScale: 1,
   difficulty: SIMULATION_DIFFICULTY.NORMAL,
-  totalRequest: 1000,
+  totalRequest: 100,
   timeLimit: 30000, // 30 seconds
   nodes: [{ id: "node1", coreCount: 4 }],
 };

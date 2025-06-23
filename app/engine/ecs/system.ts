@@ -58,6 +58,7 @@ import {
   REQUEST_GENERATION_POSSIBILITY,
   REQUEST_MESSAGE_SIZE,
 } from "../constants";
+import { simulationEngine } from "../engine";
 
 export class TrafficGeneration extends ecsy.System {
   commands: CreateRequest[] = [];
@@ -498,7 +499,7 @@ export class ResponseTransmission extends ecsy.System {
   static queries = {
     messages: { components: [Message, Response, InTransit] },
     links: { components: [Link, ResponseLink] },
-    dashboard: {components: [Dashboard]},
+    dashboard: { components: [Dashboard] },
   };
 
   execute(delta: number, time: number): void {
@@ -564,8 +565,9 @@ export class ResponseTransmission extends ecsy.System {
           throw new NotFoundError("Message not found");
         }
         message.remove(true);
-        this.queries.dashboard.results[0]
-          .getMutableComponent(ProcessedRequestCount)!.value += 1;
+        this.queries.dashboard.results[0].getMutableComponent(
+          ProcessedRequestCount
+        )!.value += 1;
       } else if (command.name === "RecordThroughput") {
         const cmd = command as RecordThroughput;
         const link =
@@ -591,7 +593,8 @@ export class SimulationIndicatorRelease extends ecsy.System {
   };
 
   execute(delta: number, time: number): void {
-    const { setTime, setSuccessRequest, setNodes, setLinks } = useSimulationMetrics.getState();
+    const { setTime, setSuccessRequest, setNodes, setLinks } =
+      useSimulationMetrics.getState();
 
     setTime((time / 1000).toFixed(1));
     const newNodeStates: NodeMetrics[] = this.queries.servers.results.map(
@@ -618,5 +621,22 @@ export class SimulationIndicatorRelease extends ecsy.System {
     setLinks(newLinkStates);
     const dashboard = this.queries.dashboard.results[0];
     setSuccessRequest(dashboard.getComponent(ProcessedRequestCount)!.value);
+  }
+}
+
+export class SimulationTermination extends ecsy.System {
+  static queries = {
+    dashboard: { components: [Dashboard] },
+  };
+
+  execute(delta: number, time: number): void {
+    const dashboard = this.queries.dashboard.results[0];
+    const processedCount = dashboard.getComponent(ProcessedRequestCount)!.value;
+    if (processedCount >= simulationEngine.config.totalRequest) {
+      simulationEngine.pause();
+    }
+    if (simulationEngine.elapsedTime >= simulationEngine.config.timeLimit) {
+      simulationEngine.pause();
+    }
   }
 }
