@@ -5,7 +5,11 @@ import type {
   SimulationConfig,
   TemporalStatus,
 } from "./status";
-import type { SimulationSettings } from "~/engine/settings";
+import type {
+  RunningStatus,
+  SimulationDifficulty,
+  SimulationSettings,
+} from "~/engine/settings";
 
 export const useSimulationMetrics = create<TemporalStatus>((set) => ({
   time: "0",
@@ -36,9 +40,9 @@ export const useSimulationConfig = create<SimulationConfig>((set) => ({
   setTotalRequest: (totalRequest: number) => set(() => ({ totalRequest })),
   setSimulationScale: (simulationScale: number) =>
     set(() => ({ simulationScale })),
-  setDifficulty: (difficulty: "easy" | "normal" | "hard") =>
+  setDifficulty: (difficulty: SimulationDifficulty) =>
     set(() => ({ difficulty })),
-  setRunningStatus: (runningStatus: "running" | "paused" | "stopped") =>
+  setRunningStatus: (runningStatus: RunningStatus) =>
     set(() => ({ runningStatus })),
   setSimulationConfig: (config: Partial<SimulationSettings>) =>
     set(() => ({ ...config })),
