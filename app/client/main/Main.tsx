@@ -15,16 +15,19 @@ import {
   type Status,
 } from "../lib/types";
 import { getRandomId } from "../lib/utils";
+import { useConfigNodes } from "~/store/memory";
 
 const Main = () => {
   const [status, setStatus] = useState<Status>(STATUS.STOPPED);
   const [tasks, setTasks] = useState<ServerTask[]>([]);
+  const nodes = useConfigNodes();
 
   const onStartClick = (form: SimulationConfig): void => {
     setSimulationSettings({
       totalRequest: form.requests,
       simulationScale: form.speed,
       difficulty: form.difficulty,
+      nodes: [{ ...nodes[0], coreCount: form.cores }],
     });
 
     if (status === STATUS.PAUSED) {

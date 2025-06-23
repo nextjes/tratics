@@ -4,6 +4,7 @@ import AddTaskModal from "./AddTaskModal";
 import type { ServerTask, Status } from "../lib/types";
 import { useState } from "react";
 import {
+  useConfigNodes,
   useSimulationTime,
   useSuccessRequest,
   useTotalRequest,
@@ -27,6 +28,7 @@ const ServerSpec = ({
   const time = useSimulationTime();
   const totalRequests = useTotalRequest();
   const successRequests = useSuccessRequest();
+  const configNodes = useConfigNodes();
 
   const onDialogClose = () => {
     setIsDialogOpen(false);
@@ -45,7 +47,9 @@ const ServerSpec = ({
           <ServerIcon className="size-[24px] [&_path]:fill-slate-300" />
           Spec
         </div>
-        <div className="text-slate-100 px-6 pb-2 text-lg font-bold">2 core</div>
+        <div className="text-slate-100 px-6 pb-2 text-lg font-bold">
+          {configNodes[0].coreCount} core
+        </div>
         <div>
           {tasks.map((task) => (
             <div

@@ -62,3 +62,9 @@ export const useSetRunningStatus = () =>
   useSimulationConfig((state) => state.setRunningStatus);
 export const useSetSimulationConfig = () =>
   useSimulationConfig((state) => state.setSimulationConfig);
+export const useConfigNodes = () => useSimulationConfig((state) => state.nodes);
+export const useSetConfigNodes = () =>
+  useSimulationConfig(
+    (state) => (nodes: { id: string; coreCount: number }[]) =>
+      state.setSimulationConfig({ nodes })
+  );
