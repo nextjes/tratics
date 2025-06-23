@@ -44,7 +44,7 @@ import {
   ResponseSender,
 } from "./system";
 
-export function createWorld(): ecsy.World {
+export function createWorld(cores: { taskId: string | null }[]): ecsy.World {
   const world = new ecsy.World();
 
   world
@@ -90,7 +90,7 @@ export function createWorld(): ecsy.World {
     .registerSystem(ResponseSender, { priority: 6 })
     .registerSystem(ResponseTransmission, { priority: 7 })
     .registerSystem(SimulationIndicatorRelease, { priority: 8 });
-  
+
   world
     .createEntity()
     .addComponent(Dashboard)
@@ -106,7 +106,7 @@ export function createWorld(): ecsy.World {
     .addComponent(Server)
     .addComponent(ClusterEntryPoint)
     .addComponent(Identity, { id: "server-1" })
-    .addComponent(Cores, { value: [{ taskId: null }, { taskId: null }] })
+    .addComponent(Cores, { value: cores })
     .addComponent(TaskQueue, { tasks: [] });
 
   world
