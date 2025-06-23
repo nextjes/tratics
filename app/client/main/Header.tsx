@@ -68,11 +68,6 @@ const Header = ({
     });
   };
 
-  const handleInputBlur = () => {
-    if (status === STATUS.STOPPED) return;
-    setSimulationSettings({ totalRequest: requestCounts });
-  };
-
   const onSpeedChange = (value: string) => {
     setSimulationSettings({ simulationScale: +value });
   };
@@ -101,7 +96,7 @@ const Header = ({
         <FormWithLabel label="Requests">
           <Input
             onChange={handleInputChange}
-            onBlur={handleInputBlur}
+            disabled={status !== STATUS.STOPPED}
             value={requestCounts}
             className="max-w-[150px] bg-slate-50 text-slate-950"
           />
