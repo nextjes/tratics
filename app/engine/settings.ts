@@ -7,7 +7,10 @@ export const RUNNING_STATUS = {
   RUNNING: "running",
   PAUSED: "paused",
   STOPPED: "stopped",
+  SUCCESS: "success",
+  FAILED: "failed",
 };
+
 export type SimulationDifficulty =
   (typeof SIMULATION_DIFFICULTY)[keyof typeof SIMULATION_DIFFICULTY];
 export type RunningStatus =
