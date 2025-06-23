@@ -31,6 +31,8 @@ export const useSimulationConfig = create<SimulationConfig>((set) => ({
   simulationScale: 1,
   difficulty: "normal",
   runningStatus: "stopped",
+  timeLimit: 30000,
+  nodes: [{ id: "node1", coreCount: 4 }],
   setTotalRequest: (totalRequest: number) => set(() => ({ totalRequest })),
   setSimulationScale: (simulationScale: number) =>
     set(() => ({ simulationScale })),
