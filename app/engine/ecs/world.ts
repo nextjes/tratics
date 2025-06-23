@@ -42,6 +42,7 @@ import {
   EnqueueTask,
   TaskTerminating,
   ResponseSender,
+  SimulationTermination,
 } from "./system";
 
 export function createWorld(cores: { taskId: string | null }[]): ecsy.World {
@@ -89,7 +90,8 @@ export function createWorld(cores: { taskId: string | null }[]): ecsy.World {
     .registerSystem(TaskTerminating, { priority: 5 })
     .registerSystem(ResponseSender, { priority: 6 })
     .registerSystem(ResponseTransmission, { priority: 7 })
-    .registerSystem(SimulationIndicatorRelease, { priority: 8 });
+    .registerSystem(SimulationIndicatorRelease, { priority: 8 })
+    .registerSystem(SimulationTermination, { priority: 9 });
 
   world
     .createEntity()
