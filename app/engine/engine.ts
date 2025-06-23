@@ -22,13 +22,21 @@ export class SimulationEngine {
   }
 
   static init(): SimulationEngine {
-    const world = createWorld();
+    const world = createWorld(
+      Array.from({ length: simulationSettings.nodes[0].coreCount }, () => ({
+        taskId: null,
+      }))
+    );
     world.stop();
     return new SimulationEngine(world, structuredClone(simulationSettings), 0);
   }
 
   reset(): void {
-    this.world = createWorld();
+    this.world = createWorld(
+      Array.from({ length: this.config.nodes[0].coreCount }, () => ({
+        taskId: null,
+      }))
+    );
     this.config = structuredClone(simulationSettings);
     this.elapsedTime = 0;
     this.lastTimestamp = null;
