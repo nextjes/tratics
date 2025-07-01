@@ -7,6 +7,7 @@ import {
   useConfigNodes,
   useSimulationTime,
   useSuccessRequest,
+  useTimeLimit,
   useTotalRequest,
 } from "~/store/memory";
 import { Progress } from "~/components/ui/progress";
@@ -29,6 +30,7 @@ const ServerSpec = ({
   const totalRequests = useTotalRequest();
   const successRequests = useSuccessRequest();
   const configNodes = useConfigNodes();
+  const timeLimit = useTimeLimit();
 
   const onDialogClose = () => {
     setIsDialogOpen(false);
@@ -82,7 +84,9 @@ const ServerSpec = ({
             <h6>Status</h6>
             <div className="grid grid-cols-[1fr_2fr] gap-2">
               <div>Time</div>
-              <div>{time}s</div>
+              <div>
+                {time}s / {Math.round(timeLimit / 1000)}s
+              </div>
               <div>Requests</div>
               <div className="flex gap-2">
                 <Progress

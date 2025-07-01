@@ -16,6 +16,7 @@ export interface SimulationConfig {
   cores: number;
   difficulty: string;
   speed: Speed;
+  timeLimit: number;
 }
 
 export const SPPED = {

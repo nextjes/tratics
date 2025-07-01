@@ -72,3 +72,5 @@ export const useSetConfigNodes = () =>
     (state) => (nodes: { id: string; coreCount: number }[]) =>
       state.setSimulationConfig({ nodes })
   );
+export const useTimeLimit = () =>
+  useSimulationConfig((state) => state.timeLimit);
