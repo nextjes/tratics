@@ -1,0 +1,83 @@
+name: Sync PR metadata with Issue
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  issues: read
+  pull-requests: write
+
+jobs:
+  sync_pr_metadata:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract Issue Number from Branch Name
+        id: extract
+        run: |
+          ISSUE_NUMBER=$(echo ${{ github.head_ref }} | grep -oE '[0-9]+$')
+          echo "issue_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
+          echo "Issue number extracted: $ISSUE_NUMBER"
+
+      - name: Update PR metadata with Issue metadata
+        if: steps.extract.outputs.issue_number != ''
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issue_number = '${{ steps.extract.outputs.issue_number }}';
+            if (!issue_number) {
+              console.log('No issue number found in branch name');
+              return;
+            }
+
+            try {
+              // Get issue details
+              const issue = await github.rest.issues.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue_number
+              });
+
+              const issue_title = issue.data.title;
+              const new_pr_title = `#${issue_number}: ${issue_title}`;
+
+              // Update PR title
+              await github.rest.pulls.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.payload.pull_request.number,
+                title: new_pr_title,
+              });
+
+              // Update PR labels (using issues API because PR is treated as an issue)
+              if (issue.data.labels && issue.data.labels.length > 0) {
+                const labels = issue.data.labels.map(label => label.name);
+                await github.rest.issues.setLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.payload.pull_request.number,
+                  labels: labels
+                });
+                console.log(`PR labels updated to: ${labels.join(', ')}`);
+              }
+
+              // Update PR assignees (using issues API)
+              if (issue.data.assignees && issue.data.assignees.length > 0) {
+                const assignees = issue.data.assignees.map(assignee => assignee.login);
+                await github.rest.issues.addAssignees({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.payload.pull_request.number,
+                  assignees: assignees
+                });
+                console.log(`PR assignees updated to: ${assignees.join(', ')}`);
+              }
+
+              console.log(`PR title updated to: ${new_pr_title}`);
+            } catch (error) {
+              console.log(`Error: ${error.message}`);
+              if (error.status === 404) {
+                console.log(`Issue #${issue_number} not found`);
+              }
+            }
