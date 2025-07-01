@@ -34,6 +34,7 @@ const Header = ({
 }: HeaderProps) => {
   const [requestCounts, setRequestCounts] = useState(DEFAULT_REQUEST_COUNTS);
   const [cores, setCores] = useState(DEFAULT_CORES);
+  const [timeLimit, setTimeLimit] = useState(30);
   const speed = useSimulationScale();
 
   const handleCoreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,12 +60,18 @@ const Header = ({
       return;
     }
 
+    if (!timeLimit) {
+      alert("Please set the time limit.");
+      return;
+    }
+
     onStartClick({
       requests: requestCounts,
       difficulty: "NORMAL",
       nodes: 1,
       cores,
       speed,
+      timeLimit,
     });
   };
 
@@ -78,13 +85,15 @@ const Header = ({
 
   return (
     <header className="py-8 bg-slate-800 text-slate-200 w-full flex flex-col justify-center items-center gap-10">
-      <div className="flex justify-center items-center gap-5">
+      <div className="flex justify-center items-center gap-3">
         <FormWithLabel label="Difficulty">
           <Input defaultValue={"NORMAL"} disabled />
         </FormWithLabel>
         <FormWithLabel label="Nodes">
           <Input defaultValue={1} disabled />
         </FormWithLabel>
+      </div>
+      <div className="flex justify-center items-center gap-5">
         <FormWithLabel label="Cores">
           <Input
             onChange={handleCoreChange}
@@ -98,6 +107,19 @@ const Header = ({
             onChange={handleInputChange}
             disabled={status !== STATUS.STOPPED}
             value={requestCounts}
+            className="max-w-[150px] bg-slate-50 text-slate-950"
+          />
+        </FormWithLabel>
+        <FormWithLabel label="Time Limit(second)">
+          <Input
+            onChange={(e) => {
+              const regExp = /^[0-9]*$/;
+              const { value } = e.target;
+              if (!regExp.test(value)) return;
+              setTimeLimit(Number(value));
+            }}
+            disabled={status !== STATUS.STOPPED}
+            value={timeLimit}
             className="max-w-[150px] bg-slate-50 text-slate-950"
           />
         </FormWithLabel>
@@ -133,7 +155,7 @@ const Header = ({
                 key={key}
                 value={SPPED[key as keyof typeof SPPED].toString()}
               >
-                {SPPED[key as keyof typeof SPPED]}
+                {key}
               </SelectItem>
             ))}
           </SelectContent>
