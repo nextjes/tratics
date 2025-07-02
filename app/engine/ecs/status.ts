@@ -10,7 +10,7 @@ export type MessageStatus = "Created" | "InTransit" | "Delivered";
 export interface SimulationResult {
   isSuccess: boolean | undefined;
   processedRequestCount: number;
-  elaspsedTime: number;
+  elapsedTime: number;
 
   succeed: (processedRequestCount: number, elaspedTime: number) => void;
   fail: (processedRequestCount: number, elaspedTime: number) => void;

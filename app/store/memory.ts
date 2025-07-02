@@ -79,23 +79,23 @@ export const useTimeLimit = () =>
 export const useSimulationResult = create<SimulationResult>((set) => ({
   isSuccess: undefined,
   processedRequestCount: 0,
-  elaspsedTime: 0,
-  succeed: (processedRequestCount: number, elaspsedTime: number) =>
+  elapsedTime: 0,
+  succeed: (processedRequestCount: number, elapsedTime: number) =>
     set(() => ({
       isSuccess: true,
       processedRequestCount,
-      elaspsedTime,
+      elapsedTime,
     })),
-  fail: (processedRequestCount: number, elaspsedTime: number) =>
+  fail: (processedRequestCount: number, elapsedTime: number) =>
     set(() => ({
       isSuccess: false,
       processedRequestCount,
-      elaspsedTime,
+      elapsedTime,
     })),
   reset: () =>
     set(() => ({
       isSuccess: undefined,
       processedRequestCount: 0,
-      elaspsedTime: 0,
+      elapsedTime: 0,
     })),
 }));
