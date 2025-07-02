@@ -51,7 +51,7 @@ export class SimulationEngine {
       this.lastTimestamp = timestamp;
     }
     const delta = timestamp - this.lastTimestamp;
-    const effectiveDelta = delta * simulationSettings.simulationScale;
+    const effectiveDelta = delta * this.config.simulationScale;
     this.elapsedTime += effectiveDelta;
     this.lastTimestamp = timestamp;
     this.world.execute(effectiveDelta, this.elapsedTime);
