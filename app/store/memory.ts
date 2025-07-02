@@ -10,6 +10,7 @@ import type {
   SimulationDifficulty,
   SimulationSettings,
 } from "~/engine/settings";
+import type { SimulationResult } from "~/engine/ecs/status";
 
 export const useSimulationMetrics = create<TemporalStatus>((set) => ({
   time: "0",
@@ -74,3 +75,27 @@ export const useSetConfigNodes = () =>
   );
 export const useTimeLimit = () =>
   useSimulationConfig((state) => state.timeLimit);
+
+export const useSimulationResult = create<SimulationResult>((set) => ({
+  isSuccess: undefined,
+  processedRequestCount: 0,
+  elaspsedTime: 0,
+  succeed: (processedRequestCount: number, elaspsedTime: number) =>
+    set(() => ({
+      isSuccess: true,
+      processedRequestCount,
+      elaspsedTime,
+    })),
+  fail: (processedRequestCount: number, elaspsedTime: number) =>
+    set(() => ({
+      isSuccess: false,
+      processedRequestCount,
+      elaspsedTime,
+    })),
+  reset: () =>
+    set(() => ({
+      isSuccess: undefined,
+      processedRequestCount: 0,
+      elaspsedTime: 0,
+    })),
+}));
