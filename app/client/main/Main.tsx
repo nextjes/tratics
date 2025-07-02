@@ -27,6 +27,7 @@ const Main = () => {
       totalRequest: form.requests,
       simulationScale: form.speed,
       difficulty: form.difficulty,
+      timeLimit: form.timeLimit * 1000,
       nodes: [{ ...nodes[0], coreCount: form.cores }],
     });
 

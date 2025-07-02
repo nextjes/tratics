@@ -1,5 +1,5 @@
 import * as ecsy from "ecsy";
-import { useSimulationMetrics } from "~/store/memory";
+import { useSimulationMetrics, useSimulationResult } from "~/store/memory";
 import {
   Server,
   Link,
@@ -632,11 +632,16 @@ export class SimulationTermination extends ecsy.System {
   execute(delta: number, time: number): void {
     const dashboard = this.queries.dashboard.results[0];
     const processedCount = dashboard.getComponent(ProcessedRequestCount)!.value;
+    const { succeed, fail } = useSimulationResult.getState();
+    const elapsedTime = time / 1000;
+
     if (processedCount >= simulationEngine.config.totalRequest) {
       simulationEngine.pause();
+      succeed(processedCount, elapsedTime);
     }
     if (simulationEngine.elapsedTime >= simulationEngine.config.timeLimit) {
       simulationEngine.pause();
+      fail(processedCount, elapsedTime);
     }
   }
 }
