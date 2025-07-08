@@ -99,3 +99,10 @@ export const useSimulationResult = create<SimulationResult>((set) => ({
       elapsedTime: 0,
     })),
 }));
+
+export const useIsSuccess = () =>
+  useSimulationResult((state) => state.isSuccess);
+export const useProcessedRequestCount = () =>
+  useSimulationResult((state) => state.processedRequestCount);
+export const useElapsedTime = () =>
+  useSimulationResult((state) => state.elapsedTime);
