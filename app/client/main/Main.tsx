@@ -7,7 +7,7 @@ import {
 } from "~/engine/entryPoints";
 import Header from "./Header";
 import Section from "./Section";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   STATUS,
   type ServerTask,
@@ -15,12 +15,42 @@ import {
   type Status,
 } from "../lib/types";
 import { getRandomId } from "../lib/utils";
-import { useConfigNodes } from "~/store/memory";
+import {
+  useConfigNodes,
+  useElapsedTime,
+  useIsSuccess,
+  useProcessedRequestCount,
+} from "~/store/memory";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle,
+} from "@radix-ui/react-dialog";
+import { DialogFooter, DialogHeader } from "~/components/ui/dialog";
+import { Button } from "../ui/button";
 
 const Main = () => {
   const [status, setStatus] = useState<Status>(STATUS.STOPPED);
   const [tasks, setTasks] = useState<ServerTask[]>([]);
   const nodes = useConfigNodes();
+
+  const [isOpen, setIsOpen] = useState(false);
+  const isSucess = useIsSuccess();
+  const processedReuqestCount = useProcessedRequestCount();
+  const elapsedTime = useElapsedTime();
+
+  useEffect(() => {
+    if (isSucess === undefined) {
+      setIsOpen(false);
+      return;
+    }
+
+    setIsOpen(true);
+  }, [isSucess]);
 
   const onStartClick = (form: SimulationConfig): void => {
     setSimulationSettings({
@@ -31,7 +61,7 @@ const Main = () => {
       nodes: [{ ...nodes[0], coreCount: form.cores }],
     });
 
-    if (status === STATUS.PAUSED) {
+    if (status === STATUS.PAUSED && isSucess === undefined) {
       resume();
     } else {
       start();
@@ -54,7 +84,15 @@ const Main = () => {
 
   const onPauseClick = (): void => {
     pause();
-    setStatus("paused");
+    setStatus(STATUS.PAUSED);
+  };
+
+  const onOpenChange = (open: boolean): void => {
+    if (!open) {
+      stop();
+      setStatus(STATUS.STOPPED);
+    }
+    setIsOpen(open);
   };
 
   return (
@@ -71,6 +109,33 @@ const Main = () => {
         addTask={addTask}
         deleteTask={deleteTask}
       />
+      <Dialog open={isOpen} onOpenChange={onOpenChange}>
+        <DialogPortal>
+          <DialogOverlay className="bg-dark-opacity-500 fixed top-0 bottom-0 left-0 right-0" />
+          <DialogContent className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] bg-white p-6 rounded-lg shadow-lg flex flex-col gap-4">
+            <DialogHeader>
+              <DialogTitle className="text-center text-2xl text-chart-1">
+                {isSucess ? "SUCCESS!" : "Failed!"}
+              </DialogTitle>
+            </DialogHeader>
+            <DialogDescription>
+              <div className="flex flex-col items-center gap-3">
+                <div className="text-base font-medium">
+                  Processed Requests: {processedReuqestCount}
+                </div>
+                <div className="text-base font-medium">
+                  Elapsed Time: {elapsedTime.toFixed(5)} seconds
+                </div>
+              </div>
+            </DialogDescription>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button>Close</Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </DialogPortal>
+      </Dialog>
     </main>
   );
 };
