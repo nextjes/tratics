@@ -126,6 +126,27 @@ body {
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+
+  --color-dark-opacity-100: hsl(0 0 2% / 0.1);
+  --color-dark-opacity-150: hsl(0 0 2% / 0.15);
+  --color-dark-opacity-200: hsl(0 0 2% / 0.2);
+  --color-dark-opacity-25: hsl(0 0 2% / 0.03);
+  --color-dark-opacity-250: hsl(0 0 2% / 0.25);
+  --color-dark-opacity-300: hsl(0 0 2% / 0.3);
+  --color-dark-opacity-350: hsl(0 0 2% / 0.35);
+  --color-dark-opacity-400: hsl(0 0 2% / 0.4);
+  --color-dark-opacity-450: hsl(0 0 2% / 0.46);
+  --color-dark-opacity-50: hsl(0 0 2% / 0.05);
+  --color-dark-opacity-500: hsl(0 0 2% / 0.51);
+  --color-dark-opacity-550: hsl(0 0 2% / 0.58);
+  --color-dark-opacity-600: hsl(0 0 2% / 0.63);
+  --color-dark-opacity-650: hsl(0 0 2% / 0.68);
+  --color-dark-opacity-700: hsl(0 0 2% / 0.73);
+  --color-dark-opacity-750: hsl(0 0 2% / 0.8);
+  --color-dark-opacity-800: hsl(0 0 2% / 0.84);
+  --color-dark-opacity-850: hsl(0 0 2% / 0.89);
+  --color-dark-opacity-900: hsl(0 0 2% / 0.92);
 }
 
 @layer base {
