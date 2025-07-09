@@ -1,9 +1,8 @@
 import * as ecsy from "ecsy";
 import { createWorld } from "./ecs/world";
 import { InvalidSimulationStatusError } from "./error";
-import type { SimulationSettings } from "~/store/status";
+import { RUNNING_STATUS, type SimulationSettings } from "~/store/status";
 import { useSimulationConfig } from "~/store/memory";
-import { RUNNING_STATUS } from "./settings";
 
 export class SimulationEngine {
   world: ecsy.World;
