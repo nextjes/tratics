@@ -62,3 +62,13 @@ export interface SimulationConfig extends SimulationSettings {
   setRunningStatus: (runningStatus: RunningStatus) => void;
   setSimulationConfig: (config: Partial<SimulationSettings>) => void;
 }
+
+export interface SimulationResult {
+  isSuccess: boolean | undefined;
+  processedRequestCount: number;
+  elapsedTime: number;
+
+  succeed: (processedRequestCount: number, elaspedTime: number) => void;
+  fail: (processedRequestCount: number, elaspedTime: number) => void;
+  reset: () => void;
+}

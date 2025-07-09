@@ -5,10 +5,10 @@ import type {
   RunningStatus,
   SimulationConfig,
   SimulationDifficulty,
+  SimulationResult,
   SimulationSettings,
   TemporalStatus,
 } from "./status";
-import type { SimulationResult } from "~/engine/ecs/status";
 
 export const useSimulationMetrics = create<TemporalStatus>((set) => ({
   time: "0",
