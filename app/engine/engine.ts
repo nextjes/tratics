@@ -1,7 +1,8 @@
 import * as ecsy from "ecsy";
-import { simulationSettings, type SimulationSettings } from "./settings";
 import { createWorld } from "./ecs/world";
 import { InvalidSimulationStatusError } from "./error";
+import { RUNNING_STATUS, type SimulationSettings } from "~/store/status";
+import { useSimulationConfig } from "~/store/memory";
 
 export class SimulationEngine {
   world: ecsy.World;
@@ -22,13 +23,14 @@ export class SimulationEngine {
   }
 
   static init(): SimulationEngine {
+    const config = useSimulationConfig.getState();
     const world = createWorld(
-      Array.from({ length: simulationSettings.nodes[0].coreCount }, () => ({
+      Array.from({ length: config.nodes[0].coreCount }, () => ({
         taskId: null,
       }))
     );
     world.stop();
-    return new SimulationEngine(world, structuredClone(simulationSettings), 0);
+    return new SimulationEngine(world, config, 0);
   }
 
   reset(): void {
@@ -37,7 +39,7 @@ export class SimulationEngine {
         taskId: null,
       }))
     );
-    this.config = structuredClone(simulationSettings);
+    this.config = useSimulationConfig.getState();
     this.elapsedTime = 0;
     this.lastTimestamp = null;
     if (this.#rafId !== null) {
@@ -65,6 +67,9 @@ export class SimulationEngine {
     }
 
     this.world.play();
+    const { setRunningStatus } = useSimulationConfig.getState();
+    setRunningStatus(RUNNING_STATUS.RUNNING);
+    this.config = useSimulationConfig.getState();
     this.#rafId = requestAnimationFrame(this.step);
   }
 
@@ -78,6 +83,9 @@ export class SimulationEngine {
       this.#rafId = null;
     }
     this.world.stop();
+    const { setRunningStatus } = useSimulationConfig.getState();
+    setRunningStatus(RUNNING_STATUS.PAUSED);
+    this.config = useSimulationConfig.getState();
   }
 
   resume(): void {
@@ -86,6 +94,9 @@ export class SimulationEngine {
     }
 
     this.world.play();
+    const { setRunningStatus } = useSimulationConfig.getState();
+    setRunningStatus(RUNNING_STATUS.RUNNING);
+    this.config = useSimulationConfig.getState();
     this.#rafId = requestAnimationFrame(this.step);
   }
 
@@ -96,10 +107,15 @@ export class SimulationEngine {
     }
     this.reset();
     this.world.stop();
+    const { setRunningStatus } = useSimulationConfig.getState();
+    setRunningStatus(RUNNING_STATUS.STOPPED);
+    this.config = useSimulationConfig.getState();
   }
 
   setSimulationSettings(settings: Partial<SimulationSettings>): void {
-    this.config = { ...this.config, ...settings };
+    const { setSimulationConfig } = useSimulationConfig.getState();
+    setSimulationConfig(settings);
+    this.config = useSimulationConfig.getState();
   }
 }
 

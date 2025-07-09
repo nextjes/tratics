@@ -2,15 +2,13 @@ import { create } from "zustand";
 import type {
   LinkMetrics,
   NodeMetrics,
+  RunningStatus,
   SimulationConfig,
+  SimulationDifficulty,
+  SimulationResult,
+  SimulationSettings,
   TemporalStatus,
 } from "./status";
-import type {
-  RunningStatus,
-  SimulationDifficulty,
-  SimulationSettings,
-} from "~/engine/settings";
-import type { SimulationResult } from "~/engine/ecs/status";
 
 export const useSimulationMetrics = create<TemporalStatus>((set) => ({
   time: "0",
