@@ -68,7 +68,7 @@ export interface SimulationResult {
   processedRequestCount: number;
   elapsedTime: number;
 
-  succeed: (processedRequestCount: number, elaspedTime: number) => void;
-  fail: (processedRequestCount: number, elaspedTime: number) => void;
+  succeed: (processedRequestCount: number, elapsedTime: number) => void;
+  fail: (processedRequestCount: number, elapsedTime: number) => void;
   reset: () => void;
 }
