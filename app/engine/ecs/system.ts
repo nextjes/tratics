@@ -596,7 +596,11 @@ export class SimulationIndicatorRelease extends ecsy.System {
     const { setTime, setSuccessRequest, setNodes, setLinks } =
       useSimulationMetrics.getState();
 
-    setTime((time / 1000).toFixed(1));
+    const elapsedTime = Math.min(
+      time / 1000,
+      simulationEngine.config.timeLimit
+    );
+    setTime(elapsedTime.toFixed(1));
     const newNodeStates: NodeMetrics[] = this.queries.servers.results.map(
       (server: ecsy.Entity) => {
         return {
@@ -620,7 +624,11 @@ export class SimulationIndicatorRelease extends ecsy.System {
     );
     setLinks(newLinkStates);
     const dashboard = this.queries.dashboard.results[0];
-    setSuccessRequest(dashboard.getComponent(ProcessedRequestCount)!.value);
+    const successRequests = Math.min(
+      dashboard.getComponent(ProcessedRequestCount)!.value,
+      simulationEngine.config.totalRequest
+    );
+    setSuccessRequest(successRequests);
   }
 }
 
