@@ -1,6 +1,5 @@
-import { useSimulationConfig } from "~/store/memory";
+import type { SimulationSettings } from "~/store/status";
 import { simulationEngine } from "./engine";
-import { simulationSettings } from "./settings";
 
 export function start(): void {
   simulationEngine.start();
@@ -19,9 +18,7 @@ export function stop(): void {
 }
 
 export function setSimulationSettings(
-  settings: Partial<typeof simulationSettings>
+  settings: Partial<SimulationSettings>
 ): void {
-  const { setSimulationConfig } = useSimulationConfig.getState();
-  setSimulationConfig(settings);
   simulationEngine.setSimulationSettings(settings);
 }
