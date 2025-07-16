@@ -4,6 +4,7 @@ import {
   pause,
   resume,
   setSimulationSettings,
+  resetSimulationResult,
 } from "~/engine/entryPoints";
 import Header from "./Header";
 import Section from "./Section";
@@ -95,6 +96,11 @@ const Main = () => {
     setIsOpen(open);
   };
 
+  const resetResult = (): void => {
+    resetSimulationResult();
+    setIsOpen(false);
+  };
+
   return (
     <main>
       <Header
@@ -130,7 +136,7 @@ const Main = () => {
             </DialogDescription>
             <DialogFooter>
               <DialogClose asChild>
-                <Button>Close</Button>
+                <Button onClick={resetResult}>Close</Button>
               </DialogClose>
             </DialogFooter>
           </DialogContent>
