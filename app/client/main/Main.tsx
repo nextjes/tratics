@@ -96,7 +96,7 @@ const Main = () => {
     setIsOpen(open);
   };
 
-  const resetResult = (): void => {
+  const onClose = (): void => {
     resetSimulationResult();
     setIsOpen(false);
   };
@@ -136,7 +136,7 @@ const Main = () => {
             </DialogDescription>
             <DialogFooter>
               <DialogClose asChild>
-                <Button onClick={resetResult}>Close</Button>
+                <Button onClick={onClose}>Close</Button>
               </DialogClose>
             </DialogFooter>
           </DialogContent>
