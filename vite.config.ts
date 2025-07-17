@@ -6,5 +6,4 @@ import svgr from "vite-plugin-svgr";
 
 export default defineConfig({
   plugins: [svgr(), tailwindcss(), reactRouter(), tsconfigPaths()],
-  base: "/tratics/",
 });
