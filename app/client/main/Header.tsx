@@ -85,15 +85,44 @@ const Header = ({
 
   return (
     <header className="py-8 bg-slate-800 text-slate-200 w-full flex flex-col justify-center items-center gap-10">
-      <div className="flex justify-center items-center gap-3">
-        <FormWithLabel label="Difficulty">
-          <Input defaultValue={"NORMAL"} disabled />
-        </FormWithLabel>
-        <FormWithLabel label="Nodes">
-          <Input defaultValue={1} disabled />
-        </FormWithLabel>
+      <div className="flex flex-col justify-start items-start gap-3 w-[150px]">
+        {status !== "stopped" ? (
+          <>
+            {status === STATUS.STARTED ? (
+              <Button onClick={onPauseClick} className="bg-slate-500">
+                Pause
+              </Button>
+            ) : (
+              <Button onClick={handleStartClick} className="bg-slate-500">
+                Start
+              </Button>
+            )}
+            <Button onClick={handleStopClick} className="bg-red-400">
+              Stop
+            </Button>
+          </>
+        ) : (
+          <Button onClick={handleStartClick} className="bg-slate-500">
+            Start
+          </Button>
+        )}
+        <Select value={speed.toString()} onValueChange={onSpeedChange}>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Speed" />
+          </SelectTrigger>
+          <SelectContent>
+            {Object.keys(SPPED).map((key) => (
+              <SelectItem
+                key={key}
+                value={SPPED[key as keyof typeof SPPED].toString()}
+              >
+                {key}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
-      <div className="flex justify-center items-center gap-5">
+      <div className="flex flex-col justify-center items-center gap-5">
         <FormWithLabel label="Cores">
           <Input
             onChange={handleCoreChange}
@@ -123,43 +152,6 @@ const Header = ({
             className="max-w-[150px] bg-slate-50 text-slate-950"
           />
         </FormWithLabel>
-      </div>
-      <div className="flex justify-center items-center gap-3">
-        {status !== "stopped" ? (
-          <>
-            {status === STATUS.STARTED ? (
-              <Button onClick={onPauseClick} className="bg-slate-500">
-                Pause
-              </Button>
-            ) : (
-              <Button onClick={handleStartClick} className="bg-slate-500">
-                Start
-              </Button>
-            )}
-            <Button onClick={handleStopClick} className="bg-red-400">
-              Stop
-            </Button>
-          </>
-        ) : (
-          <Button onClick={handleStartClick} className="bg-slate-500">
-            Start
-          </Button>
-        )}
-        <Select value={speed.toString()} onValueChange={onSpeedChange}>
-          <SelectTrigger className="w-[80px]">
-            <SelectValue placeholder="Speed" />
-          </SelectTrigger>
-          <SelectContent>
-            {Object.keys(SPPED).map((key) => (
-              <SelectItem
-                key={key}
-                value={SPPED[key as keyof typeof SPPED].toString()}
-              >
-                {key}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
       </div>
     </header>
   );

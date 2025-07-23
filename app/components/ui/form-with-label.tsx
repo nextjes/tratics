@@ -16,7 +16,7 @@ const FormWithLabel = ({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center gap-3",
+        "flex flex-col items-start justify-center gap-2",
         className
       )}
     >

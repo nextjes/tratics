@@ -1,8 +1,3 @@
-export interface ServerTask {
-  id: string;
-  time: number;
-}
-
 export const STATUS = {
   STOPPED: "stopped",
   STARTED: "started",

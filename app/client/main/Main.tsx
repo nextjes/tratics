@@ -9,13 +9,7 @@ import {
 import Header from "./Header";
 import Section from "./Section";
 import { useEffect, useState } from "react";
-import {
-  STATUS,
-  type ServerTask,
-  type SimulationConfig,
-  type Status,
-} from "../lib/types";
-import { getRandomId } from "../lib/utils";
+import { STATUS, type SimulationConfig, type Status } from "../lib/types";
 import {
   useConfigNodes,
   useElapsedTime,
@@ -36,7 +30,6 @@ import { Button } from "../ui/button";
 
 const Main = () => {
   const [status, setStatus] = useState<Status>(STATUS.STOPPED);
-  const [tasks, setTasks] = useState<ServerTask[]>([]);
   const nodes = useConfigNodes();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -75,14 +68,6 @@ const Main = () => {
     setStatus(STATUS.STOPPED);
   };
 
-  const addTask = (taskTime: number): void => {
-    setTasks((prev) => [...prev, { id: getRandomId(), time: taskTime }]);
-  };
-
-  const deleteTask = (taskId: string): void => {
-    setTasks((prev) => prev.filter((task) => task.id !== taskId));
-  };
-
   const onPauseClick = (): void => {
     pause();
     setStatus(STATUS.PAUSED);
@@ -102,19 +87,14 @@ const Main = () => {
   };
 
   return (
-    <main>
+    <main className="grid grid-cols-[300px_1fr] h-screen w-full relative">
       <Header
         status={status}
         onStartClick={onStartClick}
         onStopClick={onStopClick}
         onPauseClick={onPauseClick}
       />
-      <Section
-        tasks={tasks}
-        status={status}
-        addTask={addTask}
-        deleteTask={deleteTask}
-      />
+      <Section status={status} />
       <Dialog open={isOpen} onOpenChange={onOpenChange}>
         <DialogPortal>
           <DialogOverlay className="bg-dark-opacity-500 fixed top-0 bottom-0 left-0 right-0" />
