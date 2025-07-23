@@ -1,29 +1,20 @@
-import React from "react";
 import ClientIcon from "~/client/images/computer-monitor-svgrepo-com.svg?react";
 import ServerIcon from "~/client/images/server-svgrepo-com.svg?react";
 import { useNodes, useLinks } from "~/store/memory";
 import ServerSpec from "../ui/ServerSpec";
-import { STATUS, type ServerTask, type Status } from "../lib/types";
+import { STATUS, type Status } from "../lib/types";
 
 interface SectionProps {
-  tasks: ServerTask[];
   status: Status;
-  addTask: (taskTime: number) => void;
-  deleteTask: (taskId: string) => void;
 }
 
-const Section = ({ tasks, status, addTask, deleteTask }: SectionProps) => {
+const Section = ({ status }: SectionProps) => {
   const nodeStatus = useNodes();
   const linkStatus = useLinks();
 
   return (
     <section className="flex flex-col gap-7 justify-center items-center">
-      <ServerSpec
-        tasks={tasks}
-        status={status}
-        addTask={addTask}
-        deleteTask={deleteTask}
-      />
+      <ServerSpec status={status} />
       <div className="flex items-center">
         <ClientIcon className="size-[50px]" />
         <div className="h-2.5 bg-gray-200 w-96 rounded-sm relative">
@@ -85,9 +76,9 @@ const Section = ({ tasks, status, addTask, deleteTask }: SectionProps) => {
         <ServerIcon className="size-[50px]" />
       </div>
       {status !== "stopped" && (
-        <>
+        <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
-            Node status :
+            <span>Node status :</span>
             <div className="flex flex-col gap-1">
               {nodeStatus && nodeStatus.length > 0 ? (
                 <>
@@ -118,7 +109,7 @@ const Section = ({ tasks, status, addTask, deleteTask }: SectionProps) => {
               )}
             </div>
           </div>
-        </>
+        </div>
       )}
     </section>
   );
